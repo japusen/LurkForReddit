@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,7 +22,7 @@ fun HomeScreen(
 ) {
     when (lurkUiState) {
         is LurkUiState.Loading -> LoadingScreen(modifier)
-        is LurkUiState.Success -> ResultScreen(lurkUiState.text, modifier)
+        is LurkUiState.Success -> ResultScreen(lurkUiState.text.toString(), modifier)
         is LurkUiState.Error -> ErrorScreen(modifier)
     }
 }
@@ -56,7 +58,9 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 fun ResultScreen(lurkUiState: String, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         Text(lurkUiState)
     }

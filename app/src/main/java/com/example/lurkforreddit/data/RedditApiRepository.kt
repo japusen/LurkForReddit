@@ -2,12 +2,13 @@ package com.example.lurkforreddit.data
 
 import android.util.Log
 import com.example.lurkforreddit.model.AccessToken
+import com.example.lurkforreddit.model.Thing
 import com.example.lurkforreddit.network.ApiTokenService
 import com.example.lurkforreddit.network.RedditApiService
 
 interface RedditApiRepository {
     suspend fun initAccessToken()
-    suspend fun getSubredditListing(subreddit: String): String
+    suspend fun getSubredditListing(subreddit: String): Thing
 }
 
 class DefaultRedditApiRepository(
@@ -31,7 +32,7 @@ class DefaultRedditApiRepository(
         }
     }
 
-    override suspend fun getSubredditListing(subreddit: String): String {
+    override suspend fun getSubredditListing(subreddit: String): Thing {
         return redditApiService.getSubredditListing(tokenHeader, subreddit)
     }
 

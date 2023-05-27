@@ -1,21 +1,14 @@
 package com.example.lurkforreddit.model
 
-import android.util.Log
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonTransformingSerializer
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable(with = ModuleSerializer::class)
 abstract class Thing
-
 
 interface Votable {
     val ups: Int
@@ -23,18 +16,8 @@ interface Votable {
 }
 
 interface Created {
-    val created: Long
-    val createdUtc: Long
-}
-
-object RedditThingDeserializer :
-    JsonTransformingSerializer<Thing>(PolymorphicSerializer(Thing::class)) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        val kind = element.jsonObject["kind"]!!
-        val data = element.jsonObject["data"] ?: return element
-        Log.d("DESERIALIZE", data.toString())
-        return JsonObject(data.jsonObject.toMutableMap().also { it["kind"] = kind })
-    }
+    val created: Float
+    val createdUtc: Float
 }
 
 object ModuleSerializer : JsonContentPolymorphicSerializer<Thing>(Thing::class) {

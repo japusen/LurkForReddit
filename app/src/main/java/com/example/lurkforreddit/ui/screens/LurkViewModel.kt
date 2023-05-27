@@ -11,22 +11,25 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.model.Thing
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
 
 sealed interface LurkUiState {
-    data class Success(val text: String) : LurkUiState
+    data class Success(val text: Thing) : LurkUiState
     object Error : LurkUiState
     object Loading : LurkUiState
 }
+
 class LurkViewModel(
     private val redditApiRepository: RedditApiRepository
 ) : ViewModel() {
 
     var lurkUiState: LurkUiState by mutableStateOf(LurkUiState.Loading)
         private set
+
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()

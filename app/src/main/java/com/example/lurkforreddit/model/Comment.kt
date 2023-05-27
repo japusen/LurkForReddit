@@ -8,9 +8,14 @@ private const val COMMENT = "t1"
 @Serializable
 @SerialName(COMMENT)
 data class Comment(
-    override val created: Long,
+    val data: CommentData
+) : Thing()
+
+@Serializable
+data class CommentData(
+    override val created: Float,
     @SerialName("created_utc")
-    override val createdUtc: Long,
+    override val createdUtc: Float,
     override val ups: Int,
     override val downs: Int,
     val author: String,
@@ -27,4 +32,4 @@ data class Comment(
     @SerialName("subreddit_id")
     val subredditID: String,
     val distinguished: String?
-) : Thing(), Created, Votable
+) : Created, Votable
