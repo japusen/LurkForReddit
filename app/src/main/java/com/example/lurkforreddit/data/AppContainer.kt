@@ -16,7 +16,10 @@ class DefaultAppContainer: AppContainer {
     private val tokenURL = "https://www.reddit.com"
     private val apiURL = "https://oauth.reddit.com"
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        classDiscriminator = "kind"
+    }
 
     @OptIn(ExperimentalSerializationApi::class)
     private val tokenRetrofit = Retrofit.Builder()
