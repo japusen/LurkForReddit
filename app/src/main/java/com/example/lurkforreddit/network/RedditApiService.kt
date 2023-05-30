@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.model.Listing
 import com.example.lurkforreddit.model.Thing
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -15,7 +16,7 @@ interface RedditApiService {
         @Path("sort") sort: String,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null,
-    ): Thing
+    ): Listing
 
     @GET("/r/{subreddit}/top")
     suspend fun getSubredditTopListing(
@@ -24,7 +25,7 @@ interface RedditApiService {
         @Query("t") sort: String,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null,
-    ): Thing
+    ): Listing
 
     @GET("/r/{subreddit}/comments/{article}")
     suspend fun getComments(
@@ -32,5 +33,14 @@ interface RedditApiService {
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
         @Query("sort") sort: String
-    ): List<Thing>
+    ): List<Listing>
+
+    @GET("/r/{subreddit}/duplicates/{article}")
+    suspend fun getDuplicates(
+        @Header("Authorization") accessToken: String,
+        @Path("subreddit") subreddit: String,
+        @Path("article") article: String,
+        @Query("after") after: String? = null,
+        @Query("before") before: String? = null,
+    ): List<Listing>
 }

@@ -13,6 +13,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
 import com.example.lurkforreddit.model.CommentSort
+import com.example.lurkforreddit.model.Listing
+import com.example.lurkforreddit.model.ListingData
 import com.example.lurkforreddit.model.ListingSort
 import com.example.lurkforreddit.model.ListingTopSort
 import com.example.lurkforreddit.model.Thing
@@ -22,7 +24,7 @@ import java.io.IOException
 
 
 sealed interface LurkUiState {
-    data class Success(val data: Thing) : LurkUiState
+    data class Success(val data: ListingData) : LurkUiState
     object Error : LurkUiState
     object Loading : LurkUiState
 }
@@ -37,9 +39,10 @@ class LurkViewModel(
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-            //getListing("all", ListingSort.RISING)
+            //getListing("all", ListingSort.HOT)
             //getTopListing("all", ListingTopSort.ALL)
-            getComments("all", "13ve8iq", CommentSort.BEST)
+            //getComments("all", "13ve8iq", CommentSort.QA)
+            getDuplicates("oddlysatisfying", "13vdm8v")
         }
     }
 
@@ -78,10 +81,22 @@ class LurkViewModel(
                     redditApiRepository.getComments(subreddit, article, sort)
                 )
             } catch (e: IOException) {
-                Log.d("COMMENTS", e.toString())
                 LurkUiState.Error
             } catch (e: HttpException) {
-                Log.d("COMMENTS", e.toString())
+                LurkUiState.Error
+            }
+        }
+    }
+
+    fun getDuplicates(subreddit: String, article: String) {
+        viewModelScope.launch {
+            lurkUiState = try {
+                LurkUiState.Success(
+                    redditApiRepository.getDuplicates(subreddit, article)
+                )
+            } catch (e: IOException) {
+                LurkUiState.Error
+            } catch (e: HttpException) {
                 LurkUiState.Error
             }
         }
