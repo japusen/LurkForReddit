@@ -25,4 +25,12 @@ interface RedditApiService {
         @Query("after") after: String? = null,
         @Query("before") before: String? = null,
     ): Thing
+
+    @GET("/r/{subreddit}/comments/{article}")
+    suspend fun getComments(
+        @Header("Authorization") accessToken: String,
+        @Path("subreddit") subreddit: String,
+        @Path("article") article: String,
+        @Query("sort") sort: String
+    ): List<Thing>
 }

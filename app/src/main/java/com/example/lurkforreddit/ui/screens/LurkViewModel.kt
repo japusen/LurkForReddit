@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.screens
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,9 +12,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.model.CommentSort
 import com.example.lurkforreddit.model.ListingSort
+import com.example.lurkforreddit.model.ListingTopSort
 import com.example.lurkforreddit.model.Thing
-import com.example.lurkforreddit.model.TopSort
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -36,33 +38,50 @@ class LurkViewModel(
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
             //getListing("all", ListingSort.RISING)
-            getTopListing("all", TopSort.ALL)
+            //getTopListing("all", ListingTopSort.ALL)
+            getComments("all", "13ve8iq", CommentSort.BEST)
         }
     }
 
-    fun getListing(subreddit: String, sort: ListingSort) {
-        viewModelScope.launch {
-            lurkUiState = try {
-                LurkUiState.Success(
-                    redditApiRepository.getListing(subreddit, sort)
-                )
-            } catch (e: IOException) {
-                LurkUiState.Error
-            } catch (e: HttpException) {
-                LurkUiState.Error
-            }
-        }
-    }
+//    fun getListing(subreddit: String, sort: ListingSort) {
+//        viewModelScope.launch {
+//            lurkUiState = try {
+//                LurkUiState.Success(
+//                    redditApiRepository.getListing(subreddit, sort)
+//                )
+//            } catch (e: IOException) {
+//                LurkUiState.Error
+//            } catch (e: HttpException) {
+//                LurkUiState.Error
+//            }
+//        }
+//    }
+//
+//    fun getTopListing(subreddit: String, sort: ListingTopSort) {
+//        viewModelScope.launch {
+//            lurkUiState = try {
+//                LurkUiState.Success(
+//                    redditApiRepository.getTopListing(subreddit, sort)
+//                )
+//            } catch (e: IOException) {
+//                LurkUiState.Error
+//            } catch (e: HttpException) {
+//                LurkUiState.Error
+//            }
+//        }
+//    }
 
-    fun getTopListing(subreddit: String, sort: TopSort) {
+    fun getComments(subreddit: String, article: String, sort: CommentSort) {
         viewModelScope.launch {
             lurkUiState = try {
                 LurkUiState.Success(
-                    redditApiRepository.getTopListing(subreddit, sort)
+                    redditApiRepository.getComments(subreddit, article, sort)
                 )
             } catch (e: IOException) {
+                Log.d("COMMENTS", e.toString())
                 LurkUiState.Error
             } catch (e: HttpException) {
+                Log.d("COMMENTS", e.toString())
                 LurkUiState.Error
             }
         }

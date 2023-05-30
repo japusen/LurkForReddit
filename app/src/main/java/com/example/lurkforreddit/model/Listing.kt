@@ -11,7 +11,7 @@ enum class ListingSort(val type: String) {
     NEW("new")
 }
 
-enum class TopSort(val type: String) {
+enum class ListingTopSort(val type: String) {
     HOUR("hour"),
     DAY("day"),
     WEEK("week"),
@@ -30,6 +30,6 @@ data class Listing(
 data class ListingData(
     val after: String?,
     val before: String?,
-    val dist: Int,
+    val dist: Int? = null,
     val children: List<Thing>
 )

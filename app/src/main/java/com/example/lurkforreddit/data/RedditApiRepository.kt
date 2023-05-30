@@ -2,16 +2,19 @@ package com.example.lurkforreddit.data
 
 import android.util.Log
 import com.example.lurkforreddit.model.AccessToken
+import com.example.lurkforreddit.model.CommentSort
 import com.example.lurkforreddit.model.ListingSort
 import com.example.lurkforreddit.model.Thing
-import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.model.ListingTopSort
 import com.example.lurkforreddit.network.ApiTokenService
 import com.example.lurkforreddit.network.RedditApiService
 
 interface RedditApiRepository {
     suspend fun initAccessToken()
     suspend fun getListing(subreddit: String, sort: ListingSort): Thing
-    suspend fun getTopListing(subreddit: String, sort: TopSort): Thing
+    suspend fun getTopListing(subreddit: String, sort: ListingTopSort): Thing
+
+    suspend fun getComments(subreddit: String, article: String, sort: CommentSort): Thing
 }
 
 class DefaultRedditApiRepository(
@@ -40,8 +43,16 @@ class DefaultRedditApiRepository(
         return redditApiService.getSubredditListing(tokenHeader, subreddit, sort.type)
     }
 
-    override suspend fun getTopListing(subreddit: String, sort: TopSort
+    override suspend fun getTopListing(subreddit: String, sort: ListingTopSort
     ): Thing {
         return redditApiService.getSubredditTopListing(tokenHeader, subreddit, sort.type)
     }
+
+    override suspend fun getComments(subreddit: String, article: String, sort: CommentSort): Thing {
+        val comments = redditApiService.getComments(tokenHeader, subreddit, article, sort.type)[1]
+        Log.d("Comments", comments.toString())
+        return comments
+    }
+
+
 }

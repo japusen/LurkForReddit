@@ -26,6 +26,7 @@ object ModuleSerializer : JsonContentPolymorphicSerializer<Thing>(Thing::class) 
             "Listing" -> Listing.serializer()
             "t3" -> Link.serializer()
             "t1" -> Comment.serializer()
+            "more" -> MoreComments.serializer()
             else -> throw Exception("Unknown Module: key 'kind' not found or does not matches any module type")
         }
     }
