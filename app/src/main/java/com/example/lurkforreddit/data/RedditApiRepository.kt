@@ -49,9 +49,7 @@ class DefaultRedditApiRepository(
     }
 
     override suspend fun getComments(subreddit: String, article: String, sort: CommentSort): Thing {
-        val comments = redditApiService.getComments(tokenHeader, subreddit, article, sort.type)[1]
-        Log.d("Comments", comments.toString())
-        return comments
+        return redditApiService.getComments(tokenHeader, subreddit, article, sort.type)[1]
     }
 
 

@@ -49,7 +49,7 @@ data class CommentData(
 
 
 object RepliesSerializer : JsonTransformingSerializer<List<Thing>>(ListSerializer(Thing.serializer())) {
-    // If response is not an array, then it is a single object that should be wrapped into the array
+    // If response is not an array, then it should be an empty array
     override fun transformDeserialize(element: JsonElement): JsonElement =
         if (element !is JsonArray) JsonArray(listOf()) else element
 }

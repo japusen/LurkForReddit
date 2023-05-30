@@ -22,7 +22,7 @@ import java.io.IOException
 
 
 sealed interface LurkUiState {
-    data class Success(val text: Thing) : LurkUiState
+    data class Success(val data: Thing) : LurkUiState
     object Error : LurkUiState
     object Loading : LurkUiState
 }
@@ -43,33 +43,33 @@ class LurkViewModel(
         }
     }
 
-//    fun getListing(subreddit: String, sort: ListingSort) {
-//        viewModelScope.launch {
-//            lurkUiState = try {
-//                LurkUiState.Success(
-//                    redditApiRepository.getListing(subreddit, sort)
-//                )
-//            } catch (e: IOException) {
-//                LurkUiState.Error
-//            } catch (e: HttpException) {
-//                LurkUiState.Error
-//            }
-//        }
-//    }
-//
-//    fun getTopListing(subreddit: String, sort: ListingTopSort) {
-//        viewModelScope.launch {
-//            lurkUiState = try {
-//                LurkUiState.Success(
-//                    redditApiRepository.getTopListing(subreddit, sort)
-//                )
-//            } catch (e: IOException) {
-//                LurkUiState.Error
-//            } catch (e: HttpException) {
-//                LurkUiState.Error
-//            }
-//        }
-//    }
+    fun getListing(subreddit: String, sort: ListingSort) {
+        viewModelScope.launch {
+            lurkUiState = try {
+                LurkUiState.Success(
+                    redditApiRepository.getListing(subreddit, sort)
+                )
+            } catch (e: IOException) {
+                LurkUiState.Error
+            } catch (e: HttpException) {
+                LurkUiState.Error
+            }
+        }
+    }
+
+    fun getTopListing(subreddit: String, sort: ListingTopSort) {
+        viewModelScope.launch {
+            lurkUiState = try {
+                LurkUiState.Success(
+                    redditApiRepository.getTopListing(subreddit, sort)
+                )
+            } catch (e: IOException) {
+                LurkUiState.Error
+            } catch (e: HttpException) {
+                LurkUiState.Error
+            }
+        }
+    }
 
     fun getComments(subreddit: String, article: String, sort: CommentSort) {
         viewModelScope.launch {

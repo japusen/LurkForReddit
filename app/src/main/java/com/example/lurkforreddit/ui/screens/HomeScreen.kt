@@ -22,7 +22,7 @@ fun HomeScreen(
 ) {
     when (lurkUiState) {
         is LurkUiState.Loading -> LoadingScreen(modifier)
-        is LurkUiState.Success -> ResultScreen(lurkUiState.text.toString(), modifier)
+        is LurkUiState.Success -> ResultScreen(lurkUiState.data.toString(), modifier)
         is LurkUiState.Error -> ErrorScreen(modifier)
     }
 }
@@ -55,13 +55,13 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
  * The home screen displaying result of fetching photos.
  */
 @Composable
-fun ResultScreen(lurkUiState: String, modifier: Modifier = Modifier) {
+fun ResultScreen(data: String, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Text(lurkUiState)
+        Text(data)
     }
 }

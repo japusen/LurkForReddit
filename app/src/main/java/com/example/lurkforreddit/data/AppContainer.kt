@@ -18,7 +18,6 @@ class DefaultAppContainer : AppContainer {
 
     private val json = Json {
         ignoreUnknownKeys = true
-        coerceInputValues = true
     }
 
     @OptIn(ExperimentalSerializationApi::class)
