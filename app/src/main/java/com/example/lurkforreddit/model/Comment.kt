@@ -9,14 +9,6 @@ import kotlinx.serialization.json.JsonTransformingSerializer
 
 private const val COMMENT = "t1"
 
-enum class CommentSort(val type: String) {
-    BEST("confidence"),
-    TOP("top"),
-    NEW("new"),
-    CONTROVERSIAL("controversial"),
-    QA("qa")
-}
-
 @Serializable
 @SerialName(COMMENT)
 data class Comment(
