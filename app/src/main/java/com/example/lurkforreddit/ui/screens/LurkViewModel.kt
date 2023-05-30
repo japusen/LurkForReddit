@@ -11,7 +11,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.model.ListingSort
 import com.example.lurkforreddit.model.Thing
+import com.example.lurkforreddit.model.TopSort
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -33,14 +35,31 @@ class LurkViewModel(
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-            getSubredditListing("all")
+            //getListing("all", ListingSort.RISING)
+            getTopListing("all", TopSort.ALL)
         }
     }
 
-    fun getSubredditListing(subreddit: String) {
+    fun getListing(subreddit: String, sort: ListingSort) {
         viewModelScope.launch {
             lurkUiState = try {
-                LurkUiState.Success(redditApiRepository.getSubredditListing(subreddit))
+                LurkUiState.Success(
+                    redditApiRepository.getListing(subreddit, sort)
+                )
+            } catch (e: IOException) {
+                LurkUiState.Error
+            } catch (e: HttpException) {
+                LurkUiState.Error
+            }
+        }
+    }
+
+    fun getTopListing(subreddit: String, sort: TopSort) {
+        viewModelScope.launch {
+            lurkUiState = try {
+                LurkUiState.Success(
+                    redditApiRepository.getTopListing(subreddit, sort)
+                )
             } catch (e: IOException) {
                 LurkUiState.Error
             } catch (e: HttpException) {

@@ -2,13 +2,16 @@ package com.example.lurkforreddit.data
 
 import android.util.Log
 import com.example.lurkforreddit.model.AccessToken
+import com.example.lurkforreddit.model.ListingSort
 import com.example.lurkforreddit.model.Thing
+import com.example.lurkforreddit.model.TopSort
 import com.example.lurkforreddit.network.ApiTokenService
 import com.example.lurkforreddit.network.RedditApiService
 
 interface RedditApiRepository {
     suspend fun initAccessToken()
-    suspend fun getSubredditListing(subreddit: String): Thing
+    suspend fun getListing(subreddit: String, sort: ListingSort): Thing
+    suspend fun getTopListing(subreddit: String, sort: TopSort): Thing
 }
 
 class DefaultRedditApiRepository(
@@ -21,20 +24,24 @@ class DefaultRedditApiRepository(
 
 
     override suspend fun initAccessToken() {
+        /* TODO: Proper error handling */
         val response = apiTokenService.getToken()
         if (response.isSuccessful) {
             accessToken = response.body()!!
             tokenHeader = "Bearer ${accessToken.accessToken}"
             Log.d("AccessToken", "Response:  ${response.body()}")
         } else {
-            /* TODO: Proper error handling */
             throw Exception(response.errorBody()?.charStream()?.readText())
         }
     }
 
-    override suspend fun getSubredditListing(subreddit: String): Thing {
-        return redditApiService.getSubredditListing(tokenHeader, subreddit)
+    override suspend fun getListing(subreddit: String, sort: ListingSort
+    ): Thing {
+        return redditApiService.getSubredditListing(tokenHeader, subreddit, sort.type)
     }
 
-
+    override suspend fun getTopListing(subreddit: String, sort: TopSort
+    ): Thing {
+        return redditApiService.getSubredditTopListing(tokenHeader, subreddit, sort.type)
+    }
 }
