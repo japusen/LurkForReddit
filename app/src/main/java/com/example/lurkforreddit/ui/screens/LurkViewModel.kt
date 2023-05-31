@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.ListingData
+import com.example.lurkforreddit.network.ListingData
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort

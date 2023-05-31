@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -11,7 +11,7 @@ private const val COMMENT = "t1"
 
 @Serializable
 @SerialName(COMMENT)
-data class Comment(
+data class CommentApi(
     val data: CommentData
 ) : Thing()
 

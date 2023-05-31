@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.network
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
@@ -23,9 +23,9 @@ interface Created {
 object ModuleSerializer : JsonContentPolymorphicSerializer<Thing>(Thing::class) {
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out Thing> {
         return when (element.jsonObject["kind"]?.jsonPrimitive?.content) {
-            "Listing" -> Listing.serializer()
-            "t3" -> Link.serializer()
-            "t1" -> Comment.serializer()
+            "Listing" -> ListingApi.serializer()
+            "t3" -> LinkApi.serializer()
+            "t1" -> CommentApi.serializer()
             "more" -> MoreComments.serializer()
             else -> throw Exception("Unknown Module: key 'kind' not found or does not matches any module type")
         }

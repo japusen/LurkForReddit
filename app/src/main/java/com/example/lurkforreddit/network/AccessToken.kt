@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

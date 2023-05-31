@@ -1,8 +1,8 @@
 package com.example.lurkforreddit.data
 
 import android.util.Log
-import com.example.lurkforreddit.model.AccessToken
-import com.example.lurkforreddit.model.ListingData
+import com.example.lurkforreddit.network.AccessToken
+import com.example.lurkforreddit.network.ListingData
 import com.example.lurkforreddit.network.ApiTokenService
 import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.util.CommentSort
