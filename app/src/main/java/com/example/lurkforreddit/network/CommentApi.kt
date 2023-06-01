@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.model.Comment
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -37,11 +38,28 @@ data class CommentData(
     @SerialName("subreddit_id")
     val subredditID: String,
     val distinguished: String?
-) : Created, Votable
+) : Created, Votable {
+    fun toComment() = Comment(
+        created = created,
+        createdUtc = createdUtc,
+        ups = ups,
+        downs = downs,
+        author = author,
+        body = body,
+        bodyHtml = bodyHtml,
+        linkID = linkID,
+        replies = listOf(), /* TODO */
+        score = score,
+        scoreHidden = scoreHidden,
+        subreddit = subreddit,
+        subredditID = subredditID,
+        distinguished = distinguished ?: ""
+    )
+}
 
 
 object RepliesSerializer : JsonTransformingSerializer<List<Thing>>(ListSerializer(Thing.serializer())) {
-    // If response is not an array, then it should be an empty array
     override fun transformDeserialize(element: JsonElement): JsonElement =
+        /* TODO: Replies is a listing, currently always an empty array */
         if (element !is JsonArray) JsonArray(listOf()) else element
 }

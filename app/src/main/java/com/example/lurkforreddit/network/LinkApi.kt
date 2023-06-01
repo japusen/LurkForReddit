@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.model.Post
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,7 +10,28 @@ private const val LINK = "t3"
 @SerialName(LINK)
 data class LinkApi(
     val data: LinkData
-) : Thing()
+) : Thing() {
+    fun toPost() = Post(
+        created = data.created,
+        createdUtc = data.createdUtc,
+        ups = data.ups,
+        downs = data.downs,
+        author = data.author,
+        domain = data.domain ?: "",
+        is_self = data.is_self,
+        locked = data.locked,
+        numComments = data.numComments,
+        over18 = data.over18,
+        score = data.score,
+        selftext = data.selftext,
+        selfTextHtml = data.selfTextHtml ?: "",
+        subreddit = data.subreddit,
+        subredditID = data.subredditID,
+        thumbnail = data.thumbnail,
+        title = data.title,
+        distinguished = data.distinguished ?: ""
+    )
+}
 
 @Serializable
 data class LinkData(

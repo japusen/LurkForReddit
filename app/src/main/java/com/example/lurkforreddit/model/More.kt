@@ -5,5 +5,5 @@ data class More(
     val count: Int,
     val id: String,
     val parentID: String,
-    val CommentIDs: List<String>
+    val commentIDs: List<String>
 )

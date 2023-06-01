@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.network.LinkApi
 import com.example.lurkforreddit.network.ListingData
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.ListingSort
@@ -38,7 +39,7 @@ class LurkViewModel(
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-//            getListing("all", ListingSort.HOT)
+            getListing("all", ListingSort.HOT)
 //            getListing("all", ListingSort.TOP, TopSort.MONTH)
 //            getComments("all", "13ve8iq", CommentSort.QA)
 //            getDuplicates("oddlysatisfying", "13vdm8v")
@@ -54,8 +55,16 @@ class LurkViewModel(
     ) {
         viewModelScope.launch {
             lurkUiState = try {
+                val listing = redditApiRepository.getListing(subreddit, listingSort, topSort)
+                /* Map network model to ui model */
+                val mappedListing = listing.children.map {
+                    when (it) {
+                        is LinkApi -> it.toPost()
+                        else -> it
+                    }
+                }
                 LurkUiState.Success(
-                    redditApiRepository.getListing(subreddit, listingSort, topSort)
+                    data = listing
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
