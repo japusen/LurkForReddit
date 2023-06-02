@@ -35,7 +35,7 @@ class LurkViewModel(
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-//            getListing("all", ListingSort.HOT)
+            getListing("all", ListingSort.HOT)
 //            getListing("all", ListingSort.TOP, TopSort.MONTH)
 //            getComments("all", "13ve8iq", CommentSort.QA)
 //            getDuplicates("oddlysatisfying", "13vdm8v")
@@ -51,9 +51,8 @@ class LurkViewModel(
     ) {
         viewModelScope.launch {
             lurkUiState = try {
-                val listing = redditApiRepository.getListing(subreddit, listingSort, topSort)
                 LurkUiState.Success(
-                    data = listing.toString()
+                    redditApiRepository.getListing(subreddit, listingSort, topSort)
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
