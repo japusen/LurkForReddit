@@ -1,25 +1,11 @@
 package com.example.lurkforreddit.network
 
-import com.example.lurkforreddit.model.More
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
-@SerialName("more")
-data class MoreComments(
-    val data: MoreCommentData
-) : Thing() {
-    fun toMore() = More(
-        name = data.name,
-        count = data.count,
-        id = data.id,
-        parentID = data.parentID,
-        commentIDs = data.children
-    )
-}
 
 @Serializable
-data class MoreCommentData(
+data class MoreApi(
     val name: String,
     val count: Int,
     val id: String,

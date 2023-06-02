@@ -3,13 +3,15 @@ package com.example.lurkforreddit.data
 import android.util.Log
 import com.example.lurkforreddit.network.AccessToken
 import com.example.lurkforreddit.network.ApiTokenService
-import com.example.lurkforreddit.network.ListingData
 import com.example.lurkforreddit.network.RedditApiService
-import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
 import com.example.lurkforreddit.util.UserListing
 import com.example.lurkforreddit.util.UserSort
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -20,25 +22,30 @@ interface RedditApiRepository {
         subreddit: String,
         listingSort: ListingSort,
         topSort: TopSort? = null
-    ): ListingData
+    ): JsonElement
 
     suspend fun getDuplicates(
         subreddit: String,
         article: String
-    ): ListingData
+    ): JsonElement
 
-    suspend fun getComments(
-        subreddit: String,
-        article: String,
-        sort: CommentSort
-    ): ListingData
+//    suspend fun getComments(
+//        subreddit: String,
+//        article: String,
+//        sort: CommentSort
+//    ): JsonElement
 
-    suspend fun getUser(
+    suspend fun getUserSubmissions(
         username: String,
-        userListing: UserListing,
-        userSort: UserSort,
-        topSort: TopSort? = null
-    ): ListingData
+        sort: UserSort = UserSort.HOT,
+        topType: TopSort? = null
+    ): JsonElement
+
+    suspend fun getUserComments(
+        username: String,
+        sort: UserSort = UserSort.HOT,
+        topType: TopSort? = null
+    ): JsonElement
 }
 
 class DefaultRedditApiRepository(
@@ -73,52 +80,65 @@ class DefaultRedditApiRepository(
         subreddit: String,
         listingSort: ListingSort,
         topSort: TopSort?
-        ): ListingData {
+        ): JsonObject {
         return redditApiService.getSubredditListing(
             tokenHeader,
             subreddit,
             listingSort.type,
             topSort?.type
-        ).data
+        ).jsonObject
     }
 
-    override suspend fun getComments(
-        subreddit: String,
-        article: String,
-        sort: CommentSort
-    ): ListingData {
-        return redditApiService.getComments(
-            tokenHeader,
-            subreddit,
-            article,
-            sort.type
-        )[1].data
-    }
+//    override suspend fun getComments(
+//        subreddit: String,
+//        article: String,
+//        sort: CommentSort
+//    ): JsonElement {
+//        return redditApiService.getComments(
+//            tokenHeader,
+//            subreddit,
+//            article,
+//            sort.type
+//        ).jsonArray[1].jsonObject
+//    }
 
     override suspend fun getDuplicates(
         subreddit: String,
         article: String
-    ): ListingData {
+    ): JsonElement {
         return redditApiService.getDuplicates(
             tokenHeader,
             subreddit,
             article
-        )[1].data
+        ).jsonArray[1].jsonObject
     }
 
-    override suspend fun getUser(
+    override suspend fun getUserSubmissions(
         username: String,
-        userListing: UserListing,
-        userSort: UserSort,
-        topSort: TopSort?
-    ): ListingData {
+        sort: UserSort,
+        topType: TopSort?
+    ): JsonElement {
         return redditApiService.getUser(
-            tokenHeader,
-            username,
-            userListing.type,
-            userSort.type,
-            topSort?.type
-        ).data
+            accessToken = tokenHeader,
+            username = username,
+            data = UserListing.SUBMITTED.type,
+            listingSort = ListingSort.HOT.type,
+            topSort = topType?.type
+        ).jsonObject
+    }
+
+    override suspend fun getUserComments(
+        username: String,
+        sort: UserSort,
+        topType: TopSort?
+    ): JsonElement {
+        return redditApiService.getUser(
+            accessToken = tokenHeader,
+            username = username,
+            data = UserListing.COMMENTS.type,
+            listingSort = ListingSort.HOT.type,
+            topSort = topType?.type
+        ).jsonObject
     }
 
 

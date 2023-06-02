@@ -1,21 +1,24 @@
 package com.example.lurkforreddit.model
 
-import com.example.lurkforreddit.network.ListingApi
-
+abstract class Listing(
+    open val after: String,
+    open val before: String,
+    open val dist: Int,
+)
 
 data class SubredditFeed(
-    val after: String,
-    val before: String,
-    val dist: Int,
+    override val after: String,
+    override val before: String,
+    override val dist: Int,
     val posts: List<Post>
-)
+): Listing(after, before, dist)
 
 data class CommentTree(
-    val after: String,
-    val before: String,
-    val dist: Int,
+    override val after: String,
+    override val before: String,
+    override val dist: Int,
     val comments: List<Comment>,
     val moreComments: More
-)
+): Listing(after, before, dist)
 
 

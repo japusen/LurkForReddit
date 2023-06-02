@@ -1,5 +1,8 @@
 package com.example.lurkforreddit.network
 
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
@@ -15,15 +18,15 @@ interface RedditApiService {
         @Query("t") topSort: String? = null,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null
-    ): ListingApi
+    ): JsonElement
 
-    @GET("/r/{subreddit}/comments/{article}")
-    suspend fun getComments(
-        @Header("Authorization") accessToken: String,
-        @Path("subreddit") subreddit: String,
-        @Path("article") article: String,
-        @Query("sort") sort: String
-    ): List<ListingApi>
+//    @GET("/r/{subreddit}/comments/{article}")
+//    suspend fun getComments(
+//        @Header("Authorization") accessToken: String,
+//        @Path("subreddit") subreddit: String,
+//        @Path("article") article: String,
+//        @Query("sort") sort: String
+//    ): JsonElement
 
     @GET("/r/{subreddit}/duplicates/{article}")
     suspend fun getDuplicates(
@@ -32,7 +35,7 @@ interface RedditApiService {
         @Path("article") article: String,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null
-    ): List<ListingApi>
+    ): JsonElement
 
     @GET("/user/{username}/{data}")
     suspend fun getUser(
@@ -43,5 +46,5 @@ interface RedditApiService {
         @Query("t") topSort: String? = null,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null
-    ): ListingApi
+    ): JsonElement
 }
