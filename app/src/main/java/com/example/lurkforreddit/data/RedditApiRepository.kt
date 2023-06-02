@@ -84,8 +84,8 @@ class DefaultRedditApiRepository(
         return redditApiService.getSubredditListing(
             tokenHeader,
             subreddit,
-            listingSort.type,
-            topSort?.type
+            listingSort.value,
+            topSort?.value
         ).jsonObject
     }
 
@@ -121,9 +121,9 @@ class DefaultRedditApiRepository(
         return redditApiService.getUser(
             accessToken = tokenHeader,
             username = username,
-            data = UserListing.SUBMITTED.type,
-            listingSort = ListingSort.HOT.type,
-            topSort = topType?.type
+            data = UserListing.SUBMITTED.value,
+            listingSort = ListingSort.HOT.value,
+            topSort = topType?.value
         ).jsonObject
     }
 
@@ -135,9 +135,9 @@ class DefaultRedditApiRepository(
         return redditApiService.getUser(
             accessToken = tokenHeader,
             username = username,
-            data = UserListing.COMMENTS.type,
-            listingSort = ListingSort.HOT.type,
-            topSort = topType?.type
+            data = UserListing.COMMENTS.value,
+            listingSort = ListingSort.HOT.value,
+            topSort = topType?.value
         ).jsonObject
     }
 

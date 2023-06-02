@@ -1,8 +1,6 @@
 package com.example.lurkforreddit.network
 
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path

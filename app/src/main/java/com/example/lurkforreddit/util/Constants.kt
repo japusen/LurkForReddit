@@ -1,24 +1,24 @@
 package com.example.lurkforreddit.util
 
-enum class ListingSort(val type: String) {
+enum class ListingSort(val value: String) {
     HOT("hot"),
     RISING("rising"),
     NEW("new"),
     TOP("top")
 }
 
-enum class UserListing(val type: String) {
+enum class UserListing(val value: String) {
     SUBMITTED("submitted"),
     COMMENTS("comments")
 }
 
-enum class UserSort(val type: String) {
+enum class UserSort(val value: String) {
     HOT("hot"),
     NEW("new"),
     TOP("top"),
 }
 
-enum class TopSort(val type: String) {
+enum class TopSort(val value: String) {
     HOUR("hour"),
     DAY("day"),
     WEEK("week"),
@@ -27,7 +27,7 @@ enum class TopSort(val type: String) {
     ALL("all")
 }
 
-enum class CommentSort(val type: String) {
+enum class CommentSort(val value: String) {
     BEST("confidence"),
     TOP("top"),
     NEW("new"),
