@@ -37,10 +37,10 @@ class LurkViewModel(
             redditApiRepository.initAccessToken()
             getListing("all", ListingSort.HOT)
 //            getListing("all", ListingSort.TOP, TopSort.MONTH)
-//            getComments("all", "13ve8iq", CommentSort.QA)
 //            getDuplicates("oddlysatisfying", "13vdm8v")
 //            getUserSubmissions("theindependentonline",  UserSort.HOT)
-//            getUserComments("theindependentonline",  UserSort.TOP, TopSort.DAY)
+//            getUserComments("theindependentonline", UserSort.TOP, TopSort.DAY)
+//            getComments("all", "13ve8iq", CommentSort.QA)
         }
     }
 
@@ -52,7 +52,11 @@ class LurkViewModel(
         viewModelScope.launch {
             lurkUiState = try {
                 LurkUiState.Success(
-                    redditApiRepository.getListing(subreddit, listingSort, topSort)
+                    redditApiRepository.getListing(
+                        subreddit,
+                        listingSort,
+                        topSort
+                    ).toString()
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
@@ -62,25 +66,6 @@ class LurkViewModel(
         }
     }
 
-//    fun getComments(
-//        subreddit: String,
-//        article: String,
-//        sort: CommentSort = CommentSort.BEST
-//    ) {
-//        viewModelScope.launch {
-//            lurkUiState = try {
-//                LurkUiState.Success(
-//                    redditApiRepository.getComments(subreddit, article, sort)
-//                        .toString()
-//                )
-//            } catch (e: IOException) {
-//                LurkUiState.Error
-//            } catch (e: HttpException) {
-//                LurkUiState.Error
-//            }
-//        }
-//    }
-
     fun getDuplicates(
         subreddit: String,
         article: String
@@ -88,8 +73,10 @@ class LurkViewModel(
         viewModelScope.launch {
             lurkUiState = try {
                 LurkUiState.Success(
-                    redditApiRepository.getDuplicates(subreddit, article)
-                        .toString()
+                    redditApiRepository.getDuplicates(
+                        subreddit,
+                        article
+                    ).toString()
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
@@ -142,6 +129,25 @@ class LurkViewModel(
             }
         }
     }
+
+//    fun getComments(
+//        subreddit: String,
+//        article: String,
+//        sort: CommentSort = CommentSort.BEST
+//    ) {
+//        viewModelScope.launch {
+//            lurkUiState = try {
+//                LurkUiState.Success(
+//                    redditApiRepository.getComments(subreddit, article, sort)
+//                        .toString()
+//                )
+//            } catch (e: IOException) {
+//                LurkUiState.Error
+//            } catch (e: HttpException) {
+//                LurkUiState.Error
+//            }
+//        }
+//    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

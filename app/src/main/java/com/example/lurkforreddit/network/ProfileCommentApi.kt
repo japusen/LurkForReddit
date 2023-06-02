@@ -9,7 +9,16 @@ data class ProfileCommentListing(
     val before: String?,
     val dist: Int? = null,
     val children: List<ProfileCommentApi>
-)
+) {
+    override fun toString(): String {
+        return "ProfileCommentListing\n" +
+                "----------\n" +
+                "after = $after\n" +
+                "before = $before\n" +
+                "dist = $dist\n" +
+                "children = $children\n"
+    }
+}
 
 @Serializable
 data class ProfileCommentApi(
@@ -18,6 +27,7 @@ data class ProfileCommentApi(
     override val createdUtc: Float,
     override val ups: Int,
     override val downs: Int,
+    val id: String,
     val author: String,
     val body: String,
     @SerialName("body_html")
@@ -31,4 +41,8 @@ data class ProfileCommentApi(
     @SerialName("subreddit_id")
     val subredditID: String,
     val distinguished: String?
-) : Created, Votable
+) : Created, Votable {
+    override fun toString(): String {
+        return "\nComment: $id"
+    }
+}
