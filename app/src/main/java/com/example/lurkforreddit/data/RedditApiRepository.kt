@@ -3,6 +3,7 @@ package com.example.lurkforreddit.data
 import android.util.Log
 import com.example.lurkforreddit.network.AccessToken
 import com.example.lurkforreddit.network.ApiTokenService
+import com.example.lurkforreddit.network.Listing
 import com.example.lurkforreddit.network.PostListing
 import com.example.lurkforreddit.network.ProfileCommentListing
 import com.example.lurkforreddit.network.RedditApiService
@@ -24,24 +25,24 @@ interface RedditApiRepository {
         subreddit: String,
         listingSort: ListingSort,
         topSort: TopSort? = null
-    ): PostListing
+    ): Listing
 
     suspend fun getDuplicates(
         subreddit: String,
         article: String
-    ): PostListing
+    ): Listing
 
     suspend fun getUserSubmissions(
         username: String,
         sort: UserSort = UserSort.HOT,
         topType: TopSort? = null
-    ): PostListing
+    ): Listing
 
     suspend fun getUserComments(
         username: String,
         sort: UserSort = UserSort.HOT,
         topType: TopSort? = null
-    ): ProfileCommentListing
+    ): Listing
 
 //    suspend fun getComments(
 //        subreddit: String,
