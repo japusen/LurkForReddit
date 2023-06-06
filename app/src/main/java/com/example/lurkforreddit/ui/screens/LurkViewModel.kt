@@ -11,9 +11,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.util.CommentSort
+import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
-import com.example.lurkforreddit.util.UserSort
+import com.example.lurkforreddit.util.UserListingSort
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -35,12 +37,12 @@ class LurkViewModel(
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-            getListing("all", ListingSort.HOT)
+//            getListing("all", ListingSort.HOT)
 //            getListing("all", ListingSort.TOP, TopSort.MONTH)
 //            getDuplicates("oddlysatisfying", "13vdm8v")
-//            getUserSubmissions("theindependentonline",  UserSort.HOT)
-//            getUserComments("theindependentonline", UserSort.TOP, TopSort.DAY)
-//            getComments("all", "13ve8iq", CommentSort.QA)
+//            getUserSubmissions("theindependentonline",  UserListingSort.HOT)
+//            getUserComments("theindependentonline", UserListingSort.TOP, TopSort.ALL)
+            getPostComments("all", "13ve8iq", CommentSort.QA)
         }
     }
 
@@ -68,14 +70,16 @@ class LurkViewModel(
 
     fun getDuplicates(
         subreddit: String,
-        article: String
+        article: String,
+        sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS
     ) {
         viewModelScope.launch {
             lurkUiState = try {
                 LurkUiState.Success(
                     redditApiRepository.getDuplicates(
                         subreddit,
-                        article
+                        article,
+                        sort
                     ).toString()
                 )
             } catch (e: IOException) {
@@ -88,7 +92,7 @@ class LurkViewModel(
 
     fun getUserSubmissions(
         username: String,
-        userSort: UserSort = UserSort.HOT,
+        userListingSort: UserListingSort = UserListingSort.HOT,
         topSort: TopSort? = null
     ) {
         viewModelScope.launch {
@@ -96,7 +100,7 @@ class LurkViewModel(
                 LurkUiState.Success(
                     redditApiRepository.getUserSubmissions(
                         username,
-                        userSort,
+                        userListingSort,
                         topSort
                     ).toString()
                 )
@@ -110,7 +114,7 @@ class LurkViewModel(
 
     fun getUserComments(
         username: String,
-        userSort: UserSort = UserSort.HOT,
+        userListingSort: UserListingSort = UserListingSort.HOT,
         topSort: TopSort? = null
     ) {
         viewModelScope.launch {
@@ -118,7 +122,7 @@ class LurkViewModel(
                 LurkUiState.Success(
                     redditApiRepository.getUserComments(
                         username,
-                        userSort,
+                        userListingSort,
                         topSort
                     ).toString()
                 )
@@ -130,24 +134,27 @@ class LurkViewModel(
         }
     }
 
-//    fun getComments(
-//        subreddit: String,
-//        article: String,
-//        sort: CommentSort = CommentSort.BEST
-//    ) {
-//        viewModelScope.launch {
-//            lurkUiState = try {
-//                LurkUiState.Success(
-//                    redditApiRepository.getComments(subreddit, article, sort)
-//                        .toString()
-//                )
-//            } catch (e: IOException) {
-//                LurkUiState.Error
-//            } catch (e: HttpException) {
-//                LurkUiState.Error
-//            }
-//        }
-//    }
+    fun getPostComments(
+        subreddit: String,
+        article: String,
+        sort: CommentSort = CommentSort.BEST
+    ) {
+        viewModelScope.launch {
+            lurkUiState = try {
+                LurkUiState.Success(
+                    redditApiRepository.getPostComments(
+                        subreddit,
+                        article,
+                        sort
+                    ).toString()
+                )
+            } catch (e: IOException) {
+                LurkUiState.Error
+            } catch (e: HttpException) {
+                LurkUiState.Error
+            }
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

@@ -32,7 +32,7 @@ data class ProfileCommentApi(
 }
 
 @Serializable
-data class PostCommentsApi(
+data class CommentContents(
     override val id: String,
     override val author: String,
     override val distinguished: String? = null,
@@ -52,9 +52,14 @@ data class PostCommentsApi(
     val bodyHtml: String,
     @SerialName("link_id")
     val linkID: String,
-    val replies: List<PostCommentsApi>? = emptyList()
 ) : Content, Created, Votable {
     override fun toString(): String {
         return "\nComment: $id"
     }
 }
+
+data class CommentApi(
+    val contents: CommentContents?,
+    val replies: List<CommentApi>,
+    val more: MoreApi
+)

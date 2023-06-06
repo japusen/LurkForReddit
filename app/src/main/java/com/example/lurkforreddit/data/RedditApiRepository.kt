@@ -3,16 +3,22 @@ package com.example.lurkforreddit.data
 import android.util.Log
 import com.example.lurkforreddit.network.AccessToken
 import com.example.lurkforreddit.network.ApiTokenService
+import com.example.lurkforreddit.network.CommentApi
+import com.example.lurkforreddit.network.CommentContents
 import com.example.lurkforreddit.network.Listing
+import com.example.lurkforreddit.network.MoreApi
 import com.example.lurkforreddit.network.PostListing
 import com.example.lurkforreddit.network.ProfileCommentListing
 import com.example.lurkforreddit.network.RedditApiService
+import com.example.lurkforreddit.network.parseComments
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.network.parseProfileCommentListing
+import com.example.lurkforreddit.util.CommentSort
+import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
-import com.example.lurkforreddit.util.UserListing
-import com.example.lurkforreddit.util.UserSort
+import com.example.lurkforreddit.util.UserListingType
+import com.example.lurkforreddit.util.UserListingSort
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
@@ -29,26 +35,27 @@ interface RedditApiRepository {
 
     suspend fun getDuplicates(
         subreddit: String,
-        article: String
+        article: String,
+        sort: DuplicatesSort
     ): Listing
 
     suspend fun getUserSubmissions(
         username: String,
-        sort: UserSort = UserSort.HOT,
+        sort: UserListingSort,
         topType: TopSort? = null
     ): Listing
 
     suspend fun getUserComments(
         username: String,
-        sort: UserSort = UserSort.HOT,
+        sort: UserListingSort,
         topType: TopSort? = null
     ): Listing
 
-//    suspend fun getComments(
-//        subreddit: String,
-//        article: String,
-//        sort: CommentSort
-//    ): JsonElement
+    suspend fun getPostComments(
+        subreddit: String,
+        article: String,
+        sort: CommentSort
+    ): Pair<List<CommentContents>, MoreApi?>
 }
 
 class DefaultRedditApiRepository(
@@ -96,13 +103,15 @@ class DefaultRedditApiRepository(
 
     override suspend fun getDuplicates(
         subreddit: String,
-        article: String
+        article: String,
+        sort: DuplicatesSort
     ): PostListing {
 
         val response = redditApiService.getDuplicates(
             tokenHeader,
             subreddit,
-            article
+            article,
+            sort.value
         ).jsonArray[1]
 
         return parsePostListing(response)
@@ -110,15 +119,15 @@ class DefaultRedditApiRepository(
 
     override suspend fun getUserSubmissions(
         username: String,
-        sort: UserSort,
+        sort: UserListingSort,
         topType: TopSort?
     ): PostListing {
 
         val response = redditApiService.getUser(
             accessToken = tokenHeader,
             username = username,
-            data = UserListing.SUBMITTED.value,
-            listingSort = ListingSort.HOT.value,
+            data = UserListingType.SUBMITTED.value,
+            listingSort = sort.value,
             topSort = topType?.value
         )
 
@@ -127,19 +136,35 @@ class DefaultRedditApiRepository(
 
     override suspend fun getUserComments(
         username: String,
-        sort: UserSort,
+        sort: UserListingSort,
         topType: TopSort?
     ): ProfileCommentListing {
 
         val response = redditApiService.getUser(
             accessToken = tokenHeader,
             username = username,
-            data = UserListing.COMMENTS.value,
-            listingSort = ListingSort.HOT.value,
+            data = UserListingType.COMMENTS.value,
+            listingSort = sort.value,
             topSort = topType?.value
         ).jsonObject
 
         return parseProfileCommentListing(response)
+    }
+
+    override suspend fun getPostComments(
+        subreddit: String,
+        article: String,
+        sort: CommentSort
+    ): Pair<List<CommentContents>, MoreApi?> {
+
+        val response = redditApiService.getPostComments(
+            tokenHeader,
+            subreddit,
+            article,
+            sort.value
+        ).jsonArray[1]
+
+        return parseComments(response)
     }
 
 }

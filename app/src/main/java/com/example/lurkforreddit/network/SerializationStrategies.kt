@@ -1,6 +1,8 @@
 package com.example.lurkforreddit.network
 
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
@@ -55,4 +57,37 @@ fun parseProfileCommentListing(
     }
 
     return ProfileCommentListing(after, before, dist, comments)
+}
+
+
+fun parseComments(
+    response: JsonElement
+): Pair<List<CommentContents>, MoreApi?> {
+    val comments = mutableListOf<CommentContents>()
+    var more: MoreApi? = null
+
+    val data = response.jsonObject.getOrDefault("data", blank)
+    val children = data.jsonObject.getOrDefault("children", blank) as JsonArray
+
+    for (child in children) {
+        val kind = json.decodeFromJsonElement(
+            String.serializer(),
+            child.jsonObject.getOrDefault("kind", blank)
+        )
+        if (kind == "more") {
+            more = json.decodeFromJsonElement(
+                MoreApi.serializer(),
+                child.jsonObject.getOrDefault("data", blank)
+            )
+        } else {
+            val commentData = child.jsonObject.getOrDefault("data", blank)
+            val comment = json.decodeFromJsonElement(
+                CommentContents.serializer(),
+                commentData
+            )
+            comments.add(comment)
+        }
+    }
+
+    return Pair(comments, more)
 }

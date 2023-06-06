@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.util.DuplicatesSort
 import kotlinx.serialization.json.JsonElement
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -23,6 +24,7 @@ interface RedditApiService {
         @Header("Authorization") accessToken: String,
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
+        @Query("sort") sort: String,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null
     ): JsonElement
@@ -38,11 +40,11 @@ interface RedditApiService {
         @Query("before") before: String? = null
     ): JsonElement
 
-//    @GET("/r/{subreddit}/comments/{article}")
-//    suspend fun getComments(
-//        @Header("Authorization") accessToken: String,
-//        @Path("subreddit") subreddit: String,
-//        @Path("article") article: String,
-//        @Query("sort") sort: String
-//    ): JsonElement
+    @GET("/r/{subreddit}/comments/{article}")
+    suspend fun getPostComments(
+        @Header("Authorization") accessToken: String,
+        @Path("subreddit") subreddit: String,
+        @Path("article") article: String,
+        @Query("sort") sort: String
+    ): JsonElement
 }

@@ -7,12 +7,12 @@ enum class ListingSort(val value: String) {
     TOP("top")
 }
 
-enum class UserListing(val value: String) {
+enum class UserListingType(val value: String) {
     SUBMITTED("submitted"),
     COMMENTS("comments")
 }
 
-enum class UserSort(val value: String) {
+enum class UserListingSort(val value: String) {
     HOT("hot"),
     NEW("new"),
     TOP("top"),
@@ -33,4 +33,9 @@ enum class CommentSort(val value: String) {
     NEW("new"),
     CONTROVERSIAL("controversial"),
     QA("qa")
+}
+
+enum class DuplicatesSort(val value: String) {
+    NUMCOMMENTS("num_comments"),
+    NEW("new")
 }
