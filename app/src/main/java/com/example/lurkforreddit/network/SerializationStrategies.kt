@@ -4,6 +4,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -62,8 +63,8 @@ fun parseProfileCommentListing(
 
 fun parseComments(
     response: JsonElement
-): Pair<List<CommentContents>, MoreApi?> {
-    val comments = mutableListOf<CommentContents>()
+): Pair<List<CommentApi>, MoreApi?> {
+    val comments = mutableListOf<CommentApi>()
     var more: MoreApi? = null
 
     val data = response.jsonObject.getOrDefault("data", blank)
@@ -81,11 +82,17 @@ fun parseComments(
             )
         } else {
             val commentData = child.jsonObject.getOrDefault("data", blank)
-            val comment = json.decodeFromJsonElement(
+            val repliesData = commentData.jsonObject.getOrDefault("replies", blank)
+            val replies = if (repliesData is JsonObject) {
+                parseComments(repliesData)
+            } else {
+                Pair(listOf(), null)
+            }
+            val commentContent = json.decodeFromJsonElement(
                 CommentContents.serializer(),
                 commentData
             )
-            comments.add(comment)
+            comments.add(CommentApi(commentContent, replies.first, replies.second))
         }
     }
 

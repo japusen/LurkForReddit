@@ -12,4 +12,8 @@ data class MoreApi(
     @SerialName("parent_id")
     val parentID: String,
     val children: List<String>
-)
+) {
+    override fun toString(): String {
+        return "More: ${children.size}"
+    }
+}

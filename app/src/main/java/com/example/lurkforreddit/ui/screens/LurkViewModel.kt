@@ -42,7 +42,7 @@ class LurkViewModel(
 //            getDuplicates("oddlysatisfying", "13vdm8v")
 //            getUserSubmissions("theindependentonline",  UserListingSort.HOT)
 //            getUserComments("theindependentonline", UserListingSort.TOP, TopSort.ALL)
-            getPostComments("all", "13ve8iq", CommentSort.QA)
+            getPostComments("nba", "13ve8iq", CommentSort.BEST)
         }
     }
 
@@ -146,7 +146,7 @@ class LurkViewModel(
                         subreddit,
                         article,
                         sort
-                    ).toString()
+                    ).first.toString()
                 )
             } catch (e: IOException) {
                 LurkUiState.Error

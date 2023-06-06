@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.lurkforreddit.network.AccessToken
 import com.example.lurkforreddit.network.ApiTokenService
 import com.example.lurkforreddit.network.CommentApi
-import com.example.lurkforreddit.network.CommentContents
 import com.example.lurkforreddit.network.Listing
 import com.example.lurkforreddit.network.MoreApi
 import com.example.lurkforreddit.network.PostListing
@@ -17,8 +16,8 @@ import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
-import com.example.lurkforreddit.util.UserListingType
 import com.example.lurkforreddit.util.UserListingSort
+import com.example.lurkforreddit.util.UserListingType
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
@@ -55,7 +54,7 @@ interface RedditApiRepository {
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<List<CommentContents>, MoreApi?>
+    ): Pair<List<CommentApi>, MoreApi?>
 }
 
 class DefaultRedditApiRepository(
@@ -155,7 +154,7 @@ class DefaultRedditApiRepository(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<List<CommentContents>, MoreApi?> {
+    ): Pair<List<CommentApi>, MoreApi?> {
 
         val response = redditApiService.getPostComments(
             tokenHeader,

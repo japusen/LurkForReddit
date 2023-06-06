@@ -54,12 +54,18 @@ data class CommentContents(
     val linkID: String,
 ) : Content, Created, Votable {
     override fun toString(): String {
-        return "\nComment: $id"
+        return "$body\n"
     }
 }
 
 data class CommentApi(
     val contents: CommentContents?,
     val replies: List<CommentApi>,
-    val more: MoreApi
-)
+    val more: MoreApi?
+) {
+    override fun toString(): String {
+        return "${contents?.body}\n" +
+                "$replies\n" +
+                "$more"
+    }
+}
