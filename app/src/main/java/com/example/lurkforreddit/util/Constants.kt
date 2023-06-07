@@ -7,7 +7,7 @@ enum class ListingSort(val value: String) {
     TOP("top")
 }
 
-enum class UserListingType(val value: String) {
+enum class UserContentType(val value: String) {
     SUBMITTED("submitted"),
     COMMENTS("comments")
 }

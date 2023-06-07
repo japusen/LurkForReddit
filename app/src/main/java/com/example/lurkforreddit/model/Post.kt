@@ -1,7 +1,7 @@
 package com.example.lurkforreddit.model
 
-import com.example.lurkforreddit.network.Created
-import com.example.lurkforreddit.network.Votable
+import com.example.lurkforreddit.network.model.Created
+import com.example.lurkforreddit.network.model.Votable
 
 data class Post(
     override val created: Float,

@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.network.model.AccessToken
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded

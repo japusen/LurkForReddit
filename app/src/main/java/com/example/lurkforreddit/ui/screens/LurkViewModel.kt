@@ -10,11 +10,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.network.CommentApi
-import com.example.lurkforreddit.network.Content
-import com.example.lurkforreddit.network.MoreApi
+import com.example.lurkforreddit.network.model.CommentApi
+import com.example.lurkforreddit.network.model.Content
+import com.example.lurkforreddit.network.model.MoreApi
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
@@ -45,16 +46,16 @@ class LurkViewModel(
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-//            getListing("all", ListingSort.HOT)
-//            getListing("all", ListingSort.TOP, TopSort.ALL)
-//            getDuplicates("oddlysatisfying", "13vdm8v")
+            getPosts("all", ListingSort.HOT)
+//            getPosts("all", ListingSort.TOP, TopSort.ALL)
+//            getPostDuplicates("oddlysatisfying", "13vdm8v")
 //            getUserSubmissions("theindependentonline",  UserListingSort.HOT)
-            getUserComments("theindependentonline", UserListingSort.TOP, TopSort.ALL)
+//            getUserComments("theindependentonline", UserListingSort.TOP, TopSort.ALL)
 //            getPostComments("nba", "13ve8iq", CommentSort.BEST)
         }
     }
 
-    fun getListing(
+    fun getPosts(
         subreddit: String,
         listingSort: ListingSort = ListingSort.HOT,
         topSort: TopSort? = null
@@ -62,11 +63,14 @@ class LurkViewModel(
         viewModelScope.launch {
             lurkUiState = try {
                 LurkUiState.Success(
-                    redditApiRepository.getListing(
+                    redditApiRepository.getPosts(
                         subreddit,
                         listingSort,
                         topSort
-                    )
+                    ).cachedIn(viewModelScope)
+//                    .map{ pagingData ->
+//                        pagingData.map { content -> ... }
+//                    }
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
@@ -76,7 +80,7 @@ class LurkViewModel(
         }
     }
 
-    fun getDuplicates(
+    fun getPostDuplicates(
         subreddit: String,
         article: String,
         sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS
@@ -84,11 +88,11 @@ class LurkViewModel(
         viewModelScope.launch {
             lurkUiState = try {
                 LurkUiState.Success(
-                    redditApiRepository.getDuplicates(
+                    redditApiRepository.getPostDuplicates(
                         subreddit,
                         article,
                         sort
-                    )
+                    ).cachedIn(viewModelScope)
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
@@ -111,7 +115,7 @@ class LurkViewModel(
                         username,
                         userListingSort,
                         topSort
-                    )
+                    ).cachedIn(viewModelScope)
                 )
             } catch (e: IOException) {
                 LurkUiState.Error
@@ -134,7 +138,7 @@ class LurkViewModel(
                         username,
                         userListingSort,
                         topSort
-                    )
+                    ).cachedIn(viewModelScope)
                 )
             } catch (e: IOException) {
                 LurkUiState.Error

@@ -2,13 +2,13 @@ package com.example.lurkforreddit.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.lurkforreddit.network.Content
-import com.example.lurkforreddit.network.Listing
+import com.example.lurkforreddit.network.model.Content
+import com.example.lurkforreddit.network.model.Listing
 import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.network.parseProfileCommentListing
 import com.example.lurkforreddit.util.PagingListing
-import com.example.lurkforreddit.util.UserListingType
+import com.example.lurkforreddit.util.UserContentType
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
@@ -46,6 +46,7 @@ class ListingPagingSource(
                 prevKey = after,
                 nextKey = listing.after
             )
+
         } catch (exception: IOException) {
             return LoadResult.Error(exception)
         } catch (exception: HttpException) {
@@ -74,7 +75,7 @@ class ListingPagingSource(
         return when (listingType) {
             PagingListing.POSTS -> {
                 parsePostListing(
-                    service.getSubredditListing(
+                    service.getSubredditPosts(
                         tokenHeader = tokenHeader,
                         subreddit = subreddit!!,
                         sort = sort,
@@ -86,7 +87,7 @@ class ListingPagingSource(
 
             PagingListing.DUPLICATES -> {
                 parsePostListing(
-                    service.getDuplicates(
+                    service.getPostDuplicates(
                         tokenHeader = tokenHeader,
                         subreddit = subreddit!!,
                         article = article!!,
@@ -98,10 +99,10 @@ class ListingPagingSource(
 
             PagingListing.USERSUBMISSIONS -> {
                 parsePostListing(
-                    service.getUser(
+                    service.getUserContent(
                         tokenHeader = tokenHeader,
                         username = username!!,
-                        data = UserListingType.SUBMITTED.value,
+                        contentType = UserContentType.SUBMITTED.value,
                         sort = sort,
                         topSort = topSort,
                         after = after
@@ -111,10 +112,10 @@ class ListingPagingSource(
 
             PagingListing.USERCOMMENTS -> {
                 parseProfileCommentListing(
-                    service.getUser(
+                    service.getUserContent(
                         tokenHeader = tokenHeader,
                         username = username!!,
-                        data = UserListingType.COMMENTS.value,
+                        contentType = UserContentType.COMMENTS.value,
                         sort = sort,
                         topSort = topSort,
                         after = after

@@ -5,13 +5,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.lurkforreddit.data.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
-import com.example.lurkforreddit.network.AccessToken
+import com.example.lurkforreddit.network.model.AccessToken
 import com.example.lurkforreddit.network.AccessTokenService
-import com.example.lurkforreddit.network.CommentApi
-import com.example.lurkforreddit.network.Content
-import com.example.lurkforreddit.network.MoreApi
+import com.example.lurkforreddit.network.model.CommentApi
+import com.example.lurkforreddit.network.model.Content
+import com.example.lurkforreddit.network.model.MoreApi
 import com.example.lurkforreddit.network.RedditApiService
-import com.example.lurkforreddit.network.parseComments
+import com.example.lurkforreddit.network.parsePostComments
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
@@ -26,13 +26,13 @@ import java.io.IOException
 interface RedditApiRepository {
     suspend fun initAccessToken()
 
-    suspend fun getListing(
+    suspend fun getPosts(
         subreddit: String,
-        listingSort: ListingSort,
-        topSort: TopSort?
+        sort: ListingSort,
+        topSort: TopSort? = null
     ): Flow<PagingData<Content>>
 
-    suspend fun getDuplicates(
+    suspend fun getPostDuplicates(
         subreddit: String,
         article: String,
         sort: DuplicatesSort
@@ -47,7 +47,7 @@ interface RedditApiRepository {
     suspend fun getUserComments(
         username: String,
         sort: UserListingSort,
-        topType: TopSort? = null
+        topSort: TopSort? = null
     ): Flow<PagingData<Content>>
 
     suspend fun getPostComments(
@@ -89,9 +89,9 @@ class DefaultRedditApiRepository(
     }
 
 
-    override suspend fun getListing(
+    override suspend fun getPosts(
         subreddit: String,
-        listingSort: ListingSort,
+        sort: ListingSort,
         topSort: TopSort?
     ): Flow<PagingData<Content>> {
 
@@ -102,19 +102,19 @@ class DefaultRedditApiRepository(
             ),
             pagingSourceFactory = {
                 ListingPagingSource(
-                    PagingListing.POSTS,
-                    redditApiService,
-                    tokenHeader,
-                    subreddit,
-                    listingSort.value,
-                    topSort?.value
+                    listingType = PagingListing.POSTS,
+                    service = redditApiService,
+                    tokenHeader = tokenHeader,
+                    subreddit = subreddit,
+                    sort = sort.value,
+                    topSort = topSort?.value
                 )
             }
         ).flow
     }
 
 
-    override suspend fun getDuplicates(
+    override suspend fun getPostDuplicates(
         subreddit: String,
         article: String,
         sort: DuplicatesSort
@@ -127,12 +127,12 @@ class DefaultRedditApiRepository(
             ),
             pagingSourceFactory = {
                 ListingPagingSource(
-                    PagingListing.DUPLICATES,
-                    redditApiService,
-                    tokenHeader,
-                    subreddit,
-                    sort.value,
-                    article
+                    listingType = PagingListing.DUPLICATES,
+                    service = redditApiService,
+                    tokenHeader = tokenHeader,
+                    subreddit = subreddit,
+                    sort = sort.value,
+                    article = article
                 )
             }
         ).flow
@@ -202,7 +202,7 @@ class DefaultRedditApiRepository(
             sort.value
         ).jsonArray[1]
 
-        return parseComments(response)
+        return parsePostComments(response)
     }
 
 }

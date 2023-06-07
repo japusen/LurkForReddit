@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.network.Content
-import com.example.lurkforreddit.network.PostApi
-import com.example.lurkforreddit.network.ProfileCommentApi
+import com.example.lurkforreddit.network.model.Content
+import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.network.model.ProfileCommentApi
 
 @Composable
 fun HomeScreen(
@@ -65,9 +65,6 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * The home screen displaying result of fetching photos.
- */
 @Composable
 fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Modifier) {
     LazyColumn(
@@ -76,8 +73,8 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
         modifier = modifier.fillMaxWidth()
     ) {
         items(submissions.itemCount) { index ->
-            submissions[index]?.let {
-                when (it) {
+            submissions[index]?.let { content ->
+                when (content) {
                     is PostApi -> {
                         Card(
                             modifier = Modifier.fillMaxWidth()
@@ -89,8 +86,8 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
                             ) {
                                 Text((index + 1).toString())
                                 Column() {
-                                    Text(it.title)
-                                    Text("${it.author} - ${it.subreddit}")
+                                    Text(content.title)
+                                    Text("${content.author} - ${content.subreddit}")
                                 }
                             }
                         }
@@ -107,8 +104,8 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
                             ) {
                                 Text(index.toString())
                                 Column() {
-                                    Text(it.body)
-                                    Text("${it.author} - ${it.subreddit}")
+                                    Text(content.body)
+                                    Text("${content.author} - ${content.subreddit}")
                                 }
                             }
                         }
