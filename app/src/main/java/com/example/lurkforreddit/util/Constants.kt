@@ -39,3 +39,10 @@ enum class DuplicatesSort(val value: String) {
     NUMCOMMENTS("num_comments"),
     NEW("new")
 }
+
+enum class PagingListing(val value: String) {
+    POSTS("posts"),
+    DUPLICATES("duplicates"),
+    USERSUBMISSIONS("user_submissions"),
+    USERCOMMENTS("user_comments")
+}

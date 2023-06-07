@@ -9,23 +9,17 @@ import com.example.lurkforreddit.network.AccessToken
 import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.network.CommentApi
 import com.example.lurkforreddit.network.Content
-import com.example.lurkforreddit.network.Listing
 import com.example.lurkforreddit.network.MoreApi
-import com.example.lurkforreddit.network.PostListing
-import com.example.lurkforreddit.network.ProfileCommentListing
 import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.network.parseComments
-import com.example.lurkforreddit.network.parsePostListing
-import com.example.lurkforreddit.network.parseProfileCommentListing
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
+import com.example.lurkforreddit.util.PagingListing
 import com.example.lurkforreddit.util.TopSort
 import com.example.lurkforreddit.util.UserListingSort
-import com.example.lurkforreddit.util.UserListingType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -35,12 +29,6 @@ interface RedditApiRepository {
     suspend fun getListing(
         subreddit: String,
         listingSort: ListingSort,
-        topSort: TopSort? = null
-    ): Listing
-
-    suspend fun getListingStream(
-        subreddit: String,
-        listingSort: ListingSort,
         topSort: TopSort?
     ): Flow<PagingData<Content>>
 
@@ -48,19 +36,19 @@ interface RedditApiRepository {
         subreddit: String,
         article: String,
         sort: DuplicatesSort
-    ): Listing
+    ): Flow<PagingData<Content>>
 
     suspend fun getUserSubmissions(
         username: String,
         sort: UserListingSort,
-        topType: TopSort? = null
-    ): Listing
+        topSort: TopSort? = null
+    ): Flow<PagingData<Content>>
 
     suspend fun getUserComments(
         username: String,
         sort: UserListingSort,
         topType: TopSort? = null
-    ): Listing
+    ): Flow<PagingData<Content>>
 
     suspend fun getPostComments(
         subreddit: String,
@@ -87,7 +75,7 @@ class DefaultRedditApiRepository(
             if (response.isSuccessful) {
                 accessToken = response.body()!!
                 tokenHeader = "Bearer ${accessToken.accessToken}"
-//                Log.d("AccessToken", "Response:  ${response.body()}")
+                //Log.d("AccessToken", "Response:  ${response.body()}")
             } else {
                 throw Exception(response.errorBody()?.charStream()?.readText())
             }
@@ -100,27 +88,13 @@ class DefaultRedditApiRepository(
         }
     }
 
+
     override suspend fun getListing(
         subreddit: String,
         listingSort: ListingSort,
         topSort: TopSort?
-    ): PostListing {
-
-        val response = redditApiService.getSubredditListing(
-            tokenHeader,
-            subreddit,
-            listingSort.value,
-            topSort?.value
-        )
-
-        return parsePostListing(response)
-    }
-
-    override suspend fun getListingStream(
-        subreddit: String,
-        listingSort: ListingSort,
-        topSort: TopSort?
     ): Flow<PagingData<Content>> {
+
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
@@ -128,11 +102,12 @@ class DefaultRedditApiRepository(
             ),
             pagingSourceFactory = {
                 ListingPagingSource(
+                    PagingListing.POSTS,
                     redditApiService,
                     tokenHeader,
                     subreddit,
-                    listingSort,
-                    topSort
+                    listingSort.value,
+                    topSort?.value
                 )
             }
         ).flow
@@ -143,51 +118,76 @@ class DefaultRedditApiRepository(
         subreddit: String,
         article: String,
         sort: DuplicatesSort
-    ): PostListing {
+    ): Flow<PagingData<Content>> {
 
-        val response = redditApiService.getDuplicates(
-            tokenHeader,
-            subreddit,
-            article,
-            sort.value
-        ).jsonArray[1]
-
-        return parsePostListing(response)
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                ListingPagingSource(
+                    PagingListing.DUPLICATES,
+                    redditApiService,
+                    tokenHeader,
+                    subreddit,
+                    sort.value,
+                    article
+                )
+            }
+        ).flow
     }
+
 
     override suspend fun getUserSubmissions(
         username: String,
         sort: UserListingSort,
-        topType: TopSort?
-    ): PostListing {
+        topSort: TopSort?
+    ): Flow<PagingData<Content>> {
 
-        val response = redditApiService.getUser(
-            accessToken = tokenHeader,
-            username = username,
-            data = UserListingType.SUBMITTED.value,
-            listingSort = sort.value,
-            topSort = topType?.value
-        )
-
-        return parsePostListing(response)
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                ListingPagingSource(
+                    listingType = PagingListing.USERSUBMISSIONS,
+                    service = redditApiService,
+                    tokenHeader = tokenHeader,
+                    username = username,
+                    sort = sort.value,
+                    topSort = topSort?.value
+                )
+            }
+        ).flow
     }
+
 
     override suspend fun getUserComments(
         username: String,
         sort: UserListingSort,
-        topType: TopSort?
-    ): ProfileCommentListing {
+        topSort: TopSort?
+    ): Flow<PagingData<Content>> {
 
-        val response = redditApiService.getUser(
-            accessToken = tokenHeader,
-            username = username,
-            data = UserListingType.COMMENTS.value,
-            listingSort = sort.value,
-            topSort = topType?.value
-        ).jsonObject
-
-        return parseProfileCommentListing(response)
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                ListingPagingSource(
+                    listingType = PagingListing.USERCOMMENTS,
+                    service = redditApiService,
+                    tokenHeader = tokenHeader,
+                    username = username,
+                    sort = sort.value,
+                    topSort = topSort?.value
+                )
+            }
+        ).flow
     }
+
 
     override suspend fun getPostComments(
         subreddit: String,

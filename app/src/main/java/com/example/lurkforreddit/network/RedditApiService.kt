@@ -20,7 +20,7 @@ interface RedditApiService {
 
     @GET("/r/{subreddit}/duplicates/{article}")
     suspend fun getDuplicates(
-        @Header("Authorization") accessToken: String,
+        @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
         @Query("sort") sort: String,
@@ -30,10 +30,10 @@ interface RedditApiService {
 
     @GET("/user/{username}/{data}")
     suspend fun getUser(
-        @Header("Authorization") accessToken: String,
+        @Header("Authorization") tokenHeader: String,
         @Path("username") username: String,
         @Path("data") data: String,
-        @Query("sort") listingSort: String,
+        @Query("sort") sort: String,
         @Query("t") topSort: String? = null,
         @Query("after") after: String? = null,
         @Query("before") before: String? = null
@@ -41,7 +41,7 @@ interface RedditApiService {
 
     @GET("/r/{subreddit}/comments/{article}")
     suspend fun getPostComments(
-        @Header("Authorization") accessToken: String,
+        @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
         @Query("sort") sort: String

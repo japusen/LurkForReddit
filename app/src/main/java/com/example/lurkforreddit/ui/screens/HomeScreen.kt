@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,18 +82,34 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
                         Card(
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column() {
-                                Text(text = it.title)
-                                Text("${it.author} - ${it.subreddit}")
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text((index + 1).toString())
+                                Column() {
+                                    Text(it.title)
+                                    Text("${it.author} - ${it.subreddit}")
+                                }
                             }
                         }
                     }
 
                     is ProfileCommentApi -> {
-                        Card() {
-                            Column() {
-                                Text(text = it.body)
-                                Text("${it.author} - ${it.subreddit}")
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(index.toString())
+                                Column() {
+                                    Text(it.body)
+                                    Text("${it.author} - ${it.subreddit}")
+                                }
                             }
                         }
                     }
