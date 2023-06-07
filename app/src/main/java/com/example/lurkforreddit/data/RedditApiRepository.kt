@@ -1,9 +1,14 @@
 package com.example.lurkforreddit.data
 
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.example.lurkforreddit.data.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
 import com.example.lurkforreddit.network.AccessToken
-import com.example.lurkforreddit.network.ApiTokenService
+import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.network.CommentApi
+import com.example.lurkforreddit.network.Content
 import com.example.lurkforreddit.network.Listing
 import com.example.lurkforreddit.network.MoreApi
 import com.example.lurkforreddit.network.PostListing
@@ -18,6 +23,7 @@ import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
 import com.example.lurkforreddit.util.UserListingSort
 import com.example.lurkforreddit.util.UserListingType
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
@@ -31,6 +37,12 @@ interface RedditApiRepository {
         listingSort: ListingSort,
         topSort: TopSort? = null
     ): Listing
+
+    suspend fun getListingStream(
+        subreddit: String,
+        listingSort: ListingSort,
+        topSort: TopSort?
+    ): Flow<PagingData<Content>>
 
     suspend fun getDuplicates(
         subreddit: String,
@@ -55,10 +67,14 @@ interface RedditApiRepository {
         article: String,
         sort: CommentSort
     ): Pair<List<CommentApi>, MoreApi?>
+
+    companion object {
+        const val NETWORK_PAGE_SIZE = 50
+    }
 }
 
 class DefaultRedditApiRepository(
-    private val apiTokenService: ApiTokenService,
+    private val accessTokenService: AccessTokenService,
     private val redditApiService: RedditApiService
 ) : RedditApiRepository {
 
@@ -67,7 +83,7 @@ class DefaultRedditApiRepository(
 
     override suspend fun initAccessToken() {
         try {
-            val response = apiTokenService.getToken()
+            val response = accessTokenService.getToken()
             if (response.isSuccessful) {
                 accessToken = response.body()!!
                 tokenHeader = "Bearer ${accessToken.accessToken}"
@@ -99,6 +115,29 @@ class DefaultRedditApiRepository(
 
         return parsePostListing(response)
     }
+
+    override suspend fun getListingStream(
+        subreddit: String,
+        listingSort: ListingSort,
+        topSort: TopSort?
+    ): Flow<PagingData<Content>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                ListingPagingSource(
+                    redditApiService,
+                    tokenHeader,
+                    subreddit,
+                    listingSort,
+                    topSort
+                )
+            }
+        ).flow
+    }
+
 
     override suspend fun getDuplicates(
         subreddit: String,

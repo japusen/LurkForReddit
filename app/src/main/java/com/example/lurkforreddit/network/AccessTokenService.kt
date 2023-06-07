@@ -18,7 +18,7 @@ private fun encodedCredentials() : String {
     return "Basic $encodedID"
 }
 
-interface ApiTokenService {
+interface AccessTokenService {
     @FormUrlEncoded
     @POST("/api/v1/access_token")
     suspend fun getToken(

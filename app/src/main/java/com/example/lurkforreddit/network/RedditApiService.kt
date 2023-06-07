@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.network
 
-import com.example.lurkforreddit.util.DuplicatesSort
 import kotlinx.serialization.json.JsonElement
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -11,7 +10,7 @@ import retrofit2.http.Query
 interface RedditApiService {
     @GET("/r/{subreddit}/{sort}")
     suspend fun getSubredditListing(
-        @Header("Authorization") accessToken: String,
+        @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("sort") sort: String,
         @Query("t") topSort: String? = null,

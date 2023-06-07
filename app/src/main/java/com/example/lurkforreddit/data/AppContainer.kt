@@ -1,6 +1,6 @@
 package com.example.lurkforreddit.data
 
-import com.example.lurkforreddit.network.ApiTokenService
+import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.network.RedditApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -32,8 +32,8 @@ class DefaultAppContainer : AppContainer {
         .baseUrl(apiURL)
         .build()
 
-    private val tokenRetrofitService: ApiTokenService by lazy {
-        tokenRetrofit.create(ApiTokenService::class.java)
+    private val tokenRetrofitService: AccessTokenService by lazy {
+        tokenRetrofit.create(AccessTokenService::class.java)
     }
 
     private val apiRetrofitService: RedditApiService by lazy {
