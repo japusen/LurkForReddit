@@ -15,7 +15,8 @@ interface RedditApiService {
         @Path("sort") sort: String,
         @Query("t") topSort: String? = null,
         @Query("after") after: String? = null,
-        @Query("before") before: String? = null
+        @Query("before") before: String? = null,
+        @Query("raw_json") raw: Int = 1
     ): JsonElement
 
     @GET("/r/{subreddit}/duplicates/{article}")
@@ -25,7 +26,8 @@ interface RedditApiService {
         @Path("article") article: String,
         @Query("sort") sort: String,
         @Query("after") after: String? = null,
-        @Query("before") before: String? = null
+        @Query("before") before: String? = null,
+        @Query("raw_json") raw: Int = 1
     ): JsonElement
 
     @GET("/user/{username}/{data}")
@@ -36,7 +38,8 @@ interface RedditApiService {
         @Query("sort") sort: String,
         @Query("t") topSort: String? = null,
         @Query("after") after: String? = null,
-        @Query("before") before: String? = null
+        @Query("before") before: String? = null,
+        @Query("raw_json") raw: Int = 1
     ): JsonElement
 
     @GET("/r/{subreddit}/comments/{article}")
@@ -44,6 +47,7 @@ interface RedditApiService {
         @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
-        @Query("sort") sort: String
+        @Query("sort") sort: String,
+        @Query("raw_json") raw: Int = 1
     ): JsonElement
 }
