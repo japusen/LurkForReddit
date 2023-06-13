@@ -88,6 +88,10 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
                                 Column() {
                                     Text(content.title)
                                     Text("${content.author} - ${content.subreddit}")
+                                    Text("Self: ${content.is_self}")
+                                    Text("Gallery: ${content.is_gallery}")
+                                    Text("Type: ${content.postType}")
+                                    Text("Url: ${content.url}")
                                 }
                             }
                         }

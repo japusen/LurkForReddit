@@ -18,6 +18,10 @@ data class PostApi(
     override val createdUtc: Float,
     override val ups: Int,
     override val downs: Int,
+    val is_self: Boolean,
+    val is_gallery: Boolean = false,
+    @SerialName("post_hint")
+    val postType: String? = null,
     val thumbnail: String,
     val title: String,
     val selftext: String,
@@ -27,7 +31,6 @@ data class PostApi(
     val numComments: Int,
     val domain: String?,
     val url: String,
-    val is_self: Boolean,
     val locked: Boolean,
     @SerialName("over_18")
     val over18: Boolean,
