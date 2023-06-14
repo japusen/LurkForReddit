@@ -18,13 +18,15 @@ data class ProfileCommentApi(
     override val createdUtc: Float,
     override val ups: Int,
     override val downs: Int,
+    @SerialName("link_title")
+    val linkTitle: String,
+    @SerialName("link_id")
+    val linkID: String,
     @SerialName("score_hidden")
     val scoreHidden: Boolean,
     val body: String,
     @SerialName("body_html")
     val bodyHtml: String,
-    @SerialName("link_id")
-    val linkID: String,
 ) : Content, Created, Votable {
     override fun toString(): String {
         return "\nComment: $id"

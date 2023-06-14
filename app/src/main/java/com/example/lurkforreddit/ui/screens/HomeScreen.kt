@@ -24,6 +24,8 @@ import com.example.lurkforreddit.R
 import com.example.lurkforreddit.network.model.Content
 import com.example.lurkforreddit.network.model.PostApi
 import com.example.lurkforreddit.network.model.ProfileCommentApi
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 @Composable
 fun HomeScreen(
@@ -76,43 +78,11 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
             submissions[index]?.let { content ->
                 when (content) {
                     is PostApi -> {
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text((index + 1).toString())
-                                Column() {
-                                    Text(content.title)
-                                    Text("${content.author} - ${content.subreddit}")
-                                    Text("Self: ${content.is_self}")
-                                    Text("Gallery: ${content.is_gallery}")
-                                    Text("Type: ${content.postType}")
-                                    Text("Url: ${content.url}")
-                                }
-                            }
-                        }
+                        PostCard(content = content)
                     }
 
                     is ProfileCommentApi -> {
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(index.toString())
-                                Column() {
-                                    Text(content.body)
-                                    Text("${content.author} - ${content.subreddit}")
-                                }
-                            }
-                        }
+                        ProfileCommentCard(content = content)
                     }
                 }
             }

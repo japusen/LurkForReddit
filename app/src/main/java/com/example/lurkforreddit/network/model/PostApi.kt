@@ -2,6 +2,7 @@ package com.example.lurkforreddit.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 
 @Serializable
@@ -23,6 +24,7 @@ data class PostApi(
     @SerialName("post_hint")
     val postType: String? = null,
     val thumbnail: String,
+    val preview: JsonElement? = null,
     val title: String,
     val selftext: String,
     @SerialName("selftext_html")
@@ -34,6 +36,7 @@ data class PostApi(
     val locked: Boolean,
     @SerialName("over_18")
     val over18: Boolean,
+    val media: JsonElement? = null
 ) : Content, Created, Votable {
     override fun toString(): String {
         return "\nPost: $id"
