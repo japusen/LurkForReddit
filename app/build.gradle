@@ -68,17 +68,19 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
     // Coil
     implementation "io.coil-kt:coil-compose:2.3.0"
-    implementation 'androidx.paging:paging-common-ktx:3.1.1'
+    implementation("io.coil-kt:coil-gif:2.4.0")
+    implementation("io.coil-kt:coil-video:2.4.0")
     // DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     // Flow collectAsStateWithLifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     // Paging
+    implementation 'androidx.paging:paging-common-ktx:3.1.1'
     implementation "androidx.paging:paging-runtime:3.1.1"
-    implementation "androidx.paging:paging-compose:1.0.0-alpha20"
+    implementation "androidx.paging:paging-compose:3.2.0-beta01"
 
-    implementation("androidx.compose.foundation:foundation:1.5.0-beta01")
-    implementation("androidx.compose.foundation:foundation-layout:1.5.0-beta01")
+    implementation("androidx.compose.foundation:foundation:1.5.0-beta02")
+    implementation("androidx.compose.foundation:foundation-layout:1.5.0-beta02")
 
     testImplementation 'junit:junit:4.13.2'
 
