@@ -20,7 +20,7 @@ fun ProfileCommentCard(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
