@@ -1,6 +1,5 @@
-package com.example.lurkforreddit.ui.screens
+package com.example.lurkforreddit.ui.components
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,17 +28,14 @@ import com.example.lurkforreddit.network.model.PostApi
 @Composable
 fun PostCard(
     content: PostApi,
+    onPostClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .clickable {
-                Toast
-                    .makeText(context, "Card Clicked", Toast.LENGTH_SHORT)
-                    .show()
-            }
+            .clickable { onPostClicked() }
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -102,7 +98,9 @@ fun PostCard(
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             colorFilter = ColorFilter.tint(Color.Yellow),
-                            modifier = Modifier.width(15.dp).height(15.dp)
+                            modifier = Modifier
+                                .width(15.dp)
+                                .height(15.dp)
                         )
                     }
                     Text(

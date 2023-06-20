@@ -13,10 +13,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.network.model.CommentApi
 import com.example.lurkforreddit.network.model.Content
-import com.example.lurkforreddit.network.model.MoreApi
-import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
@@ -27,42 +24,37 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-sealed interface LurkUiState {
+sealed interface ListingState {
     data class Success(
-        val feedContent: Flow<PagingData<Content>>,
-    ) : LurkUiState
+        val listingContent: Flow<PagingData<Content>>,
+    ) : ListingState
 
-    object Error : LurkUiState
-    object Loading : LurkUiState
+    object Error : ListingState
+    object Loading : ListingState
 }
 
-class LurkViewModel(
+class HomeViewModel(
     private val redditApiRepository: RedditApiRepository
 ) : ViewModel() {
 
-    var lurkUiState: LurkUiState by mutableStateOf(LurkUiState.Loading)
+    var listingState: ListingState by mutableStateOf(ListingState.Loading)
         private set
+
+    private var subreddit: String by mutableStateOf("all")
+    private var listingSort: ListingSort by mutableStateOf(ListingSort.HOT)
+    private var topSort: TopSort? by mutableStateOf(null)
 
     init {
         viewModelScope.launch {
             redditApiRepository.initAccessToken()
-            getPosts("all", ListingSort.HOT)
-//            getPosts("all", ListingSort.TOP, TopSort.ALL)
-//            getPostDuplicates("oddlysatisfying", "13vdm8v")
-//            getUserSubmissions("theindependentonline",  UserListingSort.HOT)
-//            getUserComments("awkwardtheturtle", UserListingSort.TOP, TopSort.ALL)
-//            getPostComments("nba", "13ve8iq", CommentSort.BEST)
+            loadPosts()
         }
     }
 
-    fun getPosts(
-        subreddit: String,
-        listingSort: ListingSort = ListingSort.HOT,
-        topSort: TopSort? = null
-    ) {
+    fun loadPosts() {
         viewModelScope.launch {
-            lurkUiState = try {
-                LurkUiState.Success(
+            listingState = try {
+                ListingState.Success(
                     redditApiRepository.getPosts(
                         subreddit,
                         listingSort,
@@ -73,11 +65,23 @@ class LurkViewModel(
 //                    }
                 )
             } catch (e: IOException) {
-                LurkUiState.Error
+                ListingState.Error
             } catch (e: HttpException) {
-                LurkUiState.Error
+                ListingState.Error
             }
         }
+    }
+
+    fun changeSubreddit(sub: String) {
+        subreddit = sub
+    }
+
+    fun changeListingSort(sort: ListingSort) {
+        listingSort = sort
+    }
+
+    fun changeTopSort(sort: TopSort) {
+        topSort = sort
     }
 
     fun getPostDuplicates(
@@ -86,8 +90,8 @@ class LurkViewModel(
         sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS
     ) {
         viewModelScope.launch {
-            lurkUiState = try {
-                LurkUiState.Success(
+            listingState = try {
+                ListingState.Success(
                     redditApiRepository.getPostDuplicates(
                         subreddit,
                         article,
@@ -95,9 +99,9 @@ class LurkViewModel(
                     ).cachedIn(viewModelScope)
                 )
             } catch (e: IOException) {
-                LurkUiState.Error
+                ListingState.Error
             } catch (e: HttpException) {
-                LurkUiState.Error
+                ListingState.Error
             }
         }
     }
@@ -109,8 +113,8 @@ class LurkViewModel(
         topSort: TopSort? = null
     ) {
         viewModelScope.launch {
-            lurkUiState = try {
-                LurkUiState.Success(
+            listingState = try {
+                ListingState.Success(
                     redditApiRepository.getUserSubmissions(
                         username,
                         userListingSort,
@@ -118,9 +122,9 @@ class LurkViewModel(
                     ).cachedIn(viewModelScope)
                 )
             } catch (e: IOException) {
-                LurkUiState.Error
+                ListingState.Error
             } catch (e: HttpException) {
-                LurkUiState.Error
+                ListingState.Error
             }
         }
     }
@@ -132,8 +136,8 @@ class LurkViewModel(
         topSort: TopSort? = null
     ) {
         viewModelScope.launch {
-            lurkUiState = try {
-                LurkUiState.Success(
+            listingState = try {
+                ListingState.Success(
                     redditApiRepository.getUserComments(
                         username,
                         userListingSort,
@@ -141,23 +145,11 @@ class LurkViewModel(
                     ).cachedIn(viewModelScope)
                 )
             } catch (e: IOException) {
-                LurkUiState.Error
+                ListingState.Error
             } catch (e: HttpException) {
-                LurkUiState.Error
+                ListingState.Error
             }
         }
-    }
-
-    suspend fun getPostComments(
-        subreddit: String,
-        article: String,
-        sort: CommentSort = CommentSort.BEST
-    ): Pair<List<CommentApi>, MoreApi?> {
-        return redditApiRepository.getPostComments(
-            subreddit,
-            article,
-            sort
-        )
     }
 
     companion object {
@@ -165,9 +157,8 @@ class LurkViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                LurkViewModel(redditApiRepository = redditApiRepository)
+                HomeViewModel(redditApiRepository = redditApiRepository)
             }
         }
     }
-
 }

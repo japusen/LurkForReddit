@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.screens
+package com.example.lurkforreddit.ui.components
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent

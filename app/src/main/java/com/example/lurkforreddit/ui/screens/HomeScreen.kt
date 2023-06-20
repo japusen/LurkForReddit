@@ -21,20 +21,24 @@ import com.example.lurkforreddit.R
 import com.example.lurkforreddit.network.model.Content
 import com.example.lurkforreddit.network.model.PostApi
 import com.example.lurkforreddit.network.model.ProfileCommentApi
+import com.example.lurkforreddit.ui.components.PostCard
+import com.example.lurkforreddit.ui.components.ProfileCommentCard
 
 @Composable
 fun HomeScreen(
-    lurkUiState: LurkUiState,
+    listingState: ListingState,
+    onPostClicked: (String?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (lurkUiState) {
-        is LurkUiState.Loading -> LoadingScreen(modifier)
-        is LurkUiState.Success -> ResultScreen(
-            lurkUiState.feedContent.collectAsLazyPagingItems(),
-            modifier
-        )
-
-        is LurkUiState.Error -> ErrorScreen(modifier)
+    when (listingState) {
+        is ListingState.Loading -> LoadingScreen(modifier)
+        is ListingState.Success ->
+            ListingFeed(
+                listingState.listingContent.collectAsLazyPagingItems(),
+                onPostClicked = onPostClicked,
+                modifier
+            )
+        is ListingState.Error -> ErrorScreen(modifier)
     }
 }
 
@@ -63,7 +67,10 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Modifier) {
+fun ListingFeed(
+    submissions: LazyPagingItems<Content>,
+    onPostClicked: (String?, String?) -> Unit,
+    modifier: Modifier = Modifier) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -73,7 +80,10 @@ fun ResultScreen(submissions: LazyPagingItems<Content>, modifier: Modifier = Mod
             submissions[index]?.let { content ->
                 when (content) {
                     is PostApi -> {
-                        PostCard(content = content)
+                        PostCard(
+                            content = content,
+                            onPostClicked = { onPostClicked(content.subreddit, content.id) }
+                        )
                     }
 
                     is ProfileCommentApi -> {

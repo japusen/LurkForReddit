@@ -11,7 +11,9 @@ import com.example.lurkforreddit.network.model.CommentApi
 import com.example.lurkforreddit.network.model.Content
 import com.example.lurkforreddit.network.model.MoreApi
 import com.example.lurkforreddit.network.RedditApiService
+import com.example.lurkforreddit.network.model.PostApi
 import com.example.lurkforreddit.network.parsePostComments
+import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
@@ -54,7 +56,7 @@ interface RedditApiRepository {
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<List<CommentApi>, MoreApi?>
+    ): Pair<PostApi, Pair<List<CommentApi>, MoreApi?>>
 
     companion object {
         const val NETWORK_PAGE_SIZE = 50
@@ -193,16 +195,20 @@ class DefaultRedditApiRepository(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<List<CommentApi>, MoreApi?> {
+    ): Pair<PostApi, Pair<List<CommentApi>, MoreApi?>> {
 
         val response = redditApiService.getPostComments(
             tokenHeader,
             subreddit,
             article,
             sort.value
-        ).jsonArray[1]
+        )
 
-        return parsePostComments(response)
+        val listing = parsePostListing(response.jsonArray[0])
+        val post = listing.children[0]
+        val comments = parsePostComments(response.jsonArray[1])
+
+        return Pair(post, comments)
     }
 
 }

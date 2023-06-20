@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.screens
+package com.example.lurkforreddit.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
