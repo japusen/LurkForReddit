@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,15 +23,15 @@ fun ProfileCommentCard(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {
             Text(
                 text = content.linkTitle,
-                color = MaterialTheme.colorScheme.tertiary,
-                style = MaterialTheme.typography.titleSmall
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelMedium
             )
 
             Row(
@@ -39,22 +40,26 @@ fun ProfileCommentCard(
             ) {
                 Text(
                     text = content.subreddit,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    style = MaterialTheme.typography.labelMedium
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.labelSmall
                 )
                 Text(
                     text = content.author,
-                    style = MaterialTheme.typography.labelMedium
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall
                 )
                 Text(
                     text = "${content.score} points",
-                    style = MaterialTheme.typography.labelMedium
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall
                 )
             }
 
+            Divider(modifier = Modifier.padding(top = 4.dp, bottom = 4.dp))
+
             Text(
                 text = content.body,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
         }
     }

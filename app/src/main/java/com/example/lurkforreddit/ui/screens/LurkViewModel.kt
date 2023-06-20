@@ -50,7 +50,7 @@ class LurkViewModel(
 //            getPosts("all", ListingSort.TOP, TopSort.ALL)
 //            getPostDuplicates("oddlysatisfying", "13vdm8v")
 //            getUserSubmissions("theindependentonline",  UserListingSort.HOT)
-//            getUserComments("theindependentonline", UserListingSort.TOP, TopSort.ALL)
+//            getUserComments("awkwardtheturtle", UserListingSort.TOP, TopSort.ALL)
 //            getPostComments("nba", "13ve8iq", CommentSort.BEST)
         }
     }

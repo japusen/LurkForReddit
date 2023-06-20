@@ -39,7 +39,7 @@ fun PostCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(10.dp)
         ) {
 
             if (!content.is_self) {
@@ -78,6 +78,7 @@ fun PostCard(
             ) {
                 Text(
                     text = content.title,
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleSmall
                 )
 
@@ -87,13 +88,13 @@ fun PostCard(
                 ) {
                     Text(
                         text = content.subreddit,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        style = MaterialTheme.typography.labelLarge
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.labelMedium
                     )
                     Text(
                         text = content.author,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
 
@@ -104,13 +105,12 @@ fun PostCard(
                     Text(
                         text = "${content.score} points",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelSmall
                     )
                     Text(
                         text = "${content.numComments} comments",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelSmall
                     )
                     //Text(text = content.created.toString(), style = MaterialTheme.typography.labelSmall)
                 }
