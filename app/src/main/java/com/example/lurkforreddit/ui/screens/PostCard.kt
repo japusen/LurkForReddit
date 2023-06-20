@@ -1,5 +1,8 @@
 package com.example.lurkforreddit.ui.screens
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +29,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
+
 @Composable
 fun PostCard(
     content: PostApi,
@@ -41,7 +45,7 @@ fun PostCard(
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {
-
+            val context = LocalContext.current
             if (!content.is_self) {
                 val thumbnail = if (content.preview != null) {
                     content.preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get(
@@ -55,7 +59,7 @@ fun PostCard(
 
                 if (thumbnail != null) {
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
+                        model = ImageRequest.Builder(context)
                             .data(thumbnail)
                             .crossfade(true)
                             .build(),
@@ -67,6 +71,12 @@ fun PostCard(
                             .height(75.dp)
                             .clip(RoundedCornerShape(6.dp))
                             .fillMaxWidth()
+                            .clickable {
+                                val intent = CustomTabsIntent
+                                    .Builder()
+                                    .build()
+                                intent.launchUrl(context, Uri.parse(content.url))
+                            }
                     )
                 }
             }
