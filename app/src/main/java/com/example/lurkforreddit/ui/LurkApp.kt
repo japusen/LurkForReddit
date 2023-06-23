@@ -1,6 +1,8 @@
 package com.example.lurkforreddit.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -12,13 +14,15 @@ import com.example.lurkforreddit.ui.screens.HomeScreen
 import com.example.lurkforreddit.ui.screens.HomeViewModel
 import com.example.lurkforreddit.ui.screens.PostDetailsScreen
 import com.example.lurkforreddit.ui.screens.PostDetailsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun LurkApp(
+    homeViewModel: HomeViewModel,
+    postDetailsViewModel: PostDetailsViewModel,
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory),
-    postDetailsViewModel: PostDetailsViewModel = viewModel(factory = PostDetailsViewModel.Factory),
     ) {
+    val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -41,11 +45,23 @@ fun LurkApp(
         ) { backStackEntry ->
             val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
             val article = backStackEntry.arguments?.getString("article") ?: ""
+            LaunchedEffect(Unit) {
+                postDetailsViewModel.loadPostComments(subreddit, article)
+            }
             PostDetailsScreen(
-                postDetailsViewModel = postDetailsViewModel,
+                detailsState = postDetailsViewModel.detailsState,
                 subreddit = subreddit,
                 article = article,
-                onDetailsBackClicked = { navController.popBackStack() }
+                onDetailsBackClicked = {
+                    postDetailsViewModel.clearData()
+                    navController.popBackStack()
+                },
+                onSortChanged = { sort ->
+                    postDetailsViewModel.clearData()
+                    coroutineScope.launch {
+                        postDetailsViewModel.changeCommentSort(subreddit, article, sort)
+                    }
+                }
             )
         }
     }

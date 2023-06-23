@@ -3,6 +3,7 @@ package com.example.lurkforreddit.ui.screens
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -51,6 +52,10 @@ class PostDetailsViewModel(
                 DetailsState.Error
             }
         }
+    }
+
+    fun clearData() {
+        detailsState = DetailsState.Loading
     }
 
     suspend fun changeCommentSort(

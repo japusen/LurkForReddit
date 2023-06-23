@@ -16,9 +16,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LurkForRedditTheme {
-                LurkApp()
+                val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
+                val postDetailsViewModel: PostDetailsViewModel = viewModel(factory = PostDetailsViewModel.Factory)
+                LurkApp(
+                    homeViewModel = homeViewModel,
+                    postDetailsViewModel = postDetailsViewModel
+                )
             }
         }
     }
-
 }
