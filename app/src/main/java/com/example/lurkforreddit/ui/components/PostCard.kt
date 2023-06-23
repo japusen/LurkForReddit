@@ -31,7 +31,6 @@ fun PostCard(
     onPostClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()

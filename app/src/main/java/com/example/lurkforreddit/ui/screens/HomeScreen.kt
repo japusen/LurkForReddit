@@ -6,9 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,31 +70,40 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListingFeed(
     submissions: LazyPagingItems<Content>,
     onPostClicked: (String?, String?) -> Unit,
-    modifier: Modifier = Modifier) {
-    LazyColumn(
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.fillMaxWidth()
-    ) {
-        items(submissions.itemCount) { index ->
-            submissions[index]?.let { content ->
-                when (content) {
-                    is PostApi -> {
-                        PostCard(
-                            content = content,
-                            onPostClicked = { onPostClicked(content.subreddit, content.id) }
-                        )
-                    }
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Lurk for Reddit") }) }
+    ) { paddingValues ->
+        LazyColumn(
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+        ) {
+            items(submissions.itemCount) { index ->
+                submissions[index]?.let { content ->
+                    when (content) {
+                        is PostApi -> {
+                            PostCard(
+                                content = content,
+                                onPostClicked = { onPostClicked(content.subreddit, content.id) }
+                            )
+                        }
 
-                    is ProfileCommentApi -> {
-                        ProfileCommentCard(content = content)
+                        is ProfileCommentApi -> {
+                            ProfileCommentCard(content = content)
+                        }
                     }
                 }
             }
         }
     }
+
 }

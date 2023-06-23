@@ -18,29 +18,27 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-sealed interface CommentState {
+sealed interface DetailsState {
     data class Success(
         val postData: Pair<PostApi, Pair<List<CommentApi>, MoreApi?>>,
-    ) : CommentState
+    ) : DetailsState
 
-    object Error : CommentState
-    object Loading : CommentState
+    object Error : DetailsState
+    object Loading : DetailsState
 }
 
-class PostCommentsViewModel(
+class PostDetailsViewModel(
     private val redditApiRepository: RedditApiRepository
 ) : ViewModel() {
-    var commentState: CommentState by mutableStateOf(CommentState.Loading)
+    var detailsState: DetailsState by mutableStateOf(DetailsState.Loading)
         private set
 
-    private var subreddit: String by mutableStateOf("")
-    private var article: String by mutableStateOf("")
     private var commentSort: CommentSort by mutableStateOf(CommentSort.BEST)
 
-    suspend fun loadPostComments() {
+    suspend fun loadPostComments(subreddit: String, article: String) {
         viewModelScope.launch {
-            commentState = try {
-                CommentState.Success(
+            detailsState = try {
+                DetailsState.Success(
                     redditApiRepository.getPostComments(
                         subreddit,
                         article,
@@ -48,23 +46,20 @@ class PostCommentsViewModel(
                     )
                 )
             } catch (e: IOException) {
-                CommentState.Error
+                DetailsState.Error
             } catch (e: HttpException) {
-                CommentState.Error
+                DetailsState.Error
             }
         }
     }
 
-    fun changeSubreddit(sub: String) {
-        subreddit = sub
-    }
-
-    fun changeArticle(post: String) {
-        article = post
-    }
-
-    fun changeCommentSort(sort: CommentSort) {
+    suspend fun changeCommentSort(
+        subreddit: String,
+        article: String,
+        sort: CommentSort
+    ) {
         commentSort = sort
+        loadPostComments(subreddit, article)
     }
 
     companion object {
@@ -73,7 +68,7 @@ class PostCommentsViewModel(
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                PostCommentsViewModel(redditApiRepository = redditApiRepository)
+                PostDetailsViewModel(redditApiRepository = redditApiRepository)
             }
         }
     }

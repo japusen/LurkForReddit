@@ -51,7 +51,7 @@ class HomeViewModel(
         }
     }
 
-    fun loadPosts() {
+    private fun loadPosts() {
         viewModelScope.launch {
             listingState = try {
                 ListingState.Success(
