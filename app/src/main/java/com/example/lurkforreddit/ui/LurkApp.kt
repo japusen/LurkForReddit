@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,7 +20,7 @@ fun LurkApp(
     homeViewModel: HomeViewModel,
     postDetailsViewModel: PostDetailsViewModel,
     modifier: Modifier = Modifier,
-    ) {
+) {
     val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     NavHost(
