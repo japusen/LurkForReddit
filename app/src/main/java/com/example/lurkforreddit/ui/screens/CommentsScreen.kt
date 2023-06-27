@@ -1,44 +1,38 @@
 package com.example.lurkforreddit.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.CommentContents
 import com.example.lurkforreddit.network.model.MoreApi
 import com.example.lurkforreddit.network.model.PostApi
 import com.example.lurkforreddit.ui.components.CommentCard
 import com.example.lurkforreddit.ui.components.CommentSortMenu
+import com.example.lurkforreddit.ui.components.PostCard
 import com.example.lurkforreddit.util.CommentSort
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -52,6 +46,7 @@ fun PostDetailsScreen(
     onSortChanged: (CommentSort) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     Scaffold(
         topBar = {
             TopAppBar(
@@ -85,20 +80,23 @@ fun PostDetailsScreen(
                             contentDescription = "Other Discussions"
                         )
                     }
-                }
-
+                },
+                scrollBehavior = scrollBehavior
             )
-        }
+        },
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         when (detailsState) {
             is DetailsState.Loading -> LoadingScreen(modifier)
-            is DetailsState.Success ->
-                PostDetails(
-                    postApi = detailsState.postData.first,
-                    commentTree = detailsState.postData.second,
-                    modifier = modifier.padding(paddingValues = it)
-                )
-
+            is DetailsState.Success -> {
+                Surface() {
+                    PostDetails(
+                        postApi = detailsState.postData.first,
+                        commentTree = detailsState.postData.second,
+                        modifier = modifier.padding(paddingValues = it)
+                    )
+                }
+            }
             is DetailsState.Error -> ErrorScreen(modifier)
         }
     }
@@ -112,12 +110,18 @@ fun PostDetails(
 ) {
     val comments = commentTree.first
     val more = commentTree.second
+
     LazyColumn(
         contentPadding = PaddingValues(0.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = modifier
             .fillMaxWidth()
     ) {
+        
+        item { 
+            PostCard(content = postApi, onPostClicked = {  })
+        }
+        
         items(comments.size) { index ->
             comments[index].let { comment ->
                 if (comment.contents != null) {
