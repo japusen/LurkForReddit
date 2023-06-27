@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.lurkforreddit.ui.screens.HomeScreen
 import com.example.lurkforreddit.ui.screens.HomeViewModel
-import com.example.lurkforreddit.ui.screens.PostDetailsScreen
+import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.PostDetailsViewModel
 import kotlinx.coroutines.launch
 
@@ -47,7 +47,7 @@ fun LurkApp(
             LaunchedEffect(Unit) {
                 postDetailsViewModel.loadPostComments(subreddit, article)
             }
-            PostDetailsScreen(
+            CommentsScreen(
                 detailsState = postDetailsViewModel.detailsState,
                 subreddit = subreddit,
                 article = article,

@@ -38,71 +38,62 @@ fun PostThumbnail(
 ) {
     val context = LocalContext.current
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .width(75.dp)
-            .height(75.dp)
-            .clip(RoundedCornerShape(6.dp))
-    ) {
-        if (preview != null) {
-            val img = if (nsfw) {
-                preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("variants")?.jsonObject?.get("nsfw")?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-            } else {
-                preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-            }
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(img)
-                    .crossfade(true)
-                    .build(),
-                placeholder = null,
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable {
-                        val intent = CustomTabsIntent
-                            .Builder()
-                            .build()
-                        intent.launchUrl(context, Uri.parse(url))
-                    }
-            )
-        } else if ((thumbnail != "image") && (thumbnail != "default")) {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(thumbnail)
-                    .crossfade(true)
-                    .build(),
-                placeholder = null,
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable {
-                        val intent = CustomTabsIntent
-                            .Builder()
-                            .build()
-                        intent.launchUrl(context, Uri.parse(url))
-                    }
-            )
+    if (preview != null) {
+        val img = if (nsfw) {
+            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("variants")?.jsonObject?.get("nsfw")?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
         } else {
-            Image(
-                alignment = Alignment.Center,
-                painter = painterResource(R.drawable.ic_link_thumbnail),
-                contentDescription = null,
-                contentScale = ContentScale.None,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable {
-                        val intent = CustomTabsIntent
-                            .Builder()
-                            .build()
-                        intent.launchUrl(context, Uri.parse(url))
-                    },
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-            )
+            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
         }
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(img)
+                .crossfade(true)
+                .build(),
+            placeholder = null,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    val intent = CustomTabsIntent
+                        .Builder()
+                        .build()
+                    intent.launchUrl(context, Uri.parse(url))
+                }
+        )
+    } else if ((thumbnail != "image") && (thumbnail != "default")) {
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(thumbnail)
+                .crossfade(true)
+                .build(),
+            placeholder = null,
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    val intent = CustomTabsIntent
+                        .Builder()
+                        .build()
+                    intent.launchUrl(context, Uri.parse(url))
+                }
+        )
+    } else {
+        Image(
+            alignment = Alignment.Center,
+            painter = painterResource(R.drawable.ic_link_thumbnail),
+            contentDescription = null,
+            contentScale = ContentScale.None,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    val intent = CustomTabsIntent
+                        .Builder()
+                        .build()
+                    intent.launchUrl(context, Uri.parse(url))
+                },
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+        )
     }
-
 }

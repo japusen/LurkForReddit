@@ -14,9 +14,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,21 +32,34 @@ import com.example.lurkforreddit.network.model.ProfileCommentApi
 import com.example.lurkforreddit.ui.components.PostCard
 import com.example.lurkforreddit.ui.components.ProfileCommentCard
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     listingState: ListingState,
     onPostClicked: (String?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (listingState) {
-        is ListingState.Loading -> LoadingScreen(modifier)
-        is ListingState.Success ->
-            ListingFeed(
-                listingState.listingContent.collectAsLazyPagingItems(),
-                onPostClicked = onPostClicked,
-                modifier
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Lurk for Reddit") },
+                scrollBehavior = scrollBehavior
             )
-        is ListingState.Error -> ErrorScreen(modifier)
+        },
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { paddingValues ->
+        when (listingState) {
+            is ListingState.Loading -> LoadingScreen(modifier)
+            is ListingState.Success ->
+                ListingFeed(
+                    listingState.listingContent.collectAsLazyPagingItems(),
+                    onPostClicked = onPostClicked,
+                    modifier = modifier.padding(paddingValues)
+                )
+
+            is ListingState.Error -> ErrorScreen(modifier)
+        }
     }
 }
 
@@ -75,40 +91,32 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListingFeed(
     submissions: LazyPagingItems<Content>,
     onPostClicked: (String?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Lurk for Reddit") }) }
-    ) { paddingValues ->
-        LazyColumn(
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-        ) {
-            items(submissions.itemCount) { index ->
-                submissions[index]?.let { content ->
-                    when (content) {
-                        is PostApi -> {
-                            PostCard(
-                                content = content,
-                                onPostClicked = { onPostClicked(content.subreddit, content.id) }
-                            )
-                        }
-
-                        is ProfileCommentApi -> {
-                            ProfileCommentCard(content = content)
-                        }
+    LazyColumn(
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        items(submissions.itemCount) { index ->
+            submissions[index]?.let { content ->
+                when (content) {
+                    is PostApi -> {
+                        PostCard(
+                            content = content,
+                            onPostClicked = { onPostClicked(content.subreddit, content.id) }
+                        )
+                    }
+                    is ProfileCommentApi -> {
+                        ProfileCommentCard(content = content)
                     }
                 }
             }
         }
     }
-
 }

@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -96,7 +98,7 @@ fun CommentCard(
         if (more != null) {
             Text(
                 text = "more comments (${more.count})",
-                color = MaterialTheme.colorScheme.inversePrimary,
+                color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .padding(start = (padding + 4).dp, top = 4.dp, bottom = 4.dp)
                     .clickable {  }
@@ -105,6 +107,7 @@ fun CommentCard(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CommentContents(
     contents: CommentContents,
@@ -115,12 +118,15 @@ private fun CommentContents(
             .padding(8.dp)
     ) {
 
-        Row(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text(text = contents.author, color = MaterialTheme.colorScheme.primary)
+            Text(
+                text = contents.author,
+                color = MaterialTheme.colorScheme.primary
+            )
             Text(
                 text = if (contents.scoreHidden) "[score hidden]" else "${contents.score} points",
                 color = MaterialTheme.colorScheme.onSurfaceVariant

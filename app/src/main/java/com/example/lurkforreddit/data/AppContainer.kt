@@ -3,7 +3,6 @@ package com.example.lurkforreddit.data
 import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.network.RedditApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -20,13 +19,11 @@ class DefaultAppContainer : AppContainer {
         ignoreUnknownKeys = true
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val tokenRetrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(tokenURL)
         .build()
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val apiRetrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(apiURL)
