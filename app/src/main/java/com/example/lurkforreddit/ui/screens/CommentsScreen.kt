@@ -1,10 +1,11 @@
 package com.example.lurkforreddit.ui.screens
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,12 +26,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.network.model.CommentApi
@@ -40,24 +44,26 @@ import com.example.lurkforreddit.ui.components.CommentCard
 import com.example.lurkforreddit.ui.components.CommentSortMenu
 import com.example.lurkforreddit.ui.components.PostThumbnail
 import com.example.lurkforreddit.util.CommentSort
-import kotlinx.serialization.json.JsonNull.content
-import java.time.format.TextStyle
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentsScreen(
-    detailsState: DetailsState,
+    uiState: State<CommentsUiState>,
     subreddit: String,
     article: String,
     onDetailsBackClicked: () -> Unit,
     onSortChanged: (CommentSort) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 title = {
                     Text(
                         text = subreddit,
@@ -94,16 +100,17 @@ fun CommentsScreen(
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
-        when (detailsState) {
-            is DetailsState.Loading -> LoadingScreen(modifier)
-            is DetailsState.Success -> {
+        when (uiState.value.networkResponse) {
+            is NetworkRequest.Loading -> LoadingScreen(modifier)
+            is NetworkRequest.Success -> {
                 PostComments(
-                    post = detailsState.postData.first,
-                    commentTree = detailsState.postData.second,
+                    post = (uiState.value.networkResponse as NetworkRequest.Success).postData.first,
+                    commentTree = (uiState.value.networkResponse as NetworkRequest.Success).postData.second,
                     modifier = modifier.padding(paddingValues = it)
                 )
             }
-            is DetailsState.Error -> ErrorScreen(modifier)
+
+            is NetworkRequest.Error -> ErrorScreen(modifier)
         }
     }
 }
@@ -123,13 +130,13 @@ fun PostComments(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        
-        item { 
+
+        item {
             CommentsHeader(
                 post = post
             )
         }
-        
+
         items(comments.size) { index ->
             comments[index].let { comment ->
                 if (comment.contents != null) {
@@ -153,23 +160,18 @@ fun CommentsHeader(
 ) {
     ElevatedCard(
         modifier = modifier
-            .padding(8.dp)
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 16.dp)
             .fillMaxSize()
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = post.title,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleMedium
-            )
 
             if (!post.is_self) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
                         .clip(RoundedCornerShape(6.dp))
@@ -180,6 +182,62 @@ fun CommentsHeader(
                         nsfw = post.over18,
                         url = post.url
                     )
+                }
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = post.title,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Row() {
+                    Text(
+                        text = post.author,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+
+                    // TODO: Relative timestamp
+                }
+
+
+                if (post.is_self) {
+                    Text(
+                        text = post.selftext,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (post.over18) {
+                        Text(
+                            text = "nsfw",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                    if (post.locked) {
+                        Image(
+                            alignment = Alignment.Center,
+                            painter = painterResource(R.drawable.ic_post_locked),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            colorFilter = ColorFilter.tint(Color.Yellow),
+                            modifier = Modifier
+                                .width(15.dp)
+                                .height(15.dp)
+                        )
+                    }
                 }
             }
         }

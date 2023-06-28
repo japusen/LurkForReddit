@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,13 +13,13 @@ import androidx.navigation.navArgument
 import com.example.lurkforreddit.ui.screens.HomeScreen
 import com.example.lurkforreddit.ui.screens.HomeViewModel
 import com.example.lurkforreddit.ui.screens.CommentsScreen
-import com.example.lurkforreddit.ui.screens.PostDetailsViewModel
+import com.example.lurkforreddit.ui.screens.CommentsScreenViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun LurkApp(
     homeViewModel: HomeViewModel,
-    postDetailsViewModel: PostDetailsViewModel,
+    commentsScreenViewModel: CommentsScreenViewModel,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -44,21 +45,24 @@ fun LurkApp(
         ) { backStackEntry ->
             val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
             val article = backStackEntry.arguments?.getString("article") ?: ""
+
+            commentsScreenViewModel.setSubreddit(subreddit)
+            commentsScreenViewModel.setArticle(article)
+
             LaunchedEffect(Unit) {
-                postDetailsViewModel.loadPostComments(subreddit, article)
+                commentsScreenViewModel.loadPostComments()
             }
             CommentsScreen(
-                detailsState = postDetailsViewModel.detailsState,
+                uiState = commentsScreenViewModel.uiState.collectAsStateWithLifecycle(),
                 subreddit = subreddit,
                 article = article,
                 onDetailsBackClicked = {
-                    postDetailsViewModel.clearData()
                     navController.popBackStack()
+                    commentsScreenViewModel.clearNetworkRequest()
                 },
                 onSortChanged = { sort ->
-                    postDetailsViewModel.clearData()
                     coroutineScope.launch {
-                        postDetailsViewModel.changeCommentSort(subreddit, article, sort)
+                        commentsScreenViewModel.setCommentSort(sort)
                     }
                 }
             )

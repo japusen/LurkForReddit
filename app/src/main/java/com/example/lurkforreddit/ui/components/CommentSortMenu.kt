@@ -35,7 +35,7 @@ fun CommentSortMenu(
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_sort),
-            contentDescription = "Localized description"
+            contentDescription = "Sort Comments"
         )
     }
 
