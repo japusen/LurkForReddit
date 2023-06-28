@@ -55,8 +55,7 @@ fun CommentsScreen(
     onSortChanged: (CommentSort) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
