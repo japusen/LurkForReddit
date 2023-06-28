@@ -1,8 +1,5 @@
 package com.example.lurkforreddit.ui.screens
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -19,30 +16,38 @@ import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
 import com.example.lurkforreddit.util.UserListingSort
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
 
-sealed interface ListingState {
+sealed interface ListingNetworkRequest {
     data class Success(
         val listingContent: Flow<PagingData<Content>>,
-    ) : ListingState
+    ) : ListingNetworkRequest
 
-    object Error : ListingState
-    object Loading : ListingState
+    object Error : ListingNetworkRequest
+    object Loading : ListingNetworkRequest
 }
+
+data class HomeUiState(
+    val networkResponse: ListingNetworkRequest = ListingNetworkRequest.Loading,
+    val subreddit: String = "all",
+    val listingSort: ListingSort = ListingSort.HOT,
+    val topSort: TopSort? = null
+)
 
 class HomeViewModel(
     private val redditApiRepository: RedditApiRepository
 ) : ViewModel() {
 
-    var listingState: ListingState by mutableStateOf(ListingState.Loading)
-        private set
-
-    private var subreddit: String by mutableStateOf("all")
-    private var listingSort: ListingSort by mutableStateOf(ListingSort.HOT)
-    private var topSort: TopSort? by mutableStateOf(null)
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -51,106 +56,124 @@ class HomeViewModel(
         }
     }
 
-    private fun loadPosts() {
+    private suspend fun loadPosts() {
         viewModelScope.launch {
-            listingState = try {
-                ListingState.Success(
-                    redditApiRepository.getPosts(
-                        subreddit,
-                        listingSort,
-                        topSort
-                    ).cachedIn(viewModelScope)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    networkResponse = try {
+                        ListingNetworkRequest.Success(
+                            redditApiRepository.getPosts(
+                                subreddit = currentState.subreddit,
+                                sort = currentState.listingSort,
+                                topSort = currentState.topSort
+                            ).cachedIn(viewModelScope)
 //                    .map{ pagingData ->
 //                        pagingData.map { content -> ... }
 //                    }
+                        )
+                    } catch (e: IOException) {
+                        ListingNetworkRequest.Error
+                    } catch (e: HttpException) {
+                        ListingNetworkRequest.Error
+                    }
                 )
-            } catch (e: IOException) {
-                ListingState.Error
-            } catch (e: HttpException) {
-                ListingState.Error
             }
+
         }
     }
 
-    fun changeSubreddit(sub: String) {
-        subreddit = sub
+    fun setSubreddit(subreddit: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                subreddit = subreddit
+            )
+        }
     }
 
-    fun changeListingSort(sort: ListingSort) {
-        listingSort = sort
+    fun setListingSort(sort: ListingSort) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                listingSort = sort
+            )
+        }
     }
 
-    fun changeTopSort(sort: TopSort) {
-        topSort = sort
-    }
-
-    fun getPostDuplicates(
-        subreddit: String,
-        article: String,
-        sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS
-    ) {
-        viewModelScope.launch {
-            listingState = try {
-                ListingState.Success(
-                    redditApiRepository.getPostDuplicates(
-                        subreddit,
-                        article,
-                        sort
-                    ).cachedIn(viewModelScope)
-                )
-            } catch (e: IOException) {
-                ListingState.Error
-            } catch (e: HttpException) {
-                ListingState.Error
-            }
+    fun setTopSort(sort: TopSort?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                topSort = sort
+            )
         }
     }
 
 
-    fun getUserSubmissions(
-        username: String,
-        userListingSort: UserListingSort = UserListingSort.HOT,
-        topSort: TopSort? = null
-    ) {
-        viewModelScope.launch {
-            listingState = try {
-                ListingState.Success(
-                    redditApiRepository.getUserSubmissions(
-                        username,
-                        userListingSort,
-                        topSort
-                    ).cachedIn(viewModelScope)
-                )
-            } catch (e: IOException) {
-                ListingState.Error
-            } catch (e: HttpException) {
-                ListingState.Error
-            }
-        }
-    }
-
-
-    fun getUserComments(
-        username: String,
-        userListingSort: UserListingSort = UserListingSort.HOT,
-        topSort: TopSort? = null
-    ) {
-        viewModelScope.launch {
-            listingState = try {
-                ListingState.Success(
-                    redditApiRepository.getUserComments(
-                        username,
-                        userListingSort,
-                        topSort
-                    ).cachedIn(viewModelScope)
-                )
-            } catch (e: IOException) {
-                ListingState.Error
-            } catch (e: HttpException) {
-                ListingState.Error
-            }
-        }
-    }
+//    fun getPostDuplicates(
+//        subreddit: String,
+//        article: String,
+//        sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS
+//    ) {
+//        viewModelScope.launch {
+//            listingState = try {
+//                ListingNetworkRequest.Success(
+//                    redditApiRepository.getPostDuplicates(
+//                        subreddit,
+//                        article,
+//                        sort
+//                    ).cachedIn(viewModelScope)
+//                )
+//            } catch (e: IOException) {
+//                ListingNetworkRequest.Error
+//            } catch (e: HttpException) {
+//                ListingNetworkRequest.Error
+//            }
+//        }
+//    }
+//
+//
+//    fun getUserSubmissions(
+//        username: String,
+//        userListingSort: UserListingSort = UserListingSort.HOT,
+//        topSort: TopSort? = null
+//    ) {
+//        viewModelScope.launch {
+//            listingState = try {
+//                ListingNetworkRequest.Success(
+//                    redditApiRepository.getUserSubmissions(
+//                        username,
+//                        userListingSort,
+//                        topSort
+//                    ).cachedIn(viewModelScope)
+//                )
+//            } catch (e: IOException) {
+//                ListingNetworkRequest.Error
+//            } catch (e: HttpException) {
+//                ListingNetworkRequest.Error
+//            }
+//        }
+//    }
+//
+//
+//    fun getUserComments(
+//        username: String,
+//        userListingSort: UserListingSort = UserListingSort.HOT,
+//        topSort: TopSort? = null
+//    ) {
+//        viewModelScope.launch {
+//            listingState = try {
+//                ListingNetworkRequest.Success(
+//                    redditApiRepository.getUserComments(
+//                        username,
+//                        userListingSort,
+//                        topSort
+//                    ).cachedIn(viewModelScope)
+//                )
+//            } catch (e: IOException) {
+//                ListingNetworkRequest.Error
+//            } catch (e: HttpException) {
+//                ListingNetworkRequest.Error
+//            }
+//        }
+//    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

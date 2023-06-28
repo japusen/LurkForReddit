@@ -18,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -36,7 +37,7 @@ import com.example.lurkforreddit.ui.components.ProfileCommentCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    listingState: ListingState,
+    uiState: State<HomeUiState>,
     onPostClicked: (String?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -48,21 +49,23 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 title = { Text("Lurk for Reddit") },
+                actions = {
+
+                },
                 scrollBehavior = scrollBehavior
             )
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
-        when (listingState) {
-            is ListingState.Loading -> LoadingScreen(modifier)
-            is ListingState.Success ->
+        when (uiState.value.networkResponse) {
+            is ListingNetworkRequest.Loading -> LoadingScreen(modifier)
+            is ListingNetworkRequest.Success ->
                 ListingFeed(
-                    listingState.listingContent.collectAsLazyPagingItems(),
+                    (uiState.value.networkResponse as ListingNetworkRequest.Success).listingContent.collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
                     modifier = modifier.padding(paddingValues)
                 )
-
-            is ListingState.Error -> ErrorScreen(modifier)
+            is ListingNetworkRequest.Error -> ErrorScreen(modifier)
         }
     }
 }

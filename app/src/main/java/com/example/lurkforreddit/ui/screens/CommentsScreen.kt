@@ -102,16 +102,16 @@ fun CommentsScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         when (uiState.value.networkResponse) {
-            is NetworkRequest.Loading -> LoadingScreen(modifier)
-            is NetworkRequest.Success -> {
+            is CommentsNetworkRequest.Loading -> LoadingScreen(modifier)
+            is CommentsNetworkRequest.Success -> {
                 PostComments(
-                    post = (uiState.value.networkResponse as NetworkRequest.Success).postData.first,
-                    commentTree = (uiState.value.networkResponse as NetworkRequest.Success).postData.second,
+                    post = (uiState.value.networkResponse as CommentsNetworkRequest.Success).postData.first,
+                    commentTree = (uiState.value.networkResponse as CommentsNetworkRequest.Success).postData.second,
                     modifier = modifier.padding(paddingValues = it)
                 )
             }
 
-            is NetworkRequest.Error -> ErrorScreen(modifier)
+            is CommentsNetworkRequest.Error -> ErrorScreen(modifier)
         }
     }
 }

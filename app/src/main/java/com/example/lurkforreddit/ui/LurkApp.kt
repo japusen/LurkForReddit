@@ -30,7 +30,7 @@ fun LurkApp(
     ) {
         composable(route = "home") {
             HomeScreen(
-                listingState = homeViewModel.listingState,
+                uiState = homeViewModel.uiState.collectAsStateWithLifecycle(),
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
                 }

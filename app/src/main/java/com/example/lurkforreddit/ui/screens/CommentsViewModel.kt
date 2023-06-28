@@ -19,17 +19,17 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-sealed interface NetworkRequest {
+sealed interface CommentsNetworkRequest {
     data class Success(
         val postData: Pair<PostApi, Pair<List<CommentApi>, MoreApi?>>,
-    ) : NetworkRequest
+    ) : CommentsNetworkRequest
 
-    object Error : NetworkRequest
-    object Loading : NetworkRequest
+    object Error : CommentsNetworkRequest
+    object Loading : CommentsNetworkRequest
 }
 
 data class CommentsUiState(
-    val networkResponse: NetworkRequest = NetworkRequest.Loading,
+    val networkResponse: CommentsNetworkRequest = CommentsNetworkRequest.Loading,
     val subreddit: String = "",
     val article: String = "",
     val commentSort: CommentSort = CommentSort.BEST
@@ -47,7 +47,7 @@ class CommentsScreenViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        NetworkRequest.Success(
+                        CommentsNetworkRequest.Success(
                             redditApiRepository.getPostComments(
                                 subreddit = currentState.subreddit,
                                 article = currentState.article,
@@ -55,9 +55,9 @@ class CommentsScreenViewModel(
                             )
                         )
                     } catch (e: IOException) {
-                        NetworkRequest.Error
+                        CommentsNetworkRequest.Error
                     } catch (e: HttpException) {
-                        NetworkRequest.Error
+                        CommentsNetworkRequest.Error
                     }
                 )
             }
@@ -68,7 +68,7 @@ class CommentsScreenViewModel(
     fun clearNetworkRequest() {
         _uiState.update { currentState ->
             currentState.copy(
-                networkResponse = NetworkRequest.Loading
+                networkResponse = CommentsNetworkRequest.Loading
             )
         }
     }
