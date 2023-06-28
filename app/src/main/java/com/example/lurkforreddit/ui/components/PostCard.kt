@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.util.relativeTime
 
 
 @Composable
@@ -122,7 +123,11 @@ fun PostCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelSmall
                     )
-                    //Text(text = content.created.toString(), style = MaterialTheme.typography.labelSmall)
+                    TimeStamp(
+                        time = relativeTime(content.createdUtc),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelSmall
+                    )
                 }
             }
         }

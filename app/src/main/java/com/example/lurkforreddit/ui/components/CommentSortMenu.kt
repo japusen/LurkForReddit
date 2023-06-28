@@ -25,6 +25,7 @@ import com.example.lurkforreddit.util.CommentSort
 
 @Composable
 fun CommentSortMenu(
+    selectedSort: CommentSort,
     onSortChanged: (CommentSort) -> Unit,
     modifier: Modifier = Modifier
 ) {

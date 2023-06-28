@@ -5,7 +5,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 
-fun timeDifference(createdUtc: Float): DateTimePeriod {
+fun relativeTime(createdUtc: Float): DateTimePeriod {
     val epochSecondNow = java.time.Instant.now().epochSecond
     val now = Instant.fromEpochSeconds(epochSecondNow)
     val postTime = Instant.fromEpochSeconds(createdUtc.toLong())

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.network.model.CommentApi
 import com.example.lurkforreddit.network.model.CommentContents
 import com.example.lurkforreddit.network.model.MoreApi
+import com.example.lurkforreddit.util.relativeTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -124,11 +125,19 @@ private fun CommentContents(
         ) {
             Text(
                 text = contents.author,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium
             )
             Text(
                 text = if (contents.scoreHidden) "[score hidden]" else "${contents.score} points",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleMedium
+
+            )
+            TimeStamp(
+                time = relativeTime(contents.createdUtc),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleMedium
             )
         }
         Text(

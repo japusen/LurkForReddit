@@ -82,6 +82,7 @@ fun CommentsScreen(
                 },
                 actions = {
                     CommentSortMenu(
+                        selectedSort = uiState.value.commentSort,
                         onSortChanged = { sort ->
                             onSortChanged(sort)
                         }
