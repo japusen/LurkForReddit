@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -43,7 +43,9 @@ import com.example.lurkforreddit.network.model.PostApi
 import com.example.lurkforreddit.ui.components.CommentCard
 import com.example.lurkforreddit.ui.components.CommentSortMenu
 import com.example.lurkforreddit.ui.components.PostThumbnail
+import com.example.lurkforreddit.ui.components.TimeStamp
 import com.example.lurkforreddit.util.CommentSort
+import com.example.lurkforreddit.util.relativeTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,7 +176,7 @@ fun CommentsHeader(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                 ) {
                     PostThumbnail(
                         preview = post.preview,
@@ -186,7 +188,7 @@ fun CommentsHeader(
             }
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
@@ -197,28 +199,22 @@ fun CommentsHeader(
                     style = MaterialTheme.typography.titleMedium
                 )
 
-                Row() {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(
                         text = post.author,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.titleSmall
                     )
 
-                    // TODO: Relative timestamp
-                }
-
-
-                if (post.is_self) {
-                    Text(
-                        text = post.selftext,
-                        modifier = Modifier.padding(top = 12.dp, bottom = 12.dp)
+                    TimeStamp(
+                        time = relativeTime(post.createdUtc),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.titleSmall
                     )
-                }
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                     if (post.over18) {
                         Text(
                             text = "nsfw",
@@ -234,11 +230,22 @@ fun CommentsHeader(
                             contentScale = ContentScale.Crop,
                             colorFilter = ColorFilter.tint(Color.Yellow),
                             modifier = Modifier
-                                .width(15.dp)
-                                .height(15.dp)
+                                .width(18.dp)
+                                .height(18.dp)
                         )
                     }
                 }
+
+                if (post.selftext != "") {
+                    Divider(modifier = Modifier
+                        .padding(top = 4.dp)
+                    )
+                    Text(
+                        text = post.selftext,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                    )
+                }
+
             }
         }
     }

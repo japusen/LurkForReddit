@@ -31,6 +31,11 @@ fun LurkApp(
         composable(route = "home") {
             HomeScreen(
                 uiState = homeViewModel.uiState.collectAsStateWithLifecycle(),
+                onListingSortChanged = { listing, top ->
+                    coroutineScope.launch{
+                        homeViewModel.setListingSort(listing, top)
+                    }
+                },
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
                 }

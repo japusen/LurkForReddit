@@ -11,15 +11,12 @@ import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
 import com.example.lurkforreddit.network.model.Content
-import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
-import com.example.lurkforreddit.util.UserListingSort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -37,9 +34,10 @@ sealed interface ListingNetworkRequest {
 
 data class HomeUiState(
     val networkResponse: ListingNetworkRequest = ListingNetworkRequest.Loading,
-    val subreddit: String = "all",
+    val subreddit: String = "All",
     val listingSort: ListingSort = ListingSort.HOT,
-    val topSort: TopSort? = null
+    val topSort: TopSort? = null,
+    val isLoading: Boolean = false,
 )
 
 class HomeViewModel(
@@ -75,35 +73,33 @@ class HomeViewModel(
                         ListingNetworkRequest.Error
                     } catch (e: HttpException) {
                         ListingNetworkRequest.Error
-                    }
+                    },
+                    isLoading = false,
                 )
             }
 
         }
     }
 
-    fun setSubreddit(subreddit: String) {
+    suspend fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                subreddit = subreddit
+                subreddit = subreddit,
+                isLoading = true
             )
         }
+        loadPosts()
     }
 
-    fun setListingSort(sort: ListingSort) {
+    suspend fun setListingSort(sort: ListingSort, topSort: TopSort?) {
         _uiState.update { currentState ->
             currentState.copy(
-                listingSort = sort
+                listingSort = sort,
+                topSort = topSort,
+                isLoading = true
             )
         }
-    }
-
-    fun setTopSort(sort: TopSort?) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                topSort = sort
-            )
-        }
+        loadPosts()
     }
 
 

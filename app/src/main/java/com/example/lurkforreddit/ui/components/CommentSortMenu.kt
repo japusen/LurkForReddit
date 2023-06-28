@@ -63,7 +63,7 @@ fun CommentSortMenu(
                 },
                 leadingIcon = {
                     Icon(
-                        painterResource(id = R.drawable.ic_top),
+                        painterResource(id = R.drawable.ic_rising),
                         contentDescription = null
                     )
                 }
