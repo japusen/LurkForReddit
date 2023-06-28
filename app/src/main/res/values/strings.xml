@@ -8,8 +8,8 @@
         <item quantity="other">%d seconds ago</item>
     </plurals>
     <plurals name="timeStampMinutes">
-        <item quantity="one">%d min ago</item>
-        <item quantity="other">%d minutess ago</item>
+        <item quantity="one">%d minute ago</item>
+        <item quantity="other">%d minutes ago</item>
     </plurals>
     <plurals name="timeStampHours">
         <item quantity="one">%d hour ago</item>
