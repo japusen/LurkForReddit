@@ -10,16 +10,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.lurkforreddit.ui.screens.CommentsScreen
+import com.example.lurkforreddit.ui.screens.CommentsViewModel
+import com.example.lurkforreddit.ui.screens.DuplicatesScreen
+import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
 import com.example.lurkforreddit.ui.screens.HomeScreen
 import com.example.lurkforreddit.ui.screens.HomeViewModel
-import com.example.lurkforreddit.ui.screens.CommentsScreen
-import com.example.lurkforreddit.ui.screens.CommentsScreenViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun LurkApp(
     homeViewModel: HomeViewModel,
-    commentsScreenViewModel: CommentsScreenViewModel,
+    commentsViewModel: CommentsViewModel,
+    duplicatesViewModel: DuplicatesViewModel,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -51,23 +54,56 @@ fun LurkApp(
             val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
             val article = backStackEntry.arguments?.getString("article") ?: ""
 
-            commentsScreenViewModel.setSubreddit(subreddit)
-            commentsScreenViewModel.setArticle(article)
+            commentsViewModel.setSubreddit(subreddit)
+            commentsViewModel.setArticle(article)
 
             LaunchedEffect(Unit) {
-                commentsScreenViewModel.loadPostComments()
+                commentsViewModel.loadPostComments()
             }
             CommentsScreen(
-                uiState = commentsScreenViewModel.uiState.collectAsStateWithLifecycle(),
+                uiState = commentsViewModel.uiState.collectAsStateWithLifecycle(),
                 subreddit = subreddit,
-                article = article,
                 onDetailsBackClicked = {
                     navController.popBackStack()
-                    commentsScreenViewModel.clearNetworkRequest()
+                    //commentsViewModel.clearNetworkRequest()
                 },
                 onSortChanged = { sort ->
                     coroutineScope.launch {
-                        commentsScreenViewModel.setCommentSort(sort)
+                        commentsViewModel.setCommentSort(sort)
+                    }
+                },
+                onDuplicatesClicked = {
+                    navController.navigate("duplicates/$subreddit/$article")
+                }
+            )
+        }
+        composable(
+            route = "duplicates/{subreddit}/{article}",
+            arguments = listOf(
+                navArgument("subreddit") { type = NavType.StringType },
+                navArgument("article") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
+            val article = backStackEntry.arguments?.getString("article") ?: ""
+
+            duplicatesViewModel.setSubreddit(subreddit)
+            duplicatesViewModel.setArticle(article)
+
+            LaunchedEffect(Unit) {
+                duplicatesViewModel.loadDuplicates()
+            }
+            DuplicatesScreen(
+                uiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle(),
+                onPostClicked = { sub, art ->
+                    navController.navigate("details/$sub/$art")
+                },
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onSortChanged = { sort ->
+                    coroutineScope.launch {
+                        duplicatesViewModel.setSort(sort)
                     }
                 }
             )

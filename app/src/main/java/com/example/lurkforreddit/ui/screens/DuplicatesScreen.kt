@@ -15,21 +15,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
-import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.components.CommentSortMenu
-import com.example.lurkforreddit.ui.components.CommentsList
-import com.example.lurkforreddit.util.CommentSort
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.lurkforreddit.ui.components.DuplicatesSortMenu
+import com.example.lurkforreddit.ui.components.ListingFeed
+import com.example.lurkforreddit.util.DuplicatesSort
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsScreen(
-    uiState: State<CommentsUiState>,
-    subreddit: String,
-    onDetailsBackClicked: () -> Unit,
-    onSortChanged: (CommentSort) -> Unit,
-    onDuplicatesClicked: () -> Unit,
-    modifier: Modifier = Modifier,
+fun DuplicatesScreen(
+    uiState: State<DuplicatesUiState>,
+    onPostClicked: (String, String) -> Unit,
+    onBackClicked: () -> Unit,
+    onSortChanged: (DuplicatesSort) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
@@ -41,13 +39,13 @@ fun CommentsScreen(
                 ),
                 title = {
                     Text(
-                        text = subreddit,
+                        text = "Other Discussions",
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { onDetailsBackClicked() }
+                        onClick = { onBackClicked() }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -56,20 +54,10 @@ fun CommentsScreen(
                     }
                 },
                 actions = {
-                    CommentSortMenu(
-                        selectedSort = uiState.value.commentSort,
-                        onSortChanged = { sort ->
-                            onSortChanged(sort)
-                        }
-                    )
-                    IconButton(
-                        onClick = { onDuplicatesClicked() }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_other_discussions),
-                            contentDescription = "Other Discussions"
-                        )
-                    }
+                      DuplicatesSortMenu(
+                          selectedSort = uiState.value.sort,
+                          onSortChanged = onSortChanged
+                      )
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -77,15 +65,17 @@ fun CommentsScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         when (uiState.value.networkResponse) {
-            is CommentsNetworkRequest.Loading -> LoadingScreen(modifier)
-            is CommentsNetworkRequest.Success -> {
-                CommentsList(
-                    post = (uiState.value.networkResponse as CommentsNetworkRequest.Success).postData.first,
-                    commentTree = (uiState.value.networkResponse as CommentsNetworkRequest.Success).postData.second,
-                    modifier = modifier.padding(paddingValues = it)
+            is DuplicatesNetworkRequest.Loading -> LoadingScreen(modifier)
+            is DuplicatesNetworkRequest.Success -> {
+                ListingFeed(
+                    submissions = (uiState.value.networkResponse as DuplicatesNetworkRequest.Success)
+                        .listingContent
+                        .collectAsLazyPagingItems(),
+                    onPostClicked = onPostClicked,
+                    modifier = Modifier.padding(paddingValues = it )
                 )
             }
-            is CommentsNetworkRequest.Error -> ErrorScreen(modifier)
+            is DuplicatesNetworkRequest.Error -> ErrorScreen(modifier)
         }
     }
 }

@@ -103,29 +103,6 @@ class HomeViewModel(
     }
 
 
-//    fun getPostDuplicates(
-//        subreddit: String,
-//        article: String,
-//        sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS
-//    ) {
-//        viewModelScope.launch {
-//            listingState = try {
-//                ListingNetworkRequest.Success(
-//                    redditApiRepository.getPostDuplicates(
-//                        subreddit,
-//                        article,
-//                        sort
-//                    ).cachedIn(viewModelScope)
-//                )
-//            } catch (e: IOException) {
-//                ListingNetworkRequest.Error
-//            } catch (e: HttpException) {
-//                ListingNetworkRequest.Error
-//            }
-//        }
-//    }
-//
-//
 //    fun getUserSubmissions(
 //        username: String,
 //        userListingSort: UserListingSort = UserListingSort.HOT,

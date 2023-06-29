@@ -2,15 +2,17 @@ package com.example.lurkforreddit.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.MoreApi
-import com.example.lurkforreddit.network.model.PostApi
-import com.example.lurkforreddit.util.CommentSort
+import com.example.lurkforreddit.network.model.Content
+import com.example.lurkforreddit.util.DuplicatesSort
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,64 +21,59 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-sealed interface CommentsNetworkRequest {
-    data class Success(
-        val postData: Pair<PostApi, Pair<List<CommentApi>, MoreApi?>>,
-    ) : CommentsNetworkRequest
 
-    object Error : CommentsNetworkRequest
-    object Loading : CommentsNetworkRequest
+sealed interface DuplicatesNetworkRequest {
+    data class Success(
+        val listingContent: Flow<PagingData<Content>>,
+    ) : DuplicatesNetworkRequest
+
+    object Error : DuplicatesNetworkRequest
+    object Loading : DuplicatesNetworkRequest
 }
 
-data class CommentsUiState(
-    val networkResponse: CommentsNetworkRequest = CommentsNetworkRequest.Loading,
+data class DuplicatesUiState(
+    val networkResponse: DuplicatesNetworkRequest = DuplicatesNetworkRequest.Loading,
     val subreddit: String = "",
     val article: String = "",
-    val commentSort: CommentSort = CommentSort.BEST
+    val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
 )
 
-class CommentsViewModel(
+class DuplicatesViewModel(
     private val redditApiRepository: RedditApiRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CommentsUiState())
-    val uiState: StateFlow<CommentsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(DuplicatesUiState())
+    val uiState: StateFlow<DuplicatesUiState> = _uiState.asStateFlow()
 
-    suspend fun loadPostComments() {
+    suspend fun loadDuplicates() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        CommentsNetworkRequest.Success(
-                            redditApiRepository.getPostComments(
+                        DuplicatesNetworkRequest.Success(
+                            redditApiRepository.getPostDuplicates(
                                 subreddit = currentState.subreddit,
                                 article = currentState.article,
-                                sort = currentState.commentSort
-                            )
+                                sort = currentState.sort,
+                            ).cachedIn(viewModelScope)
+//                    .map{ pagingData ->
+//                        pagingData.map { content -> ... }
+//                    }
                         )
                     } catch (e: IOException) {
-                        CommentsNetworkRequest.Error
+                        DuplicatesNetworkRequest.Error
                     } catch (e: HttpException) {
-                        CommentsNetworkRequest.Error
+                        DuplicatesNetworkRequest.Error
                     }
                 )
             }
-
-        }
-    }
-
-    fun clearNetworkRequest() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                networkResponse = CommentsNetworkRequest.Loading
-            )
         }
     }
 
     fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                subreddit = subreddit
+                subreddit = subreddit,
             )
         }
     }
@@ -84,27 +81,27 @@ class CommentsViewModel(
     fun setArticle(article: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                article = article
+                article = article,
             )
         }
     }
 
-    suspend fun setCommentSort(sort: CommentSort) {
+    suspend fun setSort(sort: DuplicatesSort) {
         _uiState.update { currentState ->
             currentState.copy(
-                commentSort = sort
+                sort = sort,
             )
         }
-        loadPostComments()
+        loadDuplicates()
     }
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LurkApplication)
+                val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                CommentsViewModel(redditApiRepository = redditApiRepository)
+                DuplicatesViewModel(redditApiRepository = redditApiRepository)
             }
         }
     }
