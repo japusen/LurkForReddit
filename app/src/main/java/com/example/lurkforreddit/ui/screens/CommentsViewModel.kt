@@ -65,14 +65,6 @@ class CommentsViewModel(
         }
     }
 
-    fun clearNetworkRequest() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                networkResponse = CommentsNetworkRequest.Loading
-            )
-        }
-    }
-
     fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(

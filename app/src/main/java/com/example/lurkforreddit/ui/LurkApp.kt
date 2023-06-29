@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,9 +21,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LurkApp(
-    homeViewModel: HomeViewModel,
-    commentsViewModel: CommentsViewModel,
-    duplicatesViewModel: DuplicatesViewModel,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -32,6 +30,7 @@ fun LurkApp(
         startDestination = "home",
     ) {
         composable(route = "home") {
+            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
             HomeScreen(
                 uiState = homeViewModel.uiState.collectAsStateWithLifecycle(),
                 onListingSortChanged = { listing, top ->
@@ -54,6 +53,8 @@ fun LurkApp(
             val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
             val article = backStackEntry.arguments?.getString("article") ?: ""
 
+            val commentsViewModel: CommentsViewModel =
+                viewModel(factory = CommentsViewModel.Factory)
             commentsViewModel.setSubreddit(subreddit)
             commentsViewModel.setArticle(article)
 
@@ -87,6 +88,8 @@ fun LurkApp(
             val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
             val article = backStackEntry.arguments?.getString("article") ?: ""
 
+            val duplicatesViewModel: DuplicatesViewModel =
+                viewModel(factory = DuplicatesViewModel.Factory)
             duplicatesViewModel.setSubreddit(subreddit)
             duplicatesViewModel.setArticle(article)
 
