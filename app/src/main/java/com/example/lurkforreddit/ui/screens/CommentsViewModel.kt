@@ -7,9 +7,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.MoreApi
-import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.model.Comment
+import com.example.lurkforreddit.model.More
+import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.util.CommentSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,17 +19,17 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-sealed interface CommentsNetworkRequest {
+sealed interface CommentsNetworkResponse {
     data class Success(
-        val postData: Pair<PostApi, Pair<List<CommentApi>, MoreApi?>>,
-    ) : CommentsNetworkRequest
+        val postData: Pair<Post, Pair<List<Comment>, More?>>,
+    ) : CommentsNetworkResponse
 
-    object Error : CommentsNetworkRequest
-    object Loading : CommentsNetworkRequest
+    object Error : CommentsNetworkResponse
+    object Loading : CommentsNetworkResponse
 }
 
 data class CommentsUiState(
-    val networkResponse: CommentsNetworkRequest = CommentsNetworkRequest.Loading,
+    val networkResponse: CommentsNetworkResponse = CommentsNetworkResponse.Loading,
     val subreddit: String = "",
     val article: String = "",
     val commentSort: CommentSort = CommentSort.BEST
@@ -47,7 +47,7 @@ class CommentsViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        CommentsNetworkRequest.Success(
+                        CommentsNetworkResponse.Success(
                             redditApiRepository.getPostComments(
                                 subreddit = currentState.subreddit,
                                 article = currentState.article,
@@ -55,13 +55,12 @@ class CommentsViewModel(
                             )
                         )
                     } catch (e: IOException) {
-                        CommentsNetworkRequest.Error
+                        CommentsNetworkResponse.Error
                     } catch (e: HttpException) {
-                        CommentsNetworkRequest.Error
+                        CommentsNetworkResponse.Error
                     }
                 )
             }
-
         }
     }
 

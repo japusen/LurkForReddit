@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,14 +32,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.util.relativeTime
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostCard(
-    content: PostApi,
+    content: Post,
     onPostClicked: () -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
@@ -145,12 +146,12 @@ fun PostCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.labelSmall
                         )
+                        Spacer(modifier.weight(1F))
                         IconButton(
                             onClick = { expanded = !expanded },
                             modifier = Modifier
                                 .height(20.dp)
                                 .width(20.dp)
-                                .weight(1F)
                         ) {
                             if (expanded) {
                                 Icon(

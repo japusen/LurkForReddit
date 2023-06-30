@@ -25,12 +25,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.util.relativeTime
 
 @Composable
 fun CommentsHeader(
-    post: PostApi,
+    post: Post,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(

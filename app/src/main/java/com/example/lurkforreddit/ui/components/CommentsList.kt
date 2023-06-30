@@ -7,14 +7,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.MoreApi
-import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.model.Comment
+import com.example.lurkforreddit.model.More
+import com.example.lurkforreddit.model.Post
 
 @Composable
 fun CommentsList(
-    post: PostApi,
-    commentTree: Pair<List<CommentApi>, MoreApi?>,
+    post: Post,
+    commentTree: Pair<List<Comment>, More?>,
     modifier: Modifier = Modifier
 ) {
     val comments = commentTree.first

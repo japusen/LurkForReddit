@@ -6,13 +6,10 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.network.model.Content
 import com.example.lurkforreddit.util.DuplicatesSort
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,17 +19,8 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-sealed interface DuplicatesNetworkRequest {
-    data class Success(
-        val listingContent: Flow<PagingData<Content>>,
-    ) : DuplicatesNetworkRequest
-
-    object Error : DuplicatesNetworkRequest
-    object Loading : DuplicatesNetworkRequest
-}
-
 data class DuplicatesUiState(
-    val networkResponse: DuplicatesNetworkRequest = DuplicatesNetworkRequest.Loading,
+    val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
     val subreddit: String = "",
     val article: String = "",
     val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
@@ -50,7 +38,7 @@ class DuplicatesViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        DuplicatesNetworkRequest.Success(
+                        ListingNetworkResponse.Success(
                             redditApiRepository.getPostDuplicates(
                                 subreddit = currentState.subreddit,
                                 article = currentState.article,
@@ -61,9 +49,9 @@ class DuplicatesViewModel(
 //                    }
                         )
                     } catch (e: IOException) {
-                        DuplicatesNetworkRequest.Error
+                        ListingNetworkResponse.Error
                     } catch (e: HttpException) {
-                        DuplicatesNetworkRequest.Error
+                        ListingNetworkResponse.Error
                     }
                 )
             }

@@ -12,11 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.network.model.ProfileCommentApi
+import com.example.lurkforreddit.model.ProfileComment
 
 @Composable
 fun ProfileCommentCard(
-    content: ProfileCommentApi,
+    content: ProfileComment,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(

@@ -2,8 +2,8 @@ package com.example.lurkforreddit.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.lurkforreddit.network.model.Content
-import com.example.lurkforreddit.network.model.Listing
+import com.example.lurkforreddit.model.Content
+import com.example.lurkforreddit.model.Listing
 import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.network.parseProfileCommentListing

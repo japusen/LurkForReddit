@@ -1,14 +1,17 @@
 package com.example.lurkforreddit.ui
 
-import android.content.Intent
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat.startActivity
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -16,12 +19,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.lurkforreddit.R
+import com.example.lurkforreddit.ui.components.CommentSortMenu
+import com.example.lurkforreddit.ui.components.DuplicatesSortMenu
+import com.example.lurkforreddit.ui.components.ListingSortMenu
 import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.CommentsViewModel
-import com.example.lurkforreddit.ui.screens.DuplicatesScreen
 import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
-import com.example.lurkforreddit.ui.screens.HomeScreen
-import com.example.lurkforreddit.ui.screens.HomeViewModel
+import com.example.lurkforreddit.ui.screens.ListingScreen
+import com.example.lurkforreddit.ui.screens.ListingViewModel
 import com.example.lurkforreddit.util.openLinkInBrowser
 import kotlinx.coroutines.launch
 
@@ -37,22 +43,150 @@ fun LurkApp(
         startDestination = "home",
     ) {
         composable(route = "home") {
-            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
-            HomeScreen(
-                uiState = homeViewModel.uiState.collectAsStateWithLifecycle(),
-                onListingSortChanged = { listing, top ->
-                    coroutineScope.launch{
-                        homeViewModel.setListingSort(listing, top)
-                    }
+            val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
+            val homeUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
+            ListingScreen(
+                title = {
+                    Text(
+                        text = homeUiState.value.subreddit,
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 },
+                navIcon = {},
+                actions = {
+                    ListingSortMenu(
+                        selectedSort = homeUiState.value.listingSort,
+                        onListingSortChanged = { listing, top ->
+                            coroutineScope.launch{
+                                listingViewModel.setListingSort(listing, top)
+                            }
+                        }
+                    )
+                },
+                networkResponse = homeUiState.value.networkResponse,
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
                 },
                 onProfileClicked = {  },
-                onSubredditClicked = {  },
+                onSubredditClicked = { sub ->
+                    navController.navigate("subreddit/$sub")
+                },
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
+            )
+        }
+        composable(
+            route = "subreddit/{subreddit}",
+            arguments = listOf(
+                navArgument("subreddit") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
+
+            val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
+            LaunchedEffect(Unit) {
+                listingViewModel.setSubreddit(subreddit)
+            }
+
+            val subredditUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
+            ListingScreen(
+                title = {
+                    Text(
+                        text = subredditUiState.value.subreddit,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                navIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    ListingSortMenu(
+                        selectedSort = subredditUiState.value.listingSort,
+                        onListingSortChanged = { listing, top ->
+                            coroutineScope.launch{
+                                listingViewModel.setListingSort(listing, top)
+                            }
+                        }
+                    )
+                },
+                networkResponse = subredditUiState.value.networkResponse,
+                onPostClicked = { sub, article ->
+                    navController.navigate("details/$sub/$article")
+                },
+                onProfileClicked = {  },
+                onSubredditClicked = {}, /* Already on the sub, no need to reload*/
+                onBrowserClicked = { url ->
+                    openLinkInBrowser(context, url)
+                },
+            )
+        }
+        composable(
+            route = "duplicates/{subreddit}/{article}",
+            arguments = listOf(
+                navArgument("subreddit") { type = NavType.StringType },
+                navArgument("article") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
+            val article = backStackEntry.arguments?.getString("article") ?: ""
+
+            val duplicatesViewModel: DuplicatesViewModel =
+                viewModel(factory = DuplicatesViewModel.Factory)
+            duplicatesViewModel.setSubreddit(subreddit)
+            duplicatesViewModel.setArticle(article)
+
+
+            LaunchedEffect(Unit) {
+                duplicatesViewModel.loadDuplicates()
+            }
+
+            val duplicatesUiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle()
+            ListingScreen(
+                title = {
+                    Text(
+                        text = "Other Discussions",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                navIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    DuplicatesSortMenu(
+                        selectedSort = duplicatesUiState.value.sort,
+                        onSortChanged = { sort ->
+                            coroutineScope.launch {
+                                duplicatesViewModel.setSort(sort)
+                            }
+                        }
+                    )
+                },
+                networkResponse = duplicatesUiState.value.networkResponse,
+                onPostClicked = { sub, art ->
+                    navController.navigate("details/$sub/$art")
+                },
+                onProfileClicked = {  },
+                onSubredditClicked = { sub ->
+                    navController.navigate("subreddit/$sub")
+                },
+                onBrowserClicked = { url ->
+                    openLinkInBrowser(context, url)
+                }
             )
         }
         composable(
@@ -73,59 +207,44 @@ fun LurkApp(
             LaunchedEffect(Unit) {
                 commentsViewModel.loadPostComments()
             }
+
+            val commentsUiState = commentsViewModel.uiState.collectAsStateWithLifecycle()
             CommentsScreen(
-                uiState = commentsViewModel.uiState.collectAsStateWithLifecycle(),
-                subreddit = subreddit,
-                onDetailsBackClicked = {
-                    navController.popBackStack()
-                    //commentsViewModel.clearNetworkRequest()
+                title = {
+                    Text(
+                        text = subreddit,
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 },
-                onSortChanged = { sort ->
-                    coroutineScope.launch {
-                        commentsViewModel.setCommentSort(sort)
+                navIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 },
-                onDuplicatesClicked = {
-                    navController.navigate("duplicates/$subreddit/$article")
-                }
-            )
-        }
-        composable(
-            route = "duplicates/{subreddit}/{article}",
-            arguments = listOf(
-                navArgument("subreddit") { type = NavType.StringType },
-                navArgument("article") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
-            val article = backStackEntry.arguments?.getString("article") ?: ""
-
-            val duplicatesViewModel: DuplicatesViewModel =
-                viewModel(factory = DuplicatesViewModel.Factory)
-            duplicatesViewModel.setSubreddit(subreddit)
-            duplicatesViewModel.setArticle(article)
-
-            LaunchedEffect(Unit) {
-                duplicatesViewModel.loadDuplicates()
-            }
-            DuplicatesScreen(
-                uiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle(),
-                onPostClicked = { sub, art ->
-                    navController.navigate("details/$sub/$art")
-                },
-                onProfileClicked = {  },
-                onSubredditClicked = {  },
-                onBrowserClicked = { url ->
-                    openLinkInBrowser(context, url)
-                },
-                onBackClicked = {
-                    navController.popBackStack()
-                },
-                onSortChanged = { sort ->
-                    coroutineScope.launch {
-                        duplicatesViewModel.setSort(sort)
+                actions = {
+                    CommentSortMenu(
+                        selectedSort = commentsUiState.value.commentSort,
+                        onSortChanged = { sort ->
+                            coroutineScope.launch {
+                                commentsViewModel.setCommentSort(sort)
+                            }
+                        }
+                    )
+                    IconButton(
+                        onClick = { navController.navigate("duplicates/$subreddit/$article") }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_other_discussions),
+                            contentDescription = "Other Discussions"
+                        )
                     }
-                }
+                },
+                networkResponse = commentsUiState.value.networkResponse
             )
         }
     }

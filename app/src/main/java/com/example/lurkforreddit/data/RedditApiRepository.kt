@@ -5,13 +5,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.lurkforreddit.data.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
-import com.example.lurkforreddit.network.model.AccessToken
+import com.example.lurkforreddit.model.AccessToken
 import com.example.lurkforreddit.network.AccessTokenService
-import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.Content
-import com.example.lurkforreddit.network.model.MoreApi
+import com.example.lurkforreddit.model.Comment
+import com.example.lurkforreddit.model.Content
+import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.network.RedditApiService
-import com.example.lurkforreddit.network.model.PostApi
+import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.network.parsePostComments
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.util.CommentSort
@@ -56,7 +56,7 @@ interface RedditApiRepository {
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<PostApi, Pair<List<CommentApi>, MoreApi?>>
+    ): Pair<Post, Pair<List<Comment>, More?>>
 
     companion object {
         const val NETWORK_PAGE_SIZE = 50
@@ -195,7 +195,7 @@ class DefaultRedditApiRepository(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<PostApi, Pair<List<CommentApi>, MoreApi?>> {
+    ): Pair<Post, Pair<List<Comment>, More?>> {
 
         val response = redditApiService.getPostComments(
             tokenHeader,
@@ -210,5 +210,4 @@ class DefaultRedditApiRepository(
 
         return Pair(post, comments)
     }
-
 }

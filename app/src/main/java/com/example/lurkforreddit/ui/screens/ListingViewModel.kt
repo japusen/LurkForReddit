@@ -10,7 +10,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.network.model.Content
+import com.example.lurkforreddit.model.Content
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
 import kotlinx.coroutines.flow.Flow
@@ -23,29 +23,29 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-sealed interface ListingNetworkRequest {
+sealed interface ListingNetworkResponse {
     data class Success(
         val listingContent: Flow<PagingData<Content>>,
-    ) : ListingNetworkRequest
+    ) : ListingNetworkResponse
 
-    object Error : ListingNetworkRequest
-    object Loading : ListingNetworkRequest
+    object Error : ListingNetworkResponse
+    object Loading : ListingNetworkResponse
 }
 
-data class HomeUiState(
-    val networkResponse: ListingNetworkRequest = ListingNetworkRequest.Loading,
+data class ListingUiState(
+    val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
     val subreddit: String = "All",
     val listingSort: ListingSort = ListingSort.HOT,
     val topSort: TopSort? = null,
     val isLoading: Boolean = false,
 )
 
-class HomeViewModel(
+class ListingViewModel(
     private val redditApiRepository: RedditApiRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ListingUiState())
+    val uiState: StateFlow<ListingUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -59,7 +59,7 @@ class HomeViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        ListingNetworkRequest.Success(
+                        ListingNetworkResponse.Success(
                             redditApiRepository.getPosts(
                                 subreddit = currentState.subreddit,
                                 sort = currentState.listingSort,
@@ -70,9 +70,9 @@ class HomeViewModel(
 //                    }
                         )
                     } catch (e: IOException) {
-                        ListingNetworkRequest.Error
+                        ListingNetworkResponse.Error
                     } catch (e: HttpException) {
-                        ListingNetworkRequest.Error
+                        ListingNetworkResponse.Error
                     },
                     isLoading = false,
                 )
@@ -91,7 +91,7 @@ class HomeViewModel(
         loadPosts()
     }
 
-    suspend fun setListingSort(sort: ListingSort, topSort: TopSort?) {
+    suspend fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
         _uiState.update { currentState ->
             currentState.copy(
                 listingSort = sort,
@@ -153,7 +153,7 @@ class HomeViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                HomeViewModel(redditApiRepository = redditApiRepository)
+                ListingViewModel(redditApiRepository = redditApiRepository)
             }
         }
     }

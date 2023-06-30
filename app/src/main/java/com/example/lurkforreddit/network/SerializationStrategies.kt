@@ -1,12 +1,12 @@
 package com.example.lurkforreddit.network
 
-import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.CommentContents
-import com.example.lurkforreddit.network.model.MoreApi
-import com.example.lurkforreddit.network.model.PostApi
-import com.example.lurkforreddit.network.model.PostListing
-import com.example.lurkforreddit.network.model.ProfileCommentApi
-import com.example.lurkforreddit.network.model.ProfileCommentListing
+import com.example.lurkforreddit.model.Comment
+import com.example.lurkforreddit.model.CommentContents
+import com.example.lurkforreddit.model.More
+import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.model.PostListing
+import com.example.lurkforreddit.model.ProfileComment
+import com.example.lurkforreddit.model.ProfileCommentListing
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -37,7 +37,7 @@ fun parsePostListing(
 
     val posts = children.jsonArray.map {
         json.decodeFromJsonElement(
-            PostApi.serializer(),
+            Post.serializer(),
             it.jsonObject.getOrDefault("data", blank)
         )
     }
@@ -59,7 +59,7 @@ fun parseProfileCommentListing(
 
     val comments = children.jsonArray.map {
         json.decodeFromJsonElement(
-            ProfileCommentApi.serializer(),
+            ProfileComment.serializer(),
             it.jsonObject.getOrDefault("data", blank)
         )
     }
@@ -70,9 +70,9 @@ fun parseProfileCommentListing(
 
 fun parsePostComments(
     response: JsonElement
-): Pair<List<CommentApi>, MoreApi?> {
-    val comments = mutableListOf<CommentApi>()
-    var more: MoreApi? = null
+): Pair<List<Comment>, More?> {
+    val comments = mutableListOf<Comment>()
+    var more: More? = null
 
     val data = response.jsonObject.getOrDefault("data", blank)
     val children = data.jsonObject.getOrDefault("children", blank) as JsonArray
@@ -84,7 +84,7 @@ fun parsePostComments(
         )
         if (kind == "more") {
             more = json.decodeFromJsonElement(
-                MoreApi.serializer(),
+                More.serializer(),
                 child.jsonObject.getOrDefault("data", blank)
             )
         } else {
@@ -99,7 +99,7 @@ fun parsePostComments(
                 CommentContents.serializer(),
                 commentData
             )
-            comments.add(CommentApi(commentContent, replies.first, replies.second))
+            comments.add(Comment(commentContent, replies.first, replies.second))
         }
     }
 

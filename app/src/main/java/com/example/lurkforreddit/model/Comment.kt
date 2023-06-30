@@ -1,21 +1,59 @@
 package com.example.lurkforreddit.model
 
-import com.example.lurkforreddit.network.model.Created
-import com.example.lurkforreddit.network.model.Votable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 data class Comment(
+    val contents: CommentContents?,
+    val replies: List<Comment>,
+    val more: More?
+)
+
+@Serializable
+data class ProfileComment(
+    override val id: String,
+    override val author: String,
+    override val distinguished: String? = null,
+    override val score: Int,
+    override val subreddit: String,
+    @SerialName("subreddit_id")
+    override val subredditID: String,
     override val created: Float,
+    @SerialName("created_utc")
     override val createdUtc: Float,
     override val ups: Int,
     override val downs: Int,
-    val author: String,
-    val body: String,
-    val bodyHtml: String,
+    @SerialName("link_title")
+    val linkTitle: String,
+    @SerialName("link_id")
     val linkID: String,
-    val replies: List<Comment>,
-    val score: Int,
+    @SerialName("score_hidden")
     val scoreHidden: Boolean,
-    val subreddit: String,
-    val subredditID: String,
-    val distinguished: String
-): Created, Votable
+    val body: String,
+    @SerialName("body_html")
+    val bodyHtml: String,
+) : Content, Created, Votable
+
+@Serializable
+data class CommentContents(
+    override val id: String,
+    override val author: String,
+    override val distinguished: String? = null,
+    override val score: Int,
+    override val subreddit: String,
+    @SerialName("subreddit_id")
+    override val subredditID: String,
+    override val created: Float,
+    @SerialName("created_utc")
+    override val createdUtc: Float,
+    override val ups: Int,
+    override val downs: Int,
+    @SerialName("score_hidden")
+    val scoreHidden: Boolean,
+    val body: String,
+    @SerialName("body_html")
+    val bodyHtml: String,
+    @SerialName("link_id")
+    val linkID: String,
+) : Content, Created, Votable

@@ -6,15 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -22,15 +19,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.ui.components.ListingFeed
-import com.example.lurkforreddit.ui.components.ListingSortMenu
-import com.example.lurkforreddit.util.ListingSort
-import com.example.lurkforreddit.util.TopSort
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    uiState: State<HomeUiState>,
-    onListingSortChanged: (ListingSort, TopSort?) -> Unit,
+fun ListingScreen(
+    title: @Composable () -> Unit,
+    navIcon: @Composable () -> Unit,
+    actions: @Composable () -> Unit,
+    networkResponse: ListingNetworkResponse,
     onPostClicked: (String, String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
@@ -44,42 +40,27 @@ fun HomeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
-                title = {
-                    Text(
-                        text = uiState.value.subreddit,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                },
-                actions = {
-                    ListingSortMenu(
-                        selectedSort = uiState.value.listingSort,
-                        onListingSortChanged = onListingSortChanged
-                    )
-                },
+                title = title,
+                navigationIcon = navIcon,
+                actions = { actions() },
                 scrollBehavior = scrollBehavior
             )
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
 
-        if (uiState.value.isLoading) {
-            LinearProgressIndicator()
-        }
-
-        when (uiState.value.networkResponse) {
-            is ListingNetworkRequest.Loading -> LoadingScreen(modifier)
-            is ListingNetworkRequest.Success ->
+        when (networkResponse) {
+            is ListingNetworkResponse.Loading -> LoadingScreen(modifier)
+            is ListingNetworkResponse.Success ->
                 ListingFeed(
-                    (uiState.value.networkResponse as ListingNetworkRequest.Success)
-                        .listingContent
-                        .collectAsLazyPagingItems(),
+                    submissions = networkResponse.listingContent.collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
                     onProfileClicked = onProfileClicked,
                     onSubredditClicked = onSubredditClicked,
                     onBrowserClicked = onBrowserClicked,
                     modifier = modifier.padding(paddingValues)
                 )
-            is ListingNetworkRequest.Error -> ErrorScreen(modifier)
+            is ListingNetworkResponse.Error -> ErrorScreen(modifier)
         }
     }
 }

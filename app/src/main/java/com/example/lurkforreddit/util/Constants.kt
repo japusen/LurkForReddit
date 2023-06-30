@@ -16,6 +16,7 @@ enum class UserListingSort(val value: String) {
     HOT("hot"),
     NEW("new"),
     TOP("top"),
+    CONTROVERSIAL("controversial")
 }
 
 enum class TopSort(val value: String) {

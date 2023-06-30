@@ -22,17 +22,17 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.network.model.CommentApi
-import com.example.lurkforreddit.network.model.CommentContents
-import com.example.lurkforreddit.network.model.MoreApi
+import com.example.lurkforreddit.model.Comment
+import com.example.lurkforreddit.model.CommentContents
+import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.util.relativeTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
     contents: CommentContents,
-    replies: MutableList<CommentApi>,
-    more: MoreApi?,
+    replies: MutableList<Comment>,
+    more: More?,
     padding: Int,
     color: Int,
     modifier: Modifier = Modifier

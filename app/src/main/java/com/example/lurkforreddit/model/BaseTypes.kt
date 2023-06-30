@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.network.model
+package com.example.lurkforreddit.model
 
 interface Votable {
     val ups: Int
