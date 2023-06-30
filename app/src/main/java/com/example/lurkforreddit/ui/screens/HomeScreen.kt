@@ -32,6 +32,9 @@ fun HomeScreen(
     uiState: State<HomeUiState>,
     onListingSortChanged: (ListingSort, TopSort?) -> Unit,
     onPostClicked: (String, String) -> Unit,
+    onProfileClicked: (String) -> Unit,
+    onSubredditClicked: (String) -> Unit,
+    onBrowserClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -71,6 +74,9 @@ fun HomeScreen(
                         .listingContent
                         .collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
+                    onProfileClicked = onProfileClicked,
+                    onSubredditClicked = onSubredditClicked,
+                    onBrowserClicked = onBrowserClicked,
                     modifier = modifier.padding(paddingValues)
                 )
             is ListingNetworkRequest.Error -> ErrorScreen(modifier)

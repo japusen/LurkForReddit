@@ -16,6 +16,9 @@ import com.example.lurkforreddit.network.model.ProfileCommentApi
 fun ListingFeed(
     submissions: LazyPagingItems<Content>,
     onPostClicked: (String, String) -> Unit,
+    onProfileClicked: (String) -> Unit,
+    onSubredditClicked: (String) -> Unit,
+    onBrowserClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -30,7 +33,10 @@ fun ListingFeed(
                     is PostApi -> {
                         PostCard(
                             content = content,
-                            onPostClicked = { onPostClicked(content.subreddit, content.id) }
+                            onPostClicked = { onPostClicked(content.subreddit, content.id) },
+                            onProfileClicked = onProfileClicked,
+                            onSubredditClicked = onSubredditClicked,
+                            onBrowserClicked = onBrowserClicked
                         )
                     }
                     is ProfileCommentApi -> {

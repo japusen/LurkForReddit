@@ -26,6 +26,9 @@ import com.example.lurkforreddit.util.DuplicatesSort
 fun DuplicatesScreen(
     uiState: State<DuplicatesUiState>,
     onPostClicked: (String, String) -> Unit,
+    onProfileClicked: (String) -> Unit,
+    onSubredditClicked: (String) -> Unit,
+    onBrowserClicked: (String) -> Unit,
     onBackClicked: () -> Unit,
     onSortChanged: (DuplicatesSort) -> Unit,
     modifier: Modifier = Modifier
@@ -73,6 +76,9 @@ fun DuplicatesScreen(
                         .listingContent
                         .collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
+                    onProfileClicked = onProfileClicked,
+                    onSubredditClicked = onSubredditClicked,
+                    onBrowserClicked = onBrowserClicked,
                     modifier = Modifier.padding(paddingValues = it )
                 )
             }

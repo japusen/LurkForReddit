@@ -1,9 +1,14 @@
 package com.example.lurkforreddit.ui
 
+import android.content.Intent
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -17,6 +22,7 @@ import com.example.lurkforreddit.ui.screens.DuplicatesScreen
 import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
 import com.example.lurkforreddit.ui.screens.HomeScreen
 import com.example.lurkforreddit.ui.screens.HomeViewModel
+import com.example.lurkforreddit.util.openLinkInBrowser
 import kotlinx.coroutines.launch
 
 @Composable
@@ -25,6 +31,7 @@ fun LurkApp(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
+    val context = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = "home",
@@ -40,7 +47,12 @@ fun LurkApp(
                 },
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
-                }
+                },
+                onProfileClicked = {  },
+                onSubredditClicked = {  },
+                onBrowserClicked = { url ->
+                    openLinkInBrowser(context, url)
+                },
             )
         }
         composable(
@@ -100,6 +112,11 @@ fun LurkApp(
                 uiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle(),
                 onPostClicked = { sub, art ->
                     navController.navigate("details/$sub/$art")
+                },
+                onProfileClicked = {  },
+                onSubredditClicked = {  },
+                onBrowserClicked = { url ->
+                    openLinkInBrowser(context, url)
                 },
                 onBackClicked = {
                     navController.popBackStack()
