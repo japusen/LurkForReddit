@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.components
+package com.example.lurkforreddit.ui.components.menus
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,9 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,30 +24,45 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
+import com.example.lurkforreddit.util.UserContentType
+import com.example.lurkforreddit.util.UserListingSort
 
 @Composable
-fun ListingSortMenu(
-    selectedSort: ListingSort,
-    onListingSortChanged: (ListingSort, TopSort?) -> Unit,
+fun ProfileSortMenu(
+    selectedSort: UserListingSort,
+    contentType: UserContentType,
+    onContentTypeChanged: (UserContentType) -> Unit,
+    onSortChanged: (UserListingSort, TopSort?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var contentExpanded by remember { mutableStateOf(false) }
+    var sortExpanded by remember { mutableStateOf(false) }
     var submenuExpanded by remember { mutableStateOf(false) }
+    var topOrControversial by remember { mutableStateOf(UserListingSort.TOP) }
+
+
+
+    IconButton(onClick = { contentExpanded = true }
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_content_type),
+            contentDescription = "Content Type"
+        )
+    }
 
     IconButton(
-        onClick = { expanded = true }
+        onClick = { sortExpanded = true }
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_sort),
-            contentDescription = "Sort Posts"
+            contentDescription = "Sort content"
         )
     }
 
     DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
+        expanded = contentExpanded,
+        onDismissRequest = { contentExpanded = false },
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
@@ -52,15 +71,61 @@ fun ListingSortMenu(
             modifier = modifier.padding(8.dp)
         ) {
             Text(
-                text = "Post Sort",
+                text = "Profile",
+                textAlign = TextAlign.Center
+            )
+
+            DropdownMenuItem(
+                text = { Text("Submissions") },
+                onClick = {
+                    onContentTypeChanged(UserContentType.SUBMITTED)
+                    contentExpanded = false
+                },
+                leadingIcon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_submissions),
+                        contentDescription = null
+                    )
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Comments") },
+                onClick = {
+                    onContentTypeChanged(UserContentType.COMMENTS)
+                    contentExpanded = false
+                },
+                leadingIcon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_comment),
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+    }
+    
+
+    DropdownMenu(
+        expanded = sortExpanded,
+        onDismissRequest = { sortExpanded = false },
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.padding(8.dp)
+        ) {
+            Text(
+                text = if (contentType == UserContentType.SUBMITTED) "Sort Posts"
+                else "Sort Comments",
                 textAlign = TextAlign.Center
             )
 
             DropdownMenuItem(
                 text = { Text("Hot") },
                 onClick = {
-                    onListingSortChanged(ListingSort.HOT, null)
-                    expanded = false
+                    onSortChanged(UserListingSort.HOT, null)
+                    sortExpanded = false
                 },
                 leadingIcon = {
                     Icon(
@@ -70,23 +135,10 @@ fun ListingSortMenu(
                 }
             )
             DropdownMenuItem(
-                text = { Text("Rising") },
-                onClick = {
-                    onListingSortChanged(ListingSort.RISING, null)
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_rising),
-                        contentDescription = null
-                    )
-                }
-            )
-            DropdownMenuItem(
                 text = { Text("New") },
                 onClick = {
-                    onListingSortChanged(ListingSort.NEW, null)
-                    expanded = false
+                    onSortChanged(UserListingSort.NEW, null)
+                    sortExpanded = false
                 },
                 leadingIcon = {
                     Icon(
@@ -96,10 +148,25 @@ fun ListingSortMenu(
                 }
             )
             DropdownMenuItem(
+                text = { Text("Controversial") },
+                onClick = {
+                    submenuExpanded = true
+                    sortExpanded = false
+                    topOrControversial = UserListingSort.CONTROVERSIAL
+                },
+                leadingIcon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_controversial),
+                        contentDescription = null
+                    )
+                }
+            )
+            DropdownMenuItem(
                 text = { Text("Top") },
                 onClick = {
                     submenuExpanded = true
-                    expanded = false
+                    sortExpanded = false
+                    topOrControversial = UserListingSort.TOP
                 },
                 leadingIcon = {
                     Icon(
@@ -133,55 +200,55 @@ fun ListingSortMenu(
                     )
                 },
                 onClick = {
-                    expanded = true
+                    sortExpanded = true
                     submenuExpanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("All") },
                 onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.ALL)
-                    expanded = false
+                    onSortChanged(topOrControversial, TopSort.ALL)
+                    sortExpanded = false
                     submenuExpanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Year") },
                 onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.YEAR)
-                    expanded = false
+                    onSortChanged(topOrControversial, TopSort.YEAR)
+                    sortExpanded = false
                     submenuExpanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Month") },
                 onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.MONTH)
-                    expanded = false
+                    onSortChanged(topOrControversial, TopSort.MONTH)
+                    sortExpanded = false
                     submenuExpanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Week") },
                 onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.WEEK)
-                    expanded = false
+                    onSortChanged(topOrControversial, TopSort.WEEK)
+                    sortExpanded = false
                     submenuExpanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Day") },
                 onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.DAY)
-                    expanded = false
+                    onSortChanged(topOrControversial, TopSort.DAY)
+                    sortExpanded = false
                     submenuExpanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Hour") },
                 onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.HOUR)
-                    expanded = false
+                    onSortChanged(topOrControversial, TopSort.HOUR)
+                    sortExpanded = false
                     submenuExpanded = false
                 }
             )

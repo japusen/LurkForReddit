@@ -20,14 +20,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.components.CommentSortMenu
-import com.example.lurkforreddit.ui.components.DuplicatesSortMenu
-import com.example.lurkforreddit.ui.components.ListingSortMenu
+import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
+import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
+import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
+import com.example.lurkforreddit.ui.components.menus.ProfileSortMenu
 import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.CommentsViewModel
 import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
 import com.example.lurkforreddit.ui.screens.ListingScreen
 import com.example.lurkforreddit.ui.screens.ListingViewModel
+import com.example.lurkforreddit.ui.screens.ProfileViewModel
 import com.example.lurkforreddit.util.openLinkInBrowser
 import kotlinx.coroutines.launch
 
@@ -67,7 +69,9 @@ fun LurkApp(
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
                 },
-                onProfileClicked = {  },
+                onProfileClicked = { username ->
+                    navController.navigate("user/$username")
+                },
                 onSubredditClicked = { sub ->
                     navController.navigate("subreddit/$sub")
                 },
@@ -121,8 +125,70 @@ fun LurkApp(
                 onPostClicked = { sub, article ->
                     navController.navigate("details/$sub/$article")
                 },
-                onProfileClicked = {  },
+                onProfileClicked = { username ->
+                    navController.navigate("user/$username")
+                },
                 onSubredditClicked = {}, /* Already on the sub, no need to reload*/
+                onBrowserClicked = { url ->
+                    openLinkInBrowser(context, url)
+                },
+            )
+        }
+        composable(
+            route = "user/{username}",
+            arguments = listOf(
+                navArgument("username") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+
+            val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
+            LaunchedEffect(Unit) {
+                profileViewModel.setUser(username)
+            }
+
+            val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
+            ListingScreen(
+                title = {
+                    Text(
+                        text = profileUiState.value.user,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                navIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                      ProfileSortMenu(
+                          selectedSort = profileUiState.value.userListingSort,
+                          contentType = profileUiState.value.contentType,
+                          onContentTypeChanged = { contentType ->
+                              coroutineScope.launch {
+                                  profileViewModel.setContentType(contentType)
+                              }
+                          },
+                          onSortChanged = { sort, top ->
+                              coroutineScope.launch{
+                                  profileViewModel.setListingSort(sort, top)
+                              }
+                          }
+                      )
+                },
+                networkResponse = profileUiState.value.networkResponse,
+                onPostClicked = { sub, article ->
+                    navController.navigate("details/$sub/$article")
+                },
+                onProfileClicked = {}, /* Already on userpage, no need to reload */
+                onSubredditClicked = { sub ->
+                    navController.navigate("subreddit/$sub")
+                },
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
@@ -180,7 +246,9 @@ fun LurkApp(
                 onPostClicked = { sub, art ->
                     navController.navigate("details/$sub/$art")
                 },
-                onProfileClicked = {  },
+                onProfileClicked = { username ->
+                    navController.navigate("user/$username")
+                },
                 onSubredditClicked = { sub ->
                     navController.navigate("subreddit/$sub")
                 },
