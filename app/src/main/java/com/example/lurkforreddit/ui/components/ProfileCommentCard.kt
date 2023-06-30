@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,10 +18,13 @@ import com.example.lurkforreddit.model.ProfileComment
 @Composable
 fun ProfileCommentCard(
     content: ProfileComment,
+    onCommentClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onCommentClicked() }
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),

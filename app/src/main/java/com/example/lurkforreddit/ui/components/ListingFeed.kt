@@ -40,7 +40,10 @@ fun ListingFeed(
                         )
                     }
                     is ProfileComment -> {
-                        ProfileCommentCard(content = content)
+                        ProfileCommentCard(
+                            content = content,
+                            onCommentClicked = { onPostClicked(content.subreddit, content.linkID.substring(3)) },
+                        )
                     }
                 }
             }
