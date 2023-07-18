@@ -1,16 +1,5 @@
 package com.example.lurkforreddit.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
@@ -18,20 +7,15 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -39,12 +23,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
+import com.example.lurkforreddit.ui.components.menus.MainMenu
 import com.example.lurkforreddit.ui.components.menus.ProfileSortMenu
 import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.CommentsViewModel
@@ -70,61 +53,27 @@ fun LurkApp(
             val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
             val homeUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
             ModalNavigationDrawer(
                 drawerContent = {
-                    ModalDrawerSheet(
-                        drawerShape = RoundedCornerShape(0.dp),
-                    ) {
-                        TextField(
-                            value = homeUiState.value.query,
-                            onValueChange = {
-                                listingViewModel.setQuery(it)
-                                coroutineScope.launch {
-                                    listingViewModel.updateSearchResults()
-                                }
-                            },
-                            placeholder = { Text(text = "Search") }
-                        )
-                        for (result in homeUiState.value.searchResults) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = modifier
-                                        .width(30.dp)
-                                        .height(30.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                ) {
-                                    if (result.communityIcon.isNotEmpty()) {
-                                        AsyncImage(
-                                            model = ImageRequest.Builder(context)
-                                                .data(result.communityIcon)
-                                                .crossfade(true)
-                                                .build(),
-                                            contentDescription = null
-                                        )
-                                    } else if (result.icon.isNotEmpty()) {
-                                        AsyncImage(
-                                            model = ImageRequest.Builder(context)
-                                                .data(result.icon)
-                                                .crossfade(true)
-                                                .build(),
-                                            contentDescription = null
-                                        )
-                                    } else {
-                                        Text("r")
-                                    }
-                                }
-
-                                Text(result.name)
+                    MainMenu(
+                        homeUiState = homeUiState.value,
+                        setQuery = { query ->
+                            listingViewModel.setQuery(query)
+                        },
+                        updateSearchResults = {
+                            coroutineScope.launch {
+                                listingViewModel.updateSearchResults()
                             }
+                        },
+                        clearQuery = { listingViewModel.clearQuery() },
+                        navigateToProfile = { username ->
+                            navController.navigate("user/$username")
+                        },
+                        navigateToSubreddit = { subreddit ->
+                            navController.navigate("subreddit/$subreddit")
                         }
-                    }
+                    )
                 },
                 drawerState = drawerState
             ) {
@@ -138,14 +87,8 @@ fun LurkApp(
                     navIcon = {
                         IconButton(
                             onClick = {
-                                if (drawerState.isClosed) {
-                                    coroutineScope.launch {
-                                        drawerState.open()
-                                    }
-                                } else {
-                                    coroutineScope.launch {
-                                        drawerState.close()
-                                    }
+                                coroutineScope.launch {
+                                    drawerState.open()
                                 }
                             }
                         ) {

@@ -113,6 +113,15 @@ class ListingViewModel(
         }
     }
 
+    fun clearQuery() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                query = "",
+                searchResults = listOf()
+            )
+        }
+    }
+
     suspend fun updateSearchResults() {
         _uiState.update { currentState ->
             currentState.copy(
