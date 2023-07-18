@@ -15,6 +15,7 @@ import com.example.lurkforreddit.model.Post
 fun CommentsList(
     post: Post,
     commentTree: Pair<List<Comment>, More?>,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val comments = commentTree.first
@@ -29,7 +30,8 @@ fun CommentsList(
 
         item {
             CommentsHeader(
-                post = post
+                post = post,
+                openLink = openLink
             )
         }
 

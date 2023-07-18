@@ -44,6 +44,7 @@ fun PostCard(
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String) -> Unit,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -76,7 +77,8 @@ fun PostCard(
                             preview = content.preview,
                             thumbnail = content.thumbnail,
                             nsfw = content.over18,
-                            url = content.url
+                            url = content.url,
+                            openLink = openLink
                         )
                     }
                 }

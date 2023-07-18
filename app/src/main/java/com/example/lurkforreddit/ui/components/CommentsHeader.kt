@@ -31,6 +31,7 @@ import com.example.lurkforreddit.util.relativeTime
 @Composable
 fun CommentsHeader(
     post: Post,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -55,7 +56,8 @@ fun CommentsHeader(
                         preview = post.preview,
                         thumbnail = post.thumbnail,
                         nsfw = post.over18,
-                        url = post.url
+                        url = post.url,
+                        openLink = openLink
                     )
                 }
             }

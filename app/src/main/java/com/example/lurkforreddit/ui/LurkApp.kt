@@ -24,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.lurkforreddit.R
+import com.example.lurkforreddit.ui.components.LinkHandler
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
@@ -126,6 +127,9 @@ fun LurkApp(
                     onBrowserClicked = { url ->
                         openLinkInBrowser(context, url)
                     },
+                    openLink = { url ->
+                        navController.navigate("link/$url")
+                    }
                 )
             }
         }
@@ -181,6 +185,9 @@ fun LurkApp(
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
+                openLink = { url ->
+                    navController.navigate("link/$url")
+                }
             )
         }
         composable(
@@ -241,6 +248,9 @@ fun LurkApp(
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
+                openLink = { url ->
+                    navController.navigate("link/$url")
+                }
             )
         }
         composable(
@@ -303,6 +313,9 @@ fun LurkApp(
                 },
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
+                },
+                openLink = { url ->
+                    navController.navigate("link/$url")
                 }
             )
         }
@@ -361,8 +374,20 @@ fun LurkApp(
                         )
                     }
                 },
-                networkResponse = commentsUiState.value.networkResponse
+                networkResponse = commentsUiState.value.networkResponse,
+                openLink = { url ->
+                    navController.navigate("link/$url")
+                }
             )
+        }
+        composable(
+            route = "link/{url}",
+            arguments = listOf(
+                navArgument("url") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: ""
+            LinkHandler(url)
         }
     }
 }

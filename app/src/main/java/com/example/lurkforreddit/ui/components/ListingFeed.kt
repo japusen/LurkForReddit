@@ -19,6 +19,7 @@ fun ListingFeed(
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String) -> Unit,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -36,7 +37,8 @@ fun ListingFeed(
                             onPostClicked = { onPostClicked(content.subreddit, content.id) },
                             onProfileClicked = onProfileClicked,
                             onSubredditClicked = onSubredditClicked,
-                            onBrowserClicked = onBrowserClicked
+                            onBrowserClicked = onBrowserClicked,
+                            openLink = openLink
                         )
                     }
                     is ProfileComment -> {

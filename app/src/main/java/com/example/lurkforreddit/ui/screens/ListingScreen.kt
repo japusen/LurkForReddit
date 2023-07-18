@@ -31,6 +31,7 @@ fun ListingScreen(
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String) -> Unit,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -58,6 +59,7 @@ fun ListingScreen(
                     onProfileClicked = onProfileClicked,
                     onSubredditClicked = onSubredditClicked,
                     onBrowserClicked = onBrowserClicked,
+                    openLink = openLink,
                     modifier = modifier.padding(paddingValues)
                 )
             is ListingNetworkResponse.Error -> ErrorScreen(modifier)

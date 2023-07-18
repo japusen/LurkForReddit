@@ -18,6 +18,7 @@ fun CommentsScreen(
     navIcon: @Composable () -> Unit,
     actions: @Composable () -> Unit,
     networkResponse: CommentsNetworkResponse,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -41,6 +42,7 @@ fun CommentsScreen(
                 CommentsList(
                     post = networkResponse.postData.first,
                     commentTree = networkResponse.postData.second,
+                    openLink = openLink,
                     modifier = modifier.padding(paddingValues)
                 )
             }

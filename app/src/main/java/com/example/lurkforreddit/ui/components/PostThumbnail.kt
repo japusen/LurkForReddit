@@ -1,7 +1,5 @@
 package com.example.lurkforreddit.ui.components
 
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +14,13 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.lurkforreddit.R
+import com.example.lurkforreddit.util.encodedUrl
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+
 
 @Composable
 fun PostThumbnail(
@@ -28,6 +28,7 @@ fun PostThumbnail(
     thumbnail: String,
     nsfw: Boolean,
     url: String,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -50,10 +51,7 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    val intent = CustomTabsIntent
-                        .Builder()
-                        .build()
-                    intent.launchUrl(context, Uri.parse(url))
+                    openLink(encodedUrl(url))
                 }
         )
     } else if ((thumbnail != "image") && (thumbnail != "default")) {
@@ -68,10 +66,7 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    val intent = CustomTabsIntent
-                        .Builder()
-                        .build()
-                    intent.launchUrl(context, Uri.parse(url))
+                    openLink(encodedUrl(url))
                 }
         )
     } else {
@@ -83,10 +78,7 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    val intent = CustomTabsIntent
-                        .Builder()
-                        .build()
-                    intent.launchUrl(context, Uri.parse(url))
+                    openLink(encodedUrl(url))
                 },
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
         )
