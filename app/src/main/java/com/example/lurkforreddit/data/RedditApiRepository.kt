@@ -6,14 +6,16 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.lurkforreddit.data.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
 import com.example.lurkforreddit.model.AccessToken
-import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.Content
 import com.example.lurkforreddit.model.More
-import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.model.SearchResult
+import com.example.lurkforreddit.network.AccessTokenService
+import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.network.parsePostComments
 import com.example.lurkforreddit.network.parsePostListing
+import com.example.lurkforreddit.network.parseSearchResults
 import com.example.lurkforreddit.util.CommentSort
 import com.example.lurkforreddit.util.DuplicatesSort
 import com.example.lurkforreddit.util.ListingSort
@@ -57,6 +59,10 @@ interface RedditApiRepository {
         article: String,
         sort: CommentSort
     ): Pair<Post, Pair<List<Comment>, More?>>
+
+    suspend fun subredditAutoComplete(
+        query: String,
+    ): List<SearchResult>
 
     companion object {
         const val NETWORK_PAGE_SIZE = 50
@@ -209,5 +215,15 @@ class DefaultRedditApiRepository(
         val comments = parsePostComments(response.jsonArray[1])
 
         return Pair(post, comments)
+    }
+
+    override suspend fun subredditAutoComplete(query: String): List<SearchResult> {
+        val response = redditApiService.subredditAutoComplete(
+            tokenHeader,
+            query
+        )
+
+        val results = parseSearchResults(response)
+        return results ?: listOf()
     }
 }

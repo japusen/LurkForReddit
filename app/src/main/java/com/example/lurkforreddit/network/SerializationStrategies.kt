@@ -7,6 +7,7 @@ import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.PostListing
 import com.example.lurkforreddit.model.ProfileComment
 import com.example.lurkforreddit.model.ProfileCommentListing
+import com.example.lurkforreddit.model.SearchResult
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -104,4 +105,15 @@ fun parsePostComments(
     }
 
     return Pair(comments, more)
+}
+
+fun parseSearchResults(
+    response: JsonElement
+): List<SearchResult>? {
+    return response.jsonObject["subreddits"]?.jsonArray?.map {
+        json.decodeFromJsonElement(
+            SearchResult.serializer(),
+            it
+        )
+    }
 }

@@ -11,6 +11,7 @@ import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
 import com.example.lurkforreddit.model.Content
+import com.example.lurkforreddit.model.SearchResult
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +39,8 @@ data class ListingUiState(
     val listingSort: ListingSort = ListingSort.HOT,
     val topSort: TopSort? = null,
     val isLoading: Boolean = false,
+    val query: String = "",
+    val searchResults: List<SearchResult> = listOf()
 )
 
 class ListingViewModel(
@@ -102,51 +105,21 @@ class ListingViewModel(
         loadPosts()
     }
 
+    fun setQuery(query: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                query = query,
+            )
+        }
+    }
 
-//    fun getUserSubmissions(
-//        username: String,
-//        userListingSort: UserListingSort = UserListingSort.HOT,
-//        topSort: TopSort? = null
-//    ) {
-//        viewModelScope.launch {
-//            listingState = try {
-//                ListingNetworkRequest.Success(
-//                    redditApiRepository.getUserSubmissions(
-//                        username,
-//                        userListingSort,
-//                        topSort
-//                    ).cachedIn(viewModelScope)
-//                )
-//            } catch (e: IOException) {
-//                ListingNetworkRequest.Error
-//            } catch (e: HttpException) {
-//                ListingNetworkRequest.Error
-//            }
-//        }
-//    }
-//
-//
-//    fun getUserComments(
-//        username: String,
-//        userListingSort: UserListingSort = UserListingSort.HOT,
-//        topSort: TopSort? = null
-//    ) {
-//        viewModelScope.launch {
-//            listingState = try {
-//                ListingNetworkRequest.Success(
-//                    redditApiRepository.getUserComments(
-//                        username,
-//                        userListingSort,
-//                        topSort
-//                    ).cachedIn(viewModelScope)
-//                )
-//            } catch (e: IOException) {
-//                ListingNetworkRequest.Error
-//            } catch (e: HttpException) {
-//                ListingNetworkRequest.Error
-//            }
-//        }
-//    }
+    suspend fun updateSearchResults() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                searchResults = redditApiRepository.subredditAutoComplete(currentState.query)
+            )
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

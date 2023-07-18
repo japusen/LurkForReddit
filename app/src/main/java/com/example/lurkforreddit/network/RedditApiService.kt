@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.model.SearchResult
 import kotlinx.serialization.json.JsonElement
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -48,6 +49,15 @@ interface RedditApiService {
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
         @Query("sort") sort: String,
+        @Query("raw_json") raw: Int = 1
+    ): JsonElement
+
+    @GET("/api/subreddit_autocomplete")
+    suspend fun subredditAutoComplete(
+        @Header("Authorization") tokenHeader: String,
+        @Query("query") query: String,
+        @Query("include_over_18") nsfw: Boolean = true,
+        @Query("include_profiles") includeProfiles: Boolean = true,
         @Query("raw_json") raw: Int = 1
     ): JsonElement
 }
