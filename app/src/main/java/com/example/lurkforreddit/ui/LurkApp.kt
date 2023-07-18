@@ -72,6 +72,11 @@ fun LurkApp(
                         },
                         navigateToSubreddit = { subreddit ->
                             navController.navigate("subreddit/$subreddit")
+                        },
+                        closeDrawer = {
+                            coroutineScope.launch {
+                                drawerState.close()
+                            }
                         }
                     )
                 },

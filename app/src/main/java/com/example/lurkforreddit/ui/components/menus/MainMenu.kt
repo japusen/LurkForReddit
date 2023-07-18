@@ -46,10 +46,10 @@ fun MainMenu(
     clearQuery: () -> Unit,
     navigateToProfile: (String) -> Unit,
     navigateToSubreddit: (String) -> Unit,
+    closeDrawer: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     ModalDrawerSheet(
@@ -87,7 +87,6 @@ fun MainMenu(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
             )
             for (result in homeUiState.searchResults) {
                 Row(
@@ -104,6 +103,9 @@ fun MainMenu(
                             } else {
                                 navigateToSubreddit(result.name)
                             }
+                            focusManager.clearFocus()
+                            clearQuery()
+                            closeDrawer()
                         }
                 ) {
                     Box(
