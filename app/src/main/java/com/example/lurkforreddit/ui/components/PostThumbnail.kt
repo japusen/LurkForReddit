@@ -33,11 +33,12 @@ fun PostThumbnail(
     val context = LocalContext.current
 
     if (preview != null) {
-        val img = if (nsfw) {
-            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("variants")?.jsonObject?.get("nsfw")?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-        } else {
-            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-        }
+//        val img = if (nsfw) {
+//            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("variants")?.jsonObject?.get("nsfw")?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
+//        } else {
+//            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
+//        }
+        val img = preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data(img)
