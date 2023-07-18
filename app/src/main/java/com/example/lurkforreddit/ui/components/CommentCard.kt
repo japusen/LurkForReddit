@@ -80,7 +80,7 @@ fun CommentCard(
                             contents = it,
                             replies = reply.replies.toMutableList(),
                             more = reply.more,
-                            padding = padding + 4,
+                            padding = padding + 2,
                             color = color + 1
                         )
                     }
