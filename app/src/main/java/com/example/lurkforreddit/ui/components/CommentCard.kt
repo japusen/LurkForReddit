@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,7 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,6 +72,8 @@ fun CommentCard(
         CommentContents(
             postAuthor = postAuthor,
             contents = contents,
+            showReplies = showReplies,
+            numReplies = replies.size,
             modifier = Modifier
                 .combinedClickable(
                     enabled = true,
@@ -93,16 +96,6 @@ fun CommentCard(
                         )
                     }
                 }
-            }
-        } else if (replies.isNotEmpty()) {
-            Badge(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Text(
-                    text = "+${replies.size}",
-                    style = MaterialTheme.typography.labelMedium,
-                )
             }
         }
 
@@ -139,11 +132,13 @@ fun CommentCard(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun CommentContents(
     postAuthor: String,
     contents: CommentContents,
+    showReplies: Boolean,
+    numReplies: Int,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -177,6 +172,23 @@ private fun CommentContents(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.titleMedium
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            AnimatedVisibility(visible = (!showReplies && numReplies > 0)) {
+
+                Badge(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(top = 0.dp)
+                ) {
+                    Text(
+                        text = "+${numReplies}",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+            }
+
         }
         Text(
             text = contents.body,
