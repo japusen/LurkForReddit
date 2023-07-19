@@ -122,5 +122,5 @@ fun parseSearchResults(
 fun parseVredditUrl(
     media: JsonElement
 ): String {
-    return media.jsonObject["reddit_video"]?.jsonObject?.get("fallback_url")?.jsonPrimitive?.content ?: ""
+    return media.jsonObject["reddit_video"]?.jsonObject?.get("dash_url")?.jsonPrimitive?.content ?: ""
 }

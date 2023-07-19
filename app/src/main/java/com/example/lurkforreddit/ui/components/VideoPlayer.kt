@@ -15,6 +15,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
@@ -33,7 +34,7 @@ fun VideoPlayer(uri: Uri) {
                     context,
                     defaultDataSourceFactory
                 )
-                val source = ProgressiveMediaSource.Factory(dataSourceFactory)
+                val source = DashMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(MediaItem.fromUri(uri))
 
                 setMediaSource(source)
