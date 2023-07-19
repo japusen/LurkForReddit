@@ -18,7 +18,6 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-import coil.imageLoader
 import coil.request.ImageRequest
 import java.net.URI
 
@@ -36,7 +35,6 @@ fun LinkHandler(
         )
         val uri = URI(url)
         val host = uri.host
-        val imageLoader = context.imageLoader
 
         if (host.equals("i.redd.it")) {
             AsyncImage(
@@ -49,11 +47,9 @@ fun LinkHandler(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
             )
-        } else {
-            val intent = CustomTabsIntent
-                .Builder()
-                .build()
-            intent.launchUrl(context, Uri.parse(url))
+        }
+        else {
+
         }
     }
 
