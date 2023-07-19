@@ -12,11 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
-import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.dash.DashMediaSource
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 
@@ -29,22 +25,16 @@ fun VideoPlayer(uri: Uri) {
         ExoPlayer.Builder(context)
             .build()
             .apply {
-                val defaultDataSourceFactory = DefaultDataSource.Factory(context)
-                val dataSourceFactory: DataSource.Factory = DefaultDataSource.Factory(
-                    context,
-                    defaultDataSourceFactory
-                )
-                val source = DashMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(MediaItem.fromUri(uri))
-
-                setMediaSource(source)
+                // Build the media item.
+                val mediaItem = MediaItem.fromUri(uri)
+                // Set the media item to be played.
+                setMediaItem(mediaItem)
+                // Prepare the player.
                 prepare()
             }
     }
 
     exoPlayer.playWhenReady = true
-    //exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-    //exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
 
     Scaffold() { paddingValues ->
         DisposableEffect(
@@ -54,7 +44,10 @@ fun VideoPlayer(uri: Uri) {
                     PlayerView(context).apply {
                         useController = true
                         resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-
+                        setShowFastForwardButton(false)
+                        setShowRewindButton(false)
+                        setShowNextButton(false)
+                        setShowPreviousButton(false)
                         player = exoPlayer
                         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                     }
