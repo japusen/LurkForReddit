@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +32,7 @@ import com.example.lurkforreddit.model.CommentContents
 import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.util.relativeTime
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CommentCard(
     postAuthor: String,
@@ -92,22 +95,46 @@ fun CommentCard(
                 }
             }
         } else if (replies.isNotEmpty()) {
-            Text(
-                text = if (replies.size == 1 ) "${replies.size} reply hidden" else "${replies.size} replies hidden",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.padding(8.dp)
-            )
+            Badge(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Text(
+                    text = "+${replies.size}",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
         }
 
         if (more != null) {
-            Text(
-                text = "more comments (${more.count})",
-                color = MaterialTheme.colorScheme.secondary,
+            Column(
                 modifier = Modifier
-                    .padding(start = (padding + 4).dp, top = 4.dp, bottom = 4.dp)
                     .clickable { /* TODO load more comments */ }
-            )
+                    .padding(start = (padding + 2).dp)
+                    .drawBehind {
+                        if (color + 1 != 0) {
+                            drawLine(
+                                start = Offset(x = 0f, y = 0f),
+                                end = Offset(x = 0f, y = size.height),
+                                color = when (color + 1 % 4) {
+                                    0 -> Color.Magenta
+                                    1 -> Color.Blue
+                                    2 -> Color.Green
+                                    else -> Color.Red
+                                },
+                                strokeWidth = 2F,
+                                alpha = 0.5F
+                            )
+                        }
+                    }
+            ) {
+                Divider(modifier = Modifier.fillMaxWidth())
+                Text(
+                    text = "more comments (${more.count})",
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                )
+            }
         }
     }
 }
