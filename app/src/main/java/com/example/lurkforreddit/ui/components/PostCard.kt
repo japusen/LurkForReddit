@@ -75,6 +75,7 @@ fun PostCard(
                     ) {
                         PostThumbnail(
                             preview = content.preview,
+                            media = content.media,
                             thumbnail = content.thumbnail,
                             nsfw = content.over18,
                             url = content.url,

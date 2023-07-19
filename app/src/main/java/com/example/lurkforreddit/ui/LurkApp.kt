@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
@@ -16,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -24,7 +26,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.components.LinkHandler
+import com.example.lurkforreddit.ui.components.ImageLink
+import com.example.lurkforreddit.ui.components.VideoPlayer
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
@@ -36,8 +39,10 @@ import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
 import com.example.lurkforreddit.ui.screens.ListingScreen
 import com.example.lurkforreddit.ui.screens.ListingViewModel
 import com.example.lurkforreddit.ui.screens.ProfileViewModel
+import com.example.lurkforreddit.util.encodedUrl
 import com.example.lurkforreddit.util.openLinkInBrowser
 import kotlinx.coroutines.launch
+import java.net.URI
 
 @Composable
 fun LurkApp(
@@ -387,7 +392,14 @@ fun LurkApp(
             )
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
-            LinkHandler(url)
+            val uri = URI(url)
+            val host = uri.host
+
+            if (host.equals("i.redd.it")) {
+                ImageLink(url)
+            } else if (host.equals("v.redd.it")) {
+                VideoPlayer(url.toUri())
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import android.util.Log
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.CommentContents
 import com.example.lurkforreddit.model.More
@@ -116,4 +117,10 @@ fun parseSearchResults(
             it
         )
     }
+}
+
+fun parseVredditUrl(
+    media: JsonElement
+): String {
+    return media.jsonObject["reddit_video"]?.jsonObject?.get("fallback_url")?.jsonPrimitive?.content ?: ""
 }

@@ -3,9 +3,12 @@ package com.example.lurkforreddit.ui.components
 import android.net.Uri
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
@@ -42,17 +45,23 @@ fun VideoPlayer(uri: Uri) {
     //exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
     //exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
 
-    DisposableEffect(
-        AndroidView(factory = {
-            PlayerView(context).apply {
-                useController = true
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+    Scaffold() { paddingValues ->
+        DisposableEffect(
+            AndroidView(
+                modifier = Modifier.padding(paddingValues),
+                factory = {
+                    PlayerView(context).apply {
+                        useController = true
+                        resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
 
-                player = exoPlayer
-                layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-            }
-        })
-    ) {
-        onDispose { exoPlayer.release() }
+                        player = exoPlayer
+                        layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                    }
+                }
+            )
+        ) {
+            onDispose { exoPlayer.release() }
+        }
     }
+
 }

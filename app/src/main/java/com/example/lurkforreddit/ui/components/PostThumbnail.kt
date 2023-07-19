@@ -1,5 +1,8 @@
 package com.example.lurkforreddit.ui.components
 
+import android.net.Uri
+import android.util.Log
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,17 +17,20 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.lurkforreddit.R
+import com.example.lurkforreddit.network.parseVredditUrl
 import com.example.lurkforreddit.util.encodedUrl
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.net.URI
 
 
 @Composable
 fun PostThumbnail(
     preview: JsonElement?,
+    media: JsonElement?,
     thumbnail: String,
     nsfw: Boolean,
     url: String,
@@ -51,7 +57,20 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    openLink(encodedUrl(url))
+                    val uri = URI(url)
+                    val host = uri.host
+
+                    if (host.equals("i.redd.it")) {
+                        openLink(encodedUrl(url))
+                    } else if (host.equals("v.redd.it")) {
+                        val videoUrl = parseVredditUrl(media!!)
+                        openLink(encodedUrl(videoUrl))
+                    } else {
+                        val intent = CustomTabsIntent
+                            .Builder()
+                            .build()
+                        intent.launchUrl(context, Uri.parse(url))
+                    }
                 }
         )
     } else if ((thumbnail != "image") && (thumbnail != "default")) {
@@ -66,7 +85,10 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    openLink(encodedUrl(url))
+                    val intent = CustomTabsIntent
+                        .Builder()
+                        .build()
+                    intent.launchUrl(context, Uri.parse(url))
                 }
         )
     } else {
@@ -78,7 +100,10 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    openLink(encodedUrl(url))
+                    val intent = CustomTabsIntent
+                        .Builder()
+                        .build()
+                    intent.launchUrl(context, Uri.parse(url))
                 },
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
         )

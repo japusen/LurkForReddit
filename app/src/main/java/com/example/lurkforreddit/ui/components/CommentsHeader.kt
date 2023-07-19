@@ -54,6 +54,7 @@ fun CommentsHeader(
                 ) {
                     PostThumbnail(
                         preview = post.preview,
+                        media = post.media,
                         thumbnail = post.thumbnail,
                         nsfw = post.over18,
                         url = post.url,
