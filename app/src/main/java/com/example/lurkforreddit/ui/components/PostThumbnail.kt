@@ -1,7 +1,6 @@
 package com.example.lurkforreddit.ui.components
 
 import android.net.Uri
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -24,13 +23,13 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import java.net.URI
 
 
 @Composable
 fun PostThumbnail(
     preview: JsonElement?,
     media: JsonElement?,
+    domain: String?,
     thumbnail: String,
     nsfw: Boolean,
     url: String,
@@ -57,12 +56,9 @@ fun PostThumbnail(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    val uri = URI(url)
-                    val host = uri.host
-
-                    if (host.equals("i.redd.it")) {
+                    if (domain.equals("i.redd.it")) {
                         openLink(encodedUrl(url))
-                    } else if (host.equals("v.redd.it")) {
+                    } else if (domain.equals("v.redd.it")) {
                         val videoUrl = parseVredditUrl(media!!)
                         openLink(encodedUrl(videoUrl))
                     } else {

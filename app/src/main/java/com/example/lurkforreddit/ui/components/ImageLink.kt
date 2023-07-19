@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
@@ -17,7 +18,9 @@ fun ImageLink(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    Scaffold() { paddingValues ->
+    Scaffold(
+        containerColor = Color.Black
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

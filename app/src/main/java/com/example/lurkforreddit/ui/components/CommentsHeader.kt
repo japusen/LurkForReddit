@@ -55,6 +55,7 @@ fun CommentsHeader(
                     PostThumbnail(
                         preview = post.preview,
                         media = post.media,
+                        domain = post.domain,
                         thumbnail = post.thumbnail,
                         nsfw = post.over18,
                         url = post.url,

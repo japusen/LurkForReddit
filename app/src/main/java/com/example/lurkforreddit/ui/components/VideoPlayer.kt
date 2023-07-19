@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
@@ -36,7 +37,9 @@ fun VideoPlayer(uri: Uri) {
 
     exoPlayer.playWhenReady = true
 
-    Scaffold() { paddingValues ->
+    Scaffold(
+        containerColor = Color.Black
+    ) { paddingValues ->
         DisposableEffect(
             AndroidView(
                 modifier = Modifier.padding(paddingValues),
