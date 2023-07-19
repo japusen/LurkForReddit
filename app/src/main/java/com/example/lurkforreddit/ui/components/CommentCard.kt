@@ -1,6 +1,7 @@
 package com.example.lurkforreddit.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import com.example.lurkforreddit.util.relativeTime
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
+    postAuthor: String,
     contents: CommentContents,
     replies: MutableList<Comment>,
     more: More?,
@@ -63,6 +66,7 @@ fun CommentCard(
         Divider()
 
         CommentContents(
+            postAuthor = postAuthor,
             contents = contents,
             modifier = Modifier
                 .combinedClickable(
@@ -77,6 +81,7 @@ fun CommentCard(
                 if (replies.isNotEmpty()) {
                     reply.contents?.let {
                         CommentCard(
+                            postAuthor = postAuthor,
                             contents = it,
                             replies = reply.replies.toMutableList(),
                             more = reply.more,
@@ -110,6 +115,7 @@ fun CommentCard(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CommentContents(
+    postAuthor: String,
     contents: CommentContents,
     modifier: Modifier = Modifier
 ) {
@@ -126,8 +132,13 @@ private fun CommentContents(
             Text(
                 text = contents.author,
                 color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                modifier =
+                if (postAuthor == contents.author)
+                    Modifier.background(MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(4.dp))
+                else Modifier
             )
+
             Text(
                 text = if (contents.scoreHidden) "[score hidden]" else "${contents.score} points",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

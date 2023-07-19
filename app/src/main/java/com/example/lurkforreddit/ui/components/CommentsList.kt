@@ -39,6 +39,7 @@ fun CommentsList(
             comments[index].let { comment ->
                 if (comment.contents != null) {
                     CommentCard(
+                        postAuthor = post.author,
                         contents = comment.contents,
                         replies = comment.replies.toMutableList(),
                         more = comment.more,
