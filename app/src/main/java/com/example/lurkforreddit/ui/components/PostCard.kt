@@ -73,12 +73,8 @@ fun PostCard(
                             .height(75.dp)
                             .clip(RoundedCornerShape(6.dp))
                     ) {
-                        PostThumbnail(
-                            preview = content.preview,
-                            media = content.media,
-                            domain = content.domain,
+                        PostPreview(
                             thumbnail = content.thumbnail,
-                            nsfw = content.over18,
                             url = content.url,
                             openLink = openLink
                         )

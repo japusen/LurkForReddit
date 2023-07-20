@@ -52,12 +52,8 @@ fun CommentsHeader(
                         .height(150.dp)
                         .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                 ) {
-                    PostThumbnail(
-                        preview = post.preview,
-                        media = post.media,
-                        domain = post.domain,
+                    PostPreview(
                         thumbnail = post.thumbnail,
-                        nsfw = post.over18,
                         url = post.url,
                         openLink = openLink
                     )

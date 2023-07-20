@@ -16,84 +16,24 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.network.parseVredditUrl
-import com.example.lurkforreddit.util.encodedUrl
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 
 @Composable
-fun PostThumbnail(
-    preview: JsonElement?,
-    media: JsonElement?,
-    domain: String?,
+fun PostPreview(
     thumbnail: String,
-    nsfw: Boolean,
     url: String,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
-    if (preview != null) {
-//        val img = if (nsfw) {
-//            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("variants")?.jsonObject?.get("nsfw")?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-//        } else {
-//            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-//        }
-        val img = preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(img)
-                .crossfade(true)
-                .build(),
-            placeholder = null,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    if (domain.equals("i.redd.it")) {
-                        openLink(encodedUrl(url))
-                    } else if (domain.equals("v.redd.it")) {
-                        val videoUrl = parseVredditUrl(media!!)
-                        openLink(encodedUrl(videoUrl))
-                    } else {
-                        val intent = CustomTabsIntent
-                            .Builder()
-                            .build()
-                        intent.launchUrl(context, Uri.parse(url))
-                    }
-                }
-        )
-    } else if ((thumbnail != "image") && (thumbnail != "default")) {
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(thumbnail)
-                .crossfade(true)
-                .build(),
-            placeholder = null,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    val intent = CustomTabsIntent
-                        .Builder()
-                        .build()
-                    intent.launchUrl(context, Uri.parse(url))
-                }
-        )
-    } else {
+    if (thumbnail == "none") {
         Image(
             alignment = Alignment.Center,
             painter = painterResource(R.drawable.ic_link_thumbnail),
             contentDescription = null,
             contentScale = ContentScale.None,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .clickable {
                     val intent = CustomTabsIntent
@@ -102,6 +42,21 @@ fun PostThumbnail(
                     intent.launchUrl(context, Uri.parse(url))
                 },
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+        )
+    } else {
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(thumbnail)
+                .crossfade(true)
+                .build(),
+            placeholder = null,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .fillMaxSize()
+                .clickable {
+                    openLink(url)
+                }
         )
     }
 }
