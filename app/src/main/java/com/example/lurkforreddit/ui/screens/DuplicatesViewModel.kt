@@ -1,8 +1,10 @@
 package com.example.lurkforreddit.ui.screens
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -27,13 +29,24 @@ data class DuplicatesUiState(
 )
 
 class DuplicatesViewModel(
-    private val redditApiRepository: RedditApiRepository
+    private val redditApiRepository: RedditApiRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DuplicatesUiState())
     val uiState: StateFlow<DuplicatesUiState> = _uiState.asStateFlow()
 
-    suspend fun loadDuplicates() {
+    private val subreddit: String = savedStateHandle["subreddit"] ?: ""
+    private val article: String = savedStateHandle["article"] ?: ""
+
+    init {
+        setSubreddit(subreddit)
+        setArticle(article)
+        viewModelScope.launch {
+            loadDuplicates()
+        }
+    }
+    private suspend fun loadDuplicates() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -58,7 +71,7 @@ class DuplicatesViewModel(
         }
     }
 
-    fun setSubreddit(subreddit: String) {
+    private fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 subreddit = subreddit,
@@ -66,7 +79,7 @@ class DuplicatesViewModel(
         }
     }
 
-    fun setArticle(article: String) {
+    private fun setArticle(article: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 article = article,
@@ -89,7 +102,11 @@ class DuplicatesViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                DuplicatesViewModel(redditApiRepository = redditApiRepository)
+                val savedStateHandle = createSavedStateHandle()
+                DuplicatesViewModel(
+                    redditApiRepository = redditApiRepository,
+                    savedStateHandle = savedStateHandle
+                )
             }
         }
     }

@@ -1,8 +1,10 @@
 package com.example.lurkforreddit.ui.screens
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -30,19 +32,28 @@ data class ProfileUiState(
 )
 
 class ProfileViewModel(
-    private val redditApiRepository: RedditApiRepository
+    private val redditApiRepository: RedditApiRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
-    suspend fun setUser(user: String) {
+    private val username: String = savedStateHandle["username"] ?: ""
+
+    init {
+        setUser(username)
+        viewModelScope.launch {
+            getUserContent()
+        }
+    }
+
+    private fun setUser(user: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 user = user,
             )
         }
-        getUserContent()
     }
 
     suspend fun setContentType(contentType: UserContentType) {
@@ -101,7 +112,11 @@ class ProfileViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                ProfileViewModel(redditApiRepository = redditApiRepository)
+                val savedStateHandle = createSavedStateHandle()
+                ProfileViewModel(
+                    redditApiRepository = redditApiRepository,
+                    savedStateHandle = savedStateHandle
+                )
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.ui
 
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
@@ -39,7 +38,6 @@ import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
 import com.example.lurkforreddit.ui.screens.ListingScreen
 import com.example.lurkforreddit.ui.screens.ListingViewModel
 import com.example.lurkforreddit.ui.screens.ProfileViewModel
-import com.example.lurkforreddit.util.encodedUrl
 import com.example.lurkforreddit.util.openLinkInBrowser
 import kotlinx.coroutines.launch
 import java.net.URI
@@ -143,15 +141,10 @@ fun LurkApp(
             arguments = listOf(
                 navArgument("subreddit") { type = NavType.StringType },
             )
-        ) { backStackEntry ->
-            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
-
+        ) {
             val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
-            LaunchedEffect(Unit) {
-                listingViewModel.setSubreddit(subreddit)
-            }
-
             val subredditUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
+
             ListingScreen(
                 title = {
                     Text(
@@ -200,15 +193,10 @@ fun LurkApp(
             arguments = listOf(
                 navArgument("username") { type = NavType.StringType },
             )
-        ) { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: ""
-
+        ) {
             val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
-            LaunchedEffect(Unit) {
-                profileViewModel.setUser(username)
-            }
-
             val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
+
             ListingScreen(
                 title = {
                     Text(
@@ -264,21 +252,12 @@ fun LurkApp(
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
-            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
-            val article = backStackEntry.arguments?.getString("article") ?: ""
+        ) {
 
             val duplicatesViewModel: DuplicatesViewModel =
                 viewModel(factory = DuplicatesViewModel.Factory)
-            duplicatesViewModel.setSubreddit(subreddit)
-            duplicatesViewModel.setArticle(article)
-
-
-            LaunchedEffect(Unit) {
-                duplicatesViewModel.loadDuplicates()
-            }
-
             val duplicatesUiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle()
+
             ListingScreen(
                 title = {
                     Text(
@@ -330,24 +309,16 @@ fun LurkApp(
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
-            val subreddit = backStackEntry.arguments?.getString("subreddit") ?: ""
-            val article = backStackEntry.arguments?.getString("article") ?: ""
+        ) {
 
             val commentsViewModel: CommentsViewModel =
                 viewModel(factory = CommentsViewModel.Factory)
-            commentsViewModel.setSubreddit(subreddit)
-            commentsViewModel.setArticle(article)
-
-            LaunchedEffect(Unit) {
-                commentsViewModel.loadPostComments()
-            }
-
             val commentsUiState = commentsViewModel.uiState.collectAsStateWithLifecycle()
+
             CommentsScreen(
                 title = {
                     Text(
-                        text = subreddit,
+                        text = commentsUiState.value.subreddit,
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
@@ -371,7 +342,10 @@ fun LurkApp(
                         }
                     )
                     IconButton(
-                        onClick = { navController.navigate("duplicates/$subreddit/$article") }
+                        onClick = { navController.navigate("duplicates" +
+                                "/${commentsUiState.value.subreddit}" +
+                                "/$${commentsUiState.value.article}")
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_other_discussions),

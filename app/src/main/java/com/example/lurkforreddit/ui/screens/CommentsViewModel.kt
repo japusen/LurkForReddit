@@ -1,7 +1,9 @@
 package com.example.lurkforreddit.ui.screens
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -36,13 +38,25 @@ data class CommentsUiState(
 )
 
 class CommentsViewModel(
-    private val redditApiRepository: RedditApiRepository
+    private val redditApiRepository: RedditApiRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
     val uiState: StateFlow<CommentsUiState> = _uiState.asStateFlow()
 
-    suspend fun loadPostComments() {
+    private val subreddit: String = savedStateHandle["subreddit"] ?: ""
+    private val article: String = savedStateHandle["article"] ?: ""
+
+    init {
+        setSubreddit(subreddit)
+        setArticle(article)
+        viewModelScope.launch {
+            loadPostComments()
+        }
+    }
+
+    private suspend fun loadPostComments() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -64,7 +78,7 @@ class CommentsViewModel(
         }
     }
 
-    fun setSubreddit(subreddit: String) {
+    private fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 subreddit = subreddit
@@ -72,7 +86,7 @@ class CommentsViewModel(
         }
     }
 
-    fun setArticle(article: String) {
+    private fun setArticle(article: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 article = article
@@ -95,7 +109,11 @@ class CommentsViewModel(
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                CommentsViewModel(redditApiRepository = redditApiRepository)
+                val savedStateHandle = createSavedStateHandle()
+                CommentsViewModel(
+                    redditApiRepository = redditApiRepository,
+                    savedStateHandle = savedStateHandle
+                )
             }
         }
     }
