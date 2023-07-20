@@ -1,8 +1,12 @@
 package com.example.lurkforreddit.model
 
+import com.example.lurkforreddit.network.parseVredditUrl
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 
 @Serializable
@@ -37,5 +41,22 @@ data class Post(
     @SerialName("over_18")
     val over18: Boolean,
     val media: JsonElement? = null
-) : Content, Created, Votable
+) : Content, Created, Votable {
+
+    fun parseThumbnail(): String {
+        return if (preview != null)
+            preview.jsonObject["images"]?.jsonArray?.get(0)?.jsonObject?.get("source")?.jsonObject?.get("url")?.jsonPrimitive?.content ?: "none"
+        else if ((thumbnail != "image") && (thumbnail != "default"))
+            thumbnail
+        else
+            "none"
+    }
+
+    fun parseUrl(): String {
+        return if (domain == "v.redd.it")
+            parseVredditUrl(media!!)
+        else
+            url
+    }
+}
 
