@@ -11,7 +11,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,8 +29,8 @@ import com.example.lurkforreddit.ui.components.VideoPlayer
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
-import com.example.lurkforreddit.ui.components.menus.MainMenu
 import com.example.lurkforreddit.ui.components.menus.ProfileSortMenu
+import com.example.lurkforreddit.ui.components.menus.SearchMenu
 import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.CommentsViewModel
 import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
@@ -39,8 +38,8 @@ import com.example.lurkforreddit.ui.screens.ListingScreen
 import com.example.lurkforreddit.ui.screens.ListingViewModel
 import com.example.lurkforreddit.ui.screens.ProfileViewModel
 import com.example.lurkforreddit.util.openLinkInBrowser
+import com.example.lurkforreddit.util.openPostLink
 import kotlinx.coroutines.launch
-import java.net.URI
 
 @Composable
 fun LurkApp(
@@ -60,7 +59,7 @@ fun LurkApp(
 
             ModalNavigationDrawer(
                 drawerContent = {
-                    MainMenu(
+                    SearchMenu(
                         homeUiState = homeUiState.value,
                         setQuery = { query ->
                             listingViewModel.setQuery(query)
@@ -131,7 +130,7 @@ fun LurkApp(
                         openLinkInBrowser(context, url)
                     },
                     openLink = { url ->
-                        navController.navigate("link/$url")
+                        openPostLink(context, navController, url)
                     }
                 )
             }
@@ -184,7 +183,7 @@ fun LurkApp(
                     openLinkInBrowser(context, url)
                 },
                 openLink = { url ->
-                    navController.navigate("link/$url")
+                    openPostLink(context, navController, url)
                 }
             )
         }
@@ -242,7 +241,7 @@ fun LurkApp(
                     openLinkInBrowser(context, url)
                 },
                 openLink = { url ->
-                    navController.navigate("link/$url")
+                    openPostLink(context, navController, url)
                 }
             )
         }
@@ -299,7 +298,7 @@ fun LurkApp(
                     openLinkInBrowser(context, url)
                 },
                 openLink = { url ->
-                    navController.navigate("link/$url")
+                    openPostLink(context, navController, url)
                 }
             )
         }
@@ -355,25 +354,27 @@ fun LurkApp(
                 },
                 networkResponse = commentsUiState.value.networkResponse,
                 openLink = { url ->
-                    navController.navigate("link/$url")
+                    openPostLink(context, navController, url)
                 }
             )
         }
         composable(
-            route = "link/{url}",
+            route = "image/{url}",
             arguments = listOf(
                 navArgument("url") { type = NavType.StringType },
             )
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
-            val uri = URI(url)
-            val host = uri.host
-
-            if (host.equals("i.redd.it")) {
-                ImageLink(url)
-            } else if (host.equals("v.redd.it")) {
-                VideoPlayer(url.toUri())
-            }
+            ImageLink(url)
+        }
+        composable(
+            route = "video/{url}",
+            arguments = listOf(
+                navArgument("url") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: ""
+            VideoPlayer(url.toUri())
         }
     }
 }
