@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,12 +32,12 @@ import com.example.lurkforreddit.model.CommentContents
 import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.util.relativeTime
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
     postAuthor: String,
     contents: CommentContents,
-    replies: MutableList<Comment>,
+    replies: List<Comment>,
     more: More?,
     padding: Int,
     color: Int,
@@ -105,11 +104,11 @@ fun CommentCard(
                     .clickable { /* TODO load more comments */ }
                     .padding(start = (padding + 2).dp)
                     .drawBehind {
-                        if (color + 1 != 0) {
+                        if ((color + 1) != 0) {
                             drawLine(
                                 start = Offset(x = 0f, y = 0f),
                                 end = Offset(x = 0f, y = size.height),
-                                color = when (color + 1 % 4) {
+                                color = when ((color + 1) % 4) {
                                     0 -> Color.Magenta
                                     1 -> Color.Blue
                                     2 -> Color.Green
@@ -175,8 +174,7 @@ private fun CommentContents(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            AnimatedVisibility(visible = (!showReplies && numReplies > 0)) {
-
+            if ((!showReplies && numReplies > 0)) {
                 Badge(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,

@@ -41,7 +41,7 @@ fun CommentsList(
                     CommentCard(
                         postAuthor = post.author,
                         contents = comment.contents,
-                        replies = comment.replies.toMutableList(),
+                        replies = comment.replies,
                         more = comment.more,
                         padding = 4,
                         color = 0,
