@@ -10,9 +10,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
 import com.example.lurkforreddit.model.Content
+import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.SearchResult
 import com.example.lurkforreddit.util.ListingSort
 import com.example.lurkforreddit.util.TopSort
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -72,10 +75,19 @@ class ListingViewModel(
                                 subreddit = currentState.subreddit,
                                 sort = currentState.listingSort,
                                 topSort = currentState.topSort
-                            ).cachedIn(viewModelScope)
-//                    .map{ pagingData ->
-//                        pagingData.map { content -> ... }
-//                    }
+                            )
+                                .map { pagingData ->
+                                    pagingData.map { content ->
+                                        if (content is Post)
+                                            content.copy(
+                                                thumbnail = content.parseThumbnail(),
+                                                url = content.parseUrl()
+                                            )
+                                        else
+                                            content
+                                    }
+                                }
+                                .cachedIn(viewModelScope)
                         )
                     } catch (e: IOException) {
                         ListingNetworkResponse.Error
