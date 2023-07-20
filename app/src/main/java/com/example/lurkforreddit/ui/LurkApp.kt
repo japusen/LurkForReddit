@@ -344,7 +344,7 @@ fun LurkApp(
                     IconButton(
                         onClick = { navController.navigate("duplicates" +
                                 "/${commentsUiState.value.subreddit}" +
-                                "/$${commentsUiState.value.article}")
+                                "/${commentsUiState.value.article}")
                         }
                     ) {
                         Icon(
