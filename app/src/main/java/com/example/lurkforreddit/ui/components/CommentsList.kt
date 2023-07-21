@@ -14,14 +14,12 @@ import com.example.lurkforreddit.model.Post
 @Composable
 fun CommentsList(
     post: Post,
-    commentTree: Pair<List<Comment>, More?>,
+    comments: List<Comment>,
+    more: More?,
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val comments = commentTree.first
-    val more = commentTree.second
-
     LazyColumn(
         contentPadding = PaddingValues(0.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp),

@@ -74,7 +74,7 @@ fun CommentCard(
             postAuthor = postAuthor,
             contents = contents,
             showReplies = showReplies,
-            numReplies = replies.size,
+            numReplies = if (more != null) replies.size + 1 else replies.size,
             openProfile = openProfile,
             modifier = Modifier
                 .combinedClickable(
@@ -100,14 +100,13 @@ fun CommentCard(
                     }
                 }
             }
-        }
-
-        if (more != null) {
-            MoreComments(
-                padding = nestedPadding,
-                color = color + 1,
-                more = more
-            )
+            if (more != null) {
+                MoreComments(
+                    padding = nestedPadding,
+                    color = color + 1,
+                    more = more
+                )
+            }
         }
     }
 }

@@ -44,7 +44,7 @@ fun MoreComments(
     ) {
         Divider(modifier = Modifier.fillMaxWidth())
         Text(
-            text = "more comments (${more.count})",
+            text = "more comments (${more.children.size})",
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
         )

@@ -23,7 +23,9 @@ import java.io.IOException
 
 sealed interface CommentsNetworkResponse {
     data class Success(
-        val postData: Pair<Post, Pair<List<Comment>, More?>>,
+        val post: Post,
+        val comments: List<Comment>,
+        val more: More?
     ) : CommentsNetworkResponse
 
     object Error : CommentsNetworkResponse
@@ -61,12 +63,15 @@ class CommentsViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
+                        val data = redditApiRepository.getPostComments(
+                            subreddit = currentState.subreddit,
+                            article = currentState.article,
+                            sort = currentState.commentSort
+                        )
                         CommentsNetworkResponse.Success(
-                            redditApiRepository.getPostComments(
-                                subreddit = currentState.subreddit,
-                                article = currentState.article,
-                                sort = currentState.commentSort
-                            )
+                            post = data.first,
+                            comments = data.second.first,
+                            more = data.second.second
                         )
                     } catch (e: IOException) {
                         CommentsNetworkResponse.Error

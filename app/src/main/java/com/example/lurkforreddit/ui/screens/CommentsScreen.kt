@@ -41,8 +41,9 @@ fun CommentsScreen(
             is CommentsNetworkResponse.Loading -> LoadingScreen(modifier)
             is CommentsNetworkResponse.Success -> {
                 CommentsList(
-                    post = networkResponse.postData.first,
-                    commentTree = networkResponse.postData.second,
+                    post = networkResponse.post,
+                    comments = networkResponse.comments,
+                    more = networkResponse.more,
                     openLink = openLink,
                     openProfile = openProfile,
                     modifier = modifier.padding(paddingValues)
