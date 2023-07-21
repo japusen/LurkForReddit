@@ -45,6 +45,7 @@ fun CommentCard(
     modifier: Modifier = Modifier
 ) {
     var showReplies by rememberSaveable { mutableStateOf(true) }
+    val nestedPadding = 12
 
     Column(
         modifier = Modifier
@@ -92,7 +93,7 @@ fun CommentCard(
                             contents = it,
                             replies = reply.replies.toMutableList(),
                             more = reply.more,
-                            padding = padding + 2,
+                            padding = nestedPadding,
                             color = color + 1,
                             openProfile = openProfile
                         )
@@ -103,7 +104,7 @@ fun CommentCard(
 
         if (more != null) {
             MoreComments(
-                padding = padding + 2,
+                padding = nestedPadding,
                 color = color + 1,
                 more = more
             )

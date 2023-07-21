@@ -44,7 +44,7 @@ fun CommentsList(
                         contents = comment.contents,
                         replies = comment.replies,
                         more = comment.more,
-                        padding = 4,
+                        padding = 0,
                         color = 0,
                         openProfile = openProfile,
                     )
