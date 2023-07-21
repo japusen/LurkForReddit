@@ -2,6 +2,7 @@ package com.example.lurkforreddit.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ fun CommentCard(
     more: More?,
     padding: Int,
     color: Int,
+    openProfile: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showReplies by rememberSaveable { mutableStateOf(true) }
@@ -72,6 +74,7 @@ fun CommentCard(
             contents = contents,
             showReplies = showReplies,
             numReplies = replies.size,
+            openProfile = openProfile,
             modifier = Modifier
                 .combinedClickable(
                     enabled = true,
@@ -90,7 +93,8 @@ fun CommentCard(
                             replies = reply.replies.toMutableList(),
                             more = reply.more,
                             padding = padding + 2,
-                            color = color + 1
+                            color = color + 1,
+                            openProfile = openProfile
                         )
                     }
                 }
@@ -114,6 +118,7 @@ private fun CommentContents(
     contents: CommentContents,
     showReplies: Boolean,
     numReplies: Int,
+    openProfile: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -126,14 +131,16 @@ private fun CommentContents(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            val authorModifier =
+                if (postAuthor == contents.author)
+                    Modifier.background(MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(4.dp))
+                else
+                    Modifier
             Text(
                 text = contents.author,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium,
-                modifier =
-                if (postAuthor == contents.author)
-                    Modifier.background(MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(4.dp))
-                else Modifier
+                modifier = authorModifier.clickable { openProfile(contents.author) }
             )
 
             Text(

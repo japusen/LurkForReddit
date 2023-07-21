@@ -355,6 +355,9 @@ fun LurkApp(
                 networkResponse = commentsUiState.value.networkResponse,
                 openLink = { url ->
                     openPostLink(context, navController, url)
+                },
+                openProfile = { username ->
+                    navController.navigate("user/$username")
                 }
             )
         }

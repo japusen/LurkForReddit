@@ -16,6 +16,7 @@ fun CommentsList(
     post: Post,
     commentTree: Pair<List<Comment>, More?>,
     openLink: (String) -> Unit,
+    openProfile: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val comments = commentTree.first
@@ -45,6 +46,7 @@ fun CommentsList(
                         more = comment.more,
                         padding = 4,
                         color = 0,
+                        openProfile = openProfile,
                     )
                 }
             }
