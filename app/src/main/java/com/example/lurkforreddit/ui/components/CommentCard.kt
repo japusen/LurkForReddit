@@ -2,7 +2,6 @@ package com.example.lurkforreddit.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -99,34 +98,11 @@ fun CommentCard(
         }
 
         if (more != null) {
-            Column(
-                modifier = Modifier
-                    .clickable { /* TODO load more comments */ }
-                    .padding(start = (padding + 2).dp)
-                    .drawBehind {
-                        if ((color + 1) != 0) {
-                            drawLine(
-                                start = Offset(x = 0f, y = 0f),
-                                end = Offset(x = 0f, y = size.height),
-                                color = when ((color + 1) % 4) {
-                                    0 -> Color.Magenta
-                                    1 -> Color.Blue
-                                    2 -> Color.Green
-                                    else -> Color.Red
-                                },
-                                strokeWidth = 2F,
-                                alpha = 0.5F
-                            )
-                        }
-                    }
-            ) {
-                Divider(modifier = Modifier.fillMaxWidth())
-                Text(
-                    text = "more comments (${more.count})",
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                )
-            }
+            MoreComments(
+                padding = padding + 2,
+                color = color + 1,
+                more = more
+            )
         }
     }
 }

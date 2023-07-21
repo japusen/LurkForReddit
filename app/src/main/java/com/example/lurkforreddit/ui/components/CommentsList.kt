@@ -49,5 +49,15 @@ fun CommentsList(
                 }
             }
         }
+
+        if (more != null) {
+            item {
+                MoreComments(
+                    padding = 0,
+                    color = 0,
+                    more = more
+                )
+            }
+        }
     }
 }
