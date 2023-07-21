@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.model
 
+import android.util.Log
 import com.example.lurkforreddit.network.parseVredditUrl
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -53,8 +54,8 @@ data class Post(
     }
 
     fun parseUrl(): String {
-        return if (domain == "v.redd.it")
-            parseVredditUrl(media!!)
+        return if (domain == "v.redd.it" && media != null)
+            parseVredditUrl(media)
         else
             url
     }
