@@ -64,6 +64,12 @@ interface RedditApiRepository {
         query: String,
     ): List<SearchResult>
 
+    suspend fun getMoreComments(
+        linkID: String,
+        childrenIDs: String,
+        sort: CommentSort,
+    ): String
+
     companion object {
         const val NETWORK_PAGE_SIZE = 50
     }
@@ -225,5 +231,21 @@ class DefaultRedditApiRepository(
 
         val results = parseSearchResults(response)
         return results ?: listOf()
+    }
+
+    override suspend fun getMoreComments(
+        linkID: String,
+        childrenIDs: String,
+        sort: CommentSort
+    ): String {
+        return redditApiService.getMoreComments(
+            tokenHeader,
+            "t3_$linkID",
+            childrenIDs,
+            sort.value
+        ).toString()
+
+//        val comments = parseMoreComments(response)
+//        return comments ?: listOf()
     }
 }

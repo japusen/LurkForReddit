@@ -60,4 +60,15 @@ interface RedditApiService {
         @Query("include_profiles") includeProfiles: Boolean = true,
         @Query("raw_json") raw: Int = 1
     ): JsonElement
+
+    @GET("/api/morechildren")
+    suspend fun getMoreComments(
+        @Header("Authorization") tokenHeader: String,
+        @Query("link_id") linkID: String,
+        @Query("children") childrenIDs: String,
+        @Query("sort") sort: String,
+        @Query("limit_children") limit: Boolean = true,
+        @Query("api_type") type: String = "json",
+        @Query("raw_json") raw: Int = 1
+    ): JsonElement
 }
