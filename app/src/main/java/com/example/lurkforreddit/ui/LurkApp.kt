@@ -358,6 +358,11 @@ fun LurkApp(
                 },
                 openProfile = { username ->
                     navController.navigate("user/$username")
+                },
+                onMoreClicked = {
+                    coroutineScope.launch {
+                        commentsViewModel.getMoreComments()
+                    }
                 }
             )
         }

@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.screens
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -106,6 +107,58 @@ class CommentsViewModel(
             )
         }
         loadPostComments()
+    }
+
+    suspend fun getMoreComments() {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                val networkResponse = currentState.networkResponse
+                if (networkResponse is CommentsNetworkResponse.Success && networkResponse.more != null) {
+                    val more = networkResponse.more
+                    val children = more.children
+                    val ids: String
+                    val remainder: List<String>
+                    if (children.size > 1) {
+                        ids = children.subList(0, 1).joinToString(",")
+                        remainder = children.subList(1, children.size)
+                    } else {
+                        ids = children.joinToString(",")
+                        remainder = listOf()
+                    }
+                    val alteredMore = more.copy(
+                        count = remainder.size,
+                        children = remainder
+                    )
+
+                    try {
+                        Log.d("LINK ID", "t3_$article")
+                        Log.d("CHILDREN IDS", ids)
+                        Log.d("SORT", currentState.commentSort.value)
+                        val comments = networkResponse.comments
+                        val newComments = redditApiRepository.getMoreComments(
+                            linkID = article,
+                            childrenIDs = ids,
+                            sort = currentState.commentSort
+                        )
+                        currentState.copy(
+                            networkResponse = networkResponse.copy(
+                                comments = comments + newComments,
+                                more = alteredMore
+                            )
+                        )
+                    } catch (e: IOException) {
+                        currentState.copy(
+                            networkResponse = CommentsNetworkResponse.Error
+                        )
+                    } catch (e: HttpException) {
+                        currentState.copy(
+                            networkResponse = CommentsNetworkResponse.Error
+                        )
+                    }
+                } else
+                    currentState
+            }
+        }
     }
 
     companion object {

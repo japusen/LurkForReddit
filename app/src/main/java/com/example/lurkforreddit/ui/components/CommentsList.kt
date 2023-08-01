@@ -18,6 +18,7 @@ fun CommentsList(
     more: More?,
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
+    onMoreClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -44,7 +45,7 @@ fun CommentsList(
                         more = comment.more,
                         padding = 0,
                         color = 0,
-                        openProfile = openProfile,
+                        openProfile = openProfile
                     )
                 }
             }
@@ -55,7 +56,8 @@ fun CommentsList(
                 MoreComments(
                     padding = 0,
                     color = 0,
-                    more = more
+                    more = more,
+                    onMoreClicked = onMoreClicked
                 )
             }
         }

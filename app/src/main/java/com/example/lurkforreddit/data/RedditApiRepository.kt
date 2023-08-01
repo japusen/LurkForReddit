@@ -13,6 +13,7 @@ import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.SearchResult
 import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.network.RedditApiService
+import com.example.lurkforreddit.network.parseMoreComments
 import com.example.lurkforreddit.network.parsePostComments
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.network.parseSearchResults
@@ -68,7 +69,7 @@ interface RedditApiRepository {
         linkID: String,
         childrenIDs: String,
         sort: CommentSort,
-    ): String
+    ): List<Comment>
 
     companion object {
         const val NETWORK_PAGE_SIZE = 50
@@ -237,15 +238,13 @@ class DefaultRedditApiRepository(
         linkID: String,
         childrenIDs: String,
         sort: CommentSort
-    ): String {
-        return redditApiService.getMoreComments(
+    ): List<Comment> {
+        val response = redditApiService.getMoreComments(
             tokenHeader,
             "t3_$linkID",
             childrenIDs,
             sort.value
-        ).toString()
-
-//        val comments = parseMoreComments(response)
-//        return comments ?: listOf()
+        )
+        return parseMoreComments(response)
     }
 }

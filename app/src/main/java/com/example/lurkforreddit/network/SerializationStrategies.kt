@@ -119,6 +119,32 @@ fun parseSearchResults(
     }
 }
 
+fun parseMoreComments(
+    response: JsonElement
+): List<Comment> {
+    val comments = mutableListOf<Comment>()
+
+    val data = response.jsonObject.getOrDefault("json", blank).jsonObject.getOrDefault("data", blank)
+    val children = data.jsonObject.getOrDefault("things", blank) as JsonArray
+
+    for (child in children) {
+        val commentData = child.jsonObject.getOrDefault("data", blank)
+        Log.d("COMMENT", commentData.toString())
+        val repliesData = commentData.jsonObject.getOrDefault("replies", blank)
+        val replies = if (repliesData is JsonObject) {
+            parsePostComments(repliesData)
+        } else {
+            Pair(listOf(), null)
+        }
+        val commentContent = json.decodeFromJsonElement(
+            CommentContents.serializer(),
+            commentData
+        )
+        comments.add(Comment(commentContent, replies.first, replies.second))
+    }
+    return comments
+}
+
 fun parseVredditUrl(
     media: JsonElement
 ): String {

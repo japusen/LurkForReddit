@@ -20,10 +20,11 @@ fun MoreComments(
     padding: Int,
     color: Int,
     more: More,
+    onMoreClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
-            .clickable { /* TODO load more comments */ }
+            .clickable { onMoreClicked() }
             .padding(start = padding.dp)
             .drawBehind {
                 if (color != 0) {

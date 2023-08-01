@@ -95,7 +95,7 @@ fun CommentCard(
                             more = reply.more,
                             padding = nestedPadding,
                             color = color + 1,
-                            openProfile = openProfile
+                            openProfile = openProfile,
                         )
                     }
                 }
@@ -104,7 +104,8 @@ fun CommentCard(
                 MoreComments(
                     padding = nestedPadding,
                     color = color + 1,
-                    more = more
+                    more = more,
+                    onMoreClicked = {}
                 )
             }
         }

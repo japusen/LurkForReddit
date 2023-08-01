@@ -67,7 +67,7 @@ interface RedditApiService {
         @Query("link_id") linkID: String,
         @Query("children") childrenIDs: String,
         @Query("sort") sort: String,
-        @Query("limit_children") limit: Boolean = true,
+        @Query("limit_children") limit: Boolean = false,
         @Query("api_type") type: String = "json",
         @Query("raw_json") raw: Int = 1
     ): JsonElement
