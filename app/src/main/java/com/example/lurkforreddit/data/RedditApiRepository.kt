@@ -245,6 +245,6 @@ class DefaultRedditApiRepository(
             childrenIDs,
             sort.value
         )
-        return parseMoreComments(response)
+        return parseMoreComments(response, "t3_$linkID")
     }
 }

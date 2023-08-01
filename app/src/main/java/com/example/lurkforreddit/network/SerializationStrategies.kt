@@ -101,7 +101,7 @@ fun parsePostComments(
                 CommentContents.serializer(),
                 commentData
             )
-            comments.add(Comment(commentContent, replies.first, replies.second))
+            comments.add(Comment(commentContent, replies.first.toMutableList(), replies.second))
         }
     }
 
@@ -120,28 +120,35 @@ fun parseSearchResults(
 }
 
 fun parseMoreComments(
-    response: JsonElement
+    response: JsonElement,
+    root: String
 ): List<Comment> {
     val comments = mutableListOf<Comment>()
+    val replyTree = mutableMapOf<String, Comment>()
 
     val data = response.jsonObject.getOrDefault("json", blank).jsonObject.getOrDefault("data", blank)
     val children = data.jsonObject.getOrDefault("things", blank) as JsonArray
 
     for (child in children) {
+        val kind = child.jsonObject["kind"]?.jsonPrimitive?.content ?: "t1"
         val commentData = child.jsonObject.getOrDefault("data", blank)
-        Log.d("COMMENT", commentData.toString())
-        val repliesData = commentData.jsonObject.getOrDefault("replies", blank)
-        val replies = if (repliesData is JsonObject) {
-            parsePostComments(repliesData)
-        } else {
-            Pair(listOf(), null)
-        }
         val commentContent = json.decodeFromJsonElement(
             CommentContents.serializer(),
             commentData
         )
-        comments.add(Comment(commentContent, replies.first, replies.second))
+        replyTree[kind + "_${commentContent.id}"] = Comment(commentContent, mutableListOf(), null)
     }
+
+    for (reply in replyTree) {
+        val comment = reply.value
+        val parentID = comment.contents?.parentID
+        if (parentID == root) {
+            comments.add(comment)
+        } else {
+            replyTree[parentID]?.replies?.add(comment)
+        }
+    }
+
     return comments
 }
 

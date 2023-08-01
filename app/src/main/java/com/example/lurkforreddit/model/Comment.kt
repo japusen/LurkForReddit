@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 data class Comment(
     val contents: CommentContents?,
-    val replies: List<Comment>,
+    val replies: MutableList<Comment>,
     val more: More?
 )
 
@@ -56,4 +56,6 @@ data class CommentContents(
     val bodyHtml: String,
     @SerialName("link_id")
     val linkID: String,
+    @SerialName("parent_id")
+    val parentID: String,
 ) : Content, Created, Votable

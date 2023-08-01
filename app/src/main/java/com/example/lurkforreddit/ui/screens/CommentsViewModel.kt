@@ -118,9 +118,9 @@ class CommentsViewModel(
                     val children = more.children
                     val ids: String
                     val remainder: List<String>
-                    if (children.size > 1) {
-                        ids = children.subList(0, 1).joinToString(",")
-                        remainder = children.subList(1, children.size)
+                    if (children.size > 10) {
+                        ids = children.subList(0, 10).joinToString(",")
+                        remainder = children.subList(10, children.size)
                     } else {
                         ids = children.joinToString(",")
                         remainder = listOf()
@@ -131,9 +131,6 @@ class CommentsViewModel(
                     )
 
                     try {
-                        Log.d("LINK ID", "t3_$article")
-                        Log.d("CHILDREN IDS", ids)
-                        Log.d("SORT", currentState.commentSort.value)
                         val comments = networkResponse.comments
                         val newComments = redditApiRepository.getMoreComments(
                             linkID = article,
