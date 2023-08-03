@@ -28,9 +28,11 @@ fun ImageLink(
     url: String,
     modifier: Modifier = Modifier
 ) {
-    var scale by remember { mutableStateOf(1f) }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
+    val minScale = 1.0F
+    val maxScale = 5.0F
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
     var size by remember { mutableStateOf(IntSize.Zero) }
     val context = LocalContext.current
     Scaffold(
@@ -54,7 +56,7 @@ fun ImageLink(
                     .onSizeChanged { size = it }
                     .pointerInput(Unit) {
                         detectTransformGestures { _, pan, zoom, _ ->
-                            scale = maxOf(1f, minOf(scale * zoom, 5f))
+                            scale = maxOf(minScale, minOf(scale * zoom, maxScale))
                             val maxX = (size.width * (scale - 1)) / 2
                             val minX = -maxX
                             offsetX = maxOf(minX, minOf(maxX, offsetX + pan.x))
@@ -62,6 +64,20 @@ fun ImageLink(
                             val minY = -maxY
                             offsetY = maxOf(minY, minOf(maxY, offsetY + pan.y))
                         }
+                    }
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onDoubleTap = {
+                                if (scale != minScale) {
+                                    scale = minScale
+                                    offsetX = 0.0F
+                                    offsetY = 0.0F
+                                } else {
+                                    scale = maxScale / 2
+                                }
+
+                            }
+                        )
                     }
                     .graphicsLayer(
                         scaleX = scale,
