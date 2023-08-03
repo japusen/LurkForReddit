@@ -11,5 +11,17 @@ data class More(
     val id: String,
     @SerialName("parent_id")
     val parentID: String,
-    val children: List<String>
-)
+    var children: List<String>
+) {
+    fun getIDs(count: Int): String {
+        val ids: String
+        if (children.size > count) {
+            ids = children.subList(0, count).joinToString(",")
+            children = children.subList(count, children.size)
+        } else {
+            ids = children.joinToString(",")
+            children = listOf()
+        }
+        return ids
+    }
+}

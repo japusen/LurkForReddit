@@ -37,8 +37,8 @@ fun MoreComments(
                             2 -> Color.Green
                             else -> Color.Red
                         },
-                        strokeWidth = 2F,
-                        alpha = 0.5F
+                        strokeWidth = 3.0F,
+                        alpha = 0.75F
                     )
                 }
             }

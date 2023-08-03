@@ -22,6 +22,8 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
+private const val MORE_COMMENTS_AMOUNT = 50
+
 sealed interface CommentsNetworkResponse {
     data class Success(
         val post: Post,
@@ -115,20 +117,7 @@ class CommentsViewModel(
                 val networkResponse = currentState.networkResponse
                 if (networkResponse is CommentsNetworkResponse.Success && networkResponse.more != null) {
                     val more = networkResponse.more
-                    val children = more.children
-                    val ids: String
-                    val remainder: List<String>
-                    if (children.size > 10) {
-                        ids = children.subList(0, 10).joinToString(",")
-                        remainder = children.subList(10, children.size)
-                    } else {
-                        ids = children.joinToString(",")
-                        remainder = listOf()
-                    }
-                    val alteredMore = more.copy(
-                        count = remainder.size,
-                        children = remainder
-                    )
+                    val ids = more.getIDs(MORE_COMMENTS_AMOUNT)
 
                     try {
                         val comments = networkResponse.comments
@@ -140,7 +129,10 @@ class CommentsViewModel(
                         currentState.copy(
                             networkResponse = networkResponse.copy(
                                 comments = comments + newComments,
-                                more = alteredMore
+                                more = more.copy(
+                                    count = more.count,
+                                    children = more.children
+                                )
                             )
                         )
                     } catch (e: IOException) {
@@ -156,6 +148,75 @@ class CommentsViewModel(
                     currentState
             }
         }
+    }
+
+    private fun findParentComment(id: String, comments: List<Comment>): Comment? {
+        if (comments.isEmpty())
+            return null
+
+        for (comment in comments) {
+            if (comment.contents?.id == id)
+                return comment
+            val checkChild = findParentComment(id, comment.replies)
+            if (checkChild != null)
+                return checkChild
+        }
+
+        return null
+    }
+
+    suspend fun getMoreComments(parentID: String) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                val networkResponse = currentState.networkResponse
+                if (networkResponse is CommentsNetworkResponse.Success) {
+
+                    val parentComment = findParentComment(parentID, networkResponse.comments)
+                    val more = parentComment?.more
+                    val ids = more!!.getIDs(MORE_COMMENTS_AMOUNT)
+
+                    try {
+                        val comments = networkResponse.comments
+                        val newComments = redditApiRepository.getMoreComments(
+                            linkID = article,
+                            childrenIDs = ids,
+                            sort = currentState.commentSort
+                        )
+                        parentComment.replies.addAll(newComments)
+                        Log.d("MORE", "added")
+                        currentState.copy(
+                            networkResponse = networkResponse.copy(
+                                comments = comments
+                            )
+                        )
+                    } catch (e: IOException) {
+                        currentState.copy(
+                            networkResponse = CommentsNetworkResponse.Error
+                        )
+                    } catch (e: HttpException) {
+                        currentState.copy(
+                            networkResponse = CommentsNetworkResponse.Error
+                        )
+                    }
+                } else
+                    currentState
+            }
+        }
+    }
+
+    suspend fun moreComments(ids: String): List<Comment> {
+        return try {
+            redditApiRepository.getMoreComments(
+                linkID = article,
+                childrenIDs = ids,
+                sort = _uiState.value.commentSort
+            )
+        }catch (e: IOException) {
+            listOf()
+        } catch (e: HttpException) {
+            listOf()
+        }
+
     }
 
     companion object {

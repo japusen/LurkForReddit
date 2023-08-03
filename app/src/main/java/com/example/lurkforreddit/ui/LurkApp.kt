@@ -363,6 +363,12 @@ fun LurkApp(
                     coroutineScope.launch {
                         commentsViewModel.getMoreComments()
                     }
+                },
+                onNestedMoreClicked = { id ->
+//                    TODO
+//                    coroutineScope.launch {
+//                        commentsViewModel.getMoreComments(id)
+//                    }
                 }
             )
         }

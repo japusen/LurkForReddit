@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.CommentContents
@@ -42,6 +43,7 @@ fun CommentCard(
     padding: Int,
     color: Int,
     openProfile: (String) -> Unit,
+    onNestedMoreClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showReplies by rememberSaveable { mutableStateOf(true) }
@@ -62,8 +64,8 @@ fun CommentCard(
                             2 -> Color.Green
                             else -> Color.Red
                         },
-                        strokeWidth = 2F,
-                        alpha = 0.5F
+                        strokeWidth = 3.0F,
+                        alpha = 0.75F
                     )
                 }
             }
@@ -96,6 +98,7 @@ fun CommentCard(
                             padding = nestedPadding,
                             color = color + 1,
                             openProfile = openProfile,
+                            onNestedMoreClicked = onNestedMoreClicked
                         )
                     }
                 }
@@ -105,7 +108,7 @@ fun CommentCard(
                     padding = nestedPadding,
                     color = color + 1,
                     more = more,
-                    onMoreClicked = {}
+                    onMoreClicked = { onNestedMoreClicked(contents.id) }
                 )
             }
         }

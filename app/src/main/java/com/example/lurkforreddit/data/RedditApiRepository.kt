@@ -72,7 +72,7 @@ interface RedditApiRepository {
     ): List<Comment>
 
     companion object {
-        const val NETWORK_PAGE_SIZE = 50
+        const val NETWORK_PAGE_SIZE = 25
     }
 }
 

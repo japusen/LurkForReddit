@@ -21,6 +21,7 @@ fun CommentsScreen(
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
     onMoreClicked: () -> Unit,
+    onNestedMoreClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -48,6 +49,7 @@ fun CommentsScreen(
                     openLink = openLink,
                     openProfile = openProfile,
                     onMoreClicked = onMoreClicked,
+                    onNestedMoreClicked = onNestedMoreClicked,
                     modifier = modifier.padding(paddingValues)
                 )
             }

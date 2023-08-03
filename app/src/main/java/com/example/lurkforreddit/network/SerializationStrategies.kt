@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.network
 
-import android.util.Log
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.CommentContents
 import com.example.lurkforreddit.model.More
@@ -95,7 +94,7 @@ fun parsePostComments(
             val replies = if (repliesData is JsonObject) {
                 parsePostComments(repliesData)
             } else {
-                Pair(listOf(), null)
+                Pair(mutableListOf(), null)
             }
             val commentContent = json.decodeFromJsonElement(
                 CommentContents.serializer(),
@@ -127,18 +126,23 @@ fun parseMoreComments(
     val replyTree = mutableMapOf<String, Comment>()
 
     val data = response.jsonObject.getOrDefault("json", blank).jsonObject.getOrDefault("data", blank)
-    val children = data.jsonObject.getOrDefault("things", blank) as JsonArray
+    val things = data.jsonObject.getOrDefault("things", blank) as JsonArray
 
-    for (child in children) {
-        val kind = child.jsonObject["kind"]?.jsonPrimitive?.content ?: "t1"
-        val commentData = child.jsonObject.getOrDefault("data", blank)
-        val commentContent = json.decodeFromJsonElement(
-            CommentContents.serializer(),
-            commentData
-        )
-        replyTree[kind + "_${commentContent.id}"] = Comment(commentContent, mutableListOf(), null)
+    /** Assemble each comment and add it to the map by it's full id */
+    for (thing in things) {
+        val kind = thing.jsonObject["kind"]?.jsonPrimitive?.content
+        if (kind == "t1") {
+            val commentData = thing.jsonObject.getOrDefault("data", blank)
+            val commentContent = json.decodeFromJsonElement(
+                CommentContents.serializer(),
+                commentData
+            )
+            replyTree["t1_${commentContent.id}"] = Comment(commentContent, mutableListOf(), null)
+        }
     }
 
+    /** if a reply has the root as it's parent, add it to the list of comments
+     otherwise find it's parent in the map and add it to the parent's replies **/
     for (reply in replyTree) {
         val comment = reply.value
         val parentID = comment.contents?.parentID
