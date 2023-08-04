@@ -25,7 +25,6 @@ import java.io.IOException
 
 data class ProfileUiState(
     val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val user: String = "",
     val contentType: UserContentType = UserContentType.SUBMITTED,
     val userListingSort: UserListingSort = UserListingSort.HOT,
     val topSort: TopSort? = null,
@@ -39,20 +38,11 @@ class ProfileViewModel(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
-    private val username: String = savedStateHandle["username"] ?: ""
+    val username: String = savedStateHandle["username"] ?: ""
 
     init {
-        setUser(username)
         viewModelScope.launch {
             getUserContent()
-        }
-    }
-
-    private fun setUser(user: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                user = user,
-            )
         }
     }
 
@@ -85,13 +75,13 @@ class ProfileViewModel(
                             listingContent =
                             if (currentState.contentType == UserContentType.SUBMITTED) {
                                 redditApiRepository.getUserSubmissions(
-                                    username = currentState.user,
+                                    username = username,
                                     sort = currentState.userListingSort,
                                     topSort = currentState.topSort
                                 ).cachedIn(viewModelScope)
                             } else {
                                 redditApiRepository.getUserComments(
-                                    username = currentState.user,
+                                    username = username,
                                     sort = currentState.userListingSort,
                                     topSort = currentState.topSort
                                 ).cachedIn(viewModelScope)

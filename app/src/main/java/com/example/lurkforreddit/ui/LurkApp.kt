@@ -1,5 +1,7 @@
 package com.example.lurkforreddit.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
@@ -15,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,6 +37,7 @@ import com.example.lurkforreddit.ui.components.menus.SearchMenu
 import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.CommentsViewModel
 import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
+import com.example.lurkforreddit.ui.screens.HomeViewModel
 import com.example.lurkforreddit.ui.screens.ListingScreen
 import com.example.lurkforreddit.ui.screens.ListingViewModel
 import com.example.lurkforreddit.ui.screens.ProfileViewModel
@@ -53,23 +57,24 @@ fun LurkApp(
         startDestination = "home",
     ) {
         composable(route = "home") {
-            val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
-            val homeUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
+            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
+            val homeUiState = homeViewModel.uiState.collectAsStateWithLifecycle()
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
             ModalNavigationDrawer(
                 drawerContent = {
                     SearchMenu(
-                        homeUiState = homeUiState.value,
+                        query = homeUiState.value.query,
+                        searchResults = homeUiState.value.searchResults,
                         setQuery = { query ->
-                            listingViewModel.setQuery(query)
+                            homeViewModel.setQuery(query)
                         },
                         updateSearchResults = {
                             coroutineScope.launch {
-                                listingViewModel.updateSearchResults()
+                                homeViewModel.updateSearchResults()
                             }
                         },
-                        clearQuery = { listingViewModel.clearQuery() },
+                        clearQuery = { homeViewModel.clearQuery() },
                         navigateToProfile = { username ->
                             navController.navigate("user/$username")
                         },
@@ -111,7 +116,7 @@ fun LurkApp(
                             selectedSort = homeUiState.value.listingSort,
                             onListingSortChanged = { listing, top ->
                                 coroutineScope.launch{
-                                    listingViewModel.setListingSort(listing, top)
+                                    homeViewModel.setListingSort(listing, top)
                                 }
                             }
                         )
@@ -147,7 +152,7 @@ fun LurkApp(
             ListingScreen(
                 title = {
                     Text(
-                        text = subredditUiState.value.subreddit,
+                        text = listingViewModel.subreddit,
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
@@ -199,7 +204,7 @@ fun LurkApp(
             ListingScreen(
                 title = {
                     Text(
-                        text = profileUiState.value.user,
+                        text = profileViewModel.username,
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
@@ -317,7 +322,7 @@ fun LurkApp(
             CommentsScreen(
                 title = {
                     Text(
-                        text = commentsUiState.value.subreddit,
+                        text = commentsViewModel.subreddit,
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
@@ -342,8 +347,8 @@ fun LurkApp(
                     )
                     IconButton(
                         onClick = { navController.navigate("duplicates" +
-                                "/${commentsUiState.value.subreddit}" +
-                                "/${commentsUiState.value.article}")
+                                "/${commentsViewModel.subreddit}" +
+                                "/${commentsViewModel.article}")
                         }
                     ) {
                         Icon(

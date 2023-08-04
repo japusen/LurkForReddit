@@ -37,8 +37,6 @@ sealed interface CommentsNetworkResponse {
 
 data class CommentsUiState(
     val networkResponse: CommentsNetworkResponse = CommentsNetworkResponse.Loading,
-    val subreddit: String = "",
-    val article: String = "",
     val commentSort: CommentSort = CommentSort.BEST
 )
 
@@ -50,12 +48,10 @@ class CommentsViewModel(
     private val _uiState = MutableStateFlow(CommentsUiState())
     val uiState: StateFlow<CommentsUiState> = _uiState.asStateFlow()
 
-    private val subreddit: String = savedStateHandle["subreddit"] ?: ""
-    private val article: String = savedStateHandle["article"] ?: ""
+    val subreddit: String = savedStateHandle["subreddit"] ?: ""
+    val article: String = savedStateHandle["article"] ?: ""
 
     init {
-        setSubreddit(subreddit)
-        setArticle(article)
         viewModelScope.launch {
             loadPostComments()
         }
@@ -67,8 +63,8 @@ class CommentsViewModel(
                 currentState.copy(
                     networkResponse = try {
                         val data = redditApiRepository.getPostComments(
-                            subreddit = currentState.subreddit,
-                            article = currentState.article,
+                            subreddit = subreddit,
+                            article = article,
                             sort = currentState.commentSort
                         )
                         CommentsNetworkResponse.Success(
@@ -83,22 +79,6 @@ class CommentsViewModel(
                     }
                 )
             }
-        }
-    }
-
-    private fun setSubreddit(subreddit: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                subreddit = subreddit
-            )
-        }
-    }
-
-    private fun setArticle(article: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                article = article
-            )
         }
     }
 

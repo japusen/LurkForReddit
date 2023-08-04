@@ -23,8 +23,6 @@ import java.io.IOException
 
 data class DuplicatesUiState(
     val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val subreddit: String = "",
-    val article: String = "",
     val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
 )
 
@@ -40,8 +38,6 @@ class DuplicatesViewModel(
     private val article: String = savedStateHandle["article"] ?: ""
 
     init {
-        setSubreddit(subreddit)
-        setArticle(article)
         viewModelScope.launch {
             loadDuplicates()
         }
@@ -53,8 +49,8 @@ class DuplicatesViewModel(
                     networkResponse = try {
                         ListingNetworkResponse.Success(
                             redditApiRepository.getPostDuplicates(
-                                subreddit = currentState.subreddit,
-                                article = currentState.article,
+                                subreddit = subreddit,
+                                article = article,
                                 sort = currentState.sort,
                             ).cachedIn(viewModelScope)
 //                    .map{ pagingData ->
@@ -68,22 +64,6 @@ class DuplicatesViewModel(
                     }
                 )
             }
-        }
-    }
-
-    private fun setSubreddit(subreddit: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                subreddit = subreddit,
-            )
-        }
-    }
-
-    private fun setArticle(article: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                article = article,
-            )
         }
     }
 
