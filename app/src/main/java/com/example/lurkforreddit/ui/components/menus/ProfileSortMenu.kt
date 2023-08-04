@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,7 +84,15 @@ fun ProfileSortMenu(
                         painterResource(id = R.drawable.ic_submissions),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (contentType == UserContentType.SUBMITTED)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Comments") },
@@ -99,7 +105,15 @@ fun ProfileSortMenu(
                         painterResource(id = R.drawable.ic_comment),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (contentType == UserContentType.COMMENTS)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
         }
     }
@@ -132,7 +146,15 @@ fun ProfileSortMenu(
                         painterResource(id = R.drawable.ic_hot),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == UserListingSort.HOT)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("New") },
@@ -145,7 +167,15 @@ fun ProfileSortMenu(
                         painterResource(id = R.drawable.ic_time),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == UserListingSort.NEW)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Controversial") },
@@ -159,7 +189,15 @@ fun ProfileSortMenu(
                         painterResource(id = R.drawable.ic_controversial),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == UserListingSort.CONTROVERSIAL)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Top") },
@@ -173,7 +211,15 @@ fun ProfileSortMenu(
                         painterResource(id = R.drawable.ic_top),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == UserListingSort.TOP)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
         }
     }

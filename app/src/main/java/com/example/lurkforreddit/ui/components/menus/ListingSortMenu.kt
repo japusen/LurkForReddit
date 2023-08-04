@@ -8,6 +8,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,7 +69,16 @@ fun ListingSortMenu(
                         painterResource(id = R.drawable.ic_hot),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == ListingSort.HOT)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
+
             )
             DropdownMenuItem(
                 text = { Text("Rising") },
@@ -80,7 +91,15 @@ fun ListingSortMenu(
                         painterResource(id = R.drawable.ic_rising),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == ListingSort.RISING)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("New") },
@@ -93,7 +112,15 @@ fun ListingSortMenu(
                         painterResource(id = R.drawable.ic_time),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == ListingSort.NEW)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Top") },
@@ -106,7 +133,15 @@ fun ListingSortMenu(
                         painterResource(id = R.drawable.ic_top),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == ListingSort.TOP)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
         }
     }

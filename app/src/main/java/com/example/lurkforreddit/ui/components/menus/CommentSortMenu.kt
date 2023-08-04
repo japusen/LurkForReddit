@@ -8,6 +8,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,7 +68,15 @@ fun CommentSortMenu(
                         painterResource(id = R.drawable.ic_rising),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == CommentSort.TOP)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Best") },
@@ -79,7 +89,15 @@ fun CommentSortMenu(
                         painterResource(id = R.drawable.ic_star),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == CommentSort.BEST)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("New") },
@@ -92,7 +110,15 @@ fun CommentSortMenu(
                         painterResource(id = R.drawable.ic_time),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == CommentSort.NEW)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Controversial") },
@@ -105,7 +131,15 @@ fun CommentSortMenu(
                         painterResource(id = R.drawable.ic_controversial),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == CommentSort.CONTROVERSIAL)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
             DropdownMenuItem(
                 text = { Text("Q&A") },
@@ -118,7 +152,15 @@ fun CommentSortMenu(
                         painterResource(id = R.drawable.ic_question_answer),
                         contentDescription = null
                     )
-                }
+                },
+                colors =
+                if (selectedSort == CommentSort.QA)
+                    MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.primary,
+                        leadingIconColor = MaterialTheme.colorScheme.primary
+                    )
+                else
+                    MenuDefaults.itemColors()
             )
         }
     }

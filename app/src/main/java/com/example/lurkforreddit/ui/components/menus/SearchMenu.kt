@@ -32,12 +32,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.lurkforreddit.ui.screens.ListingUiState
+import com.example.lurkforreddit.model.SearchResult
 import kotlinx.coroutines.launch
 
 @Composable
 fun SearchMenu(
-    homeUiState: ListingUiState,
+    query: String,
+    searchResults: List<SearchResult>,
     setQuery: (String) -> Unit,
     updateSearchResults: () -> Unit,
     clearQuery: () -> Unit,
@@ -58,7 +59,7 @@ fun SearchMenu(
             modifier = Modifier.padding(8.dp)
         ) {
             OutlinedTextField(
-                value = homeUiState.query,
+                value = query,
                 onValueChange = {
                     setQuery(it)
                     coroutineScope.launch {
@@ -85,7 +86,7 @@ fun SearchMenu(
                 modifier = Modifier
                     .fillMaxWidth()
             )
-            for (result in homeUiState.searchResults) {
+            for (result in searchResults) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
