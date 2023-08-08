@@ -44,7 +44,7 @@ fun CommentsHeader(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            if (!post.is_self) {
+            if (!post.isSelfPost) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
