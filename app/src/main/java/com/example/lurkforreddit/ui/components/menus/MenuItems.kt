@@ -1,12 +1,12 @@
 package com.example.lurkforreddit.ui.components.menus
 
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.util.CommentSort
-import com.example.lurkforreddit.util.DuplicatesSort
-import com.example.lurkforreddit.util.ListingSort
-import com.example.lurkforreddit.util.TopSort
-import com.example.lurkforreddit.util.UserContentType
-import com.example.lurkforreddit.util.UserListingSort
+import com.example.lurkforreddit.model.CommentSort
+import com.example.lurkforreddit.model.DuplicatesSort
+import com.example.lurkforreddit.model.ListingSort
+import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.model.UserContentType
+import com.example.lurkforreddit.model.UserListingSort
 
 enum class CommentSortItems(
     val sort: CommentSort,

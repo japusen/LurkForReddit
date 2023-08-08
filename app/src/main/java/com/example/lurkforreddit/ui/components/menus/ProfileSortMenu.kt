@@ -22,9 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.util.TopSort
-import com.example.lurkforreddit.util.UserContentType
-import com.example.lurkforreddit.util.UserListingSort
+import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.model.UserContentType
+import com.example.lurkforreddit.model.UserListingSort
 
 @Composable
 fun ProfileSortMenu(
