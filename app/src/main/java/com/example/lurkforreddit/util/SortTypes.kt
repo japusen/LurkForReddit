@@ -1,5 +1,7 @@
 package com.example.lurkforreddit.util
 
+import com.example.lurkforreddit.R
+
 enum class ListingSort(val value: String) {
     HOT("hot"),
     RISING("rising"),
@@ -46,4 +48,36 @@ enum class PagingListing(val value: String) {
     DUPLICATES("duplicates"),
     USERSUBMISSIONS("user_submissions"),
     USERCOMMENTS("user_comments")
+}
+
+enum class CommentSortItems(
+    val sort: CommentSort,
+    val text: String,
+    val iconID: Int,
+) {
+    BEST(
+        sort = CommentSort.BEST,
+        text = "Best",
+        iconID = R.drawable.ic_star
+    ),
+    TOP(
+        sort = CommentSort.TOP,
+        text = "Top",
+        iconID = R.drawable.ic_rising
+    ),
+    NEW(
+        sort = CommentSort.NEW,
+        text = "New",
+        iconID = R.drawable.ic_time
+    ),
+    CONTROVERSIAL(
+        sort = CommentSort.CONTROVERSIAL,
+        text = "Controversial",
+        iconID = R.drawable.ic_controversial
+    ),
+    QA(
+        sort = CommentSort.QA,
+        text = "Q&A",
+        iconID = R.drawable.ic_question_answer
+    )
 }

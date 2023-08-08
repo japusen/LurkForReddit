@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.ui.screens
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -82,6 +81,10 @@ class CommentsViewModel(
         }
     }
 
+    /**
+     * Change the sort of the comments and reload comments
+     * @param sort the type of sort (best, top, new, controversial, q&a)
+     * **/
     suspend fun setCommentSort(sort: CommentSort) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -91,6 +94,9 @@ class CommentsViewModel(
         loadPostComments()
     }
 
+    /**
+     * Fetch more top-level comments and update the comment tree
+     * **/
     suspend fun getMoreComments() {
         viewModelScope.launch {
             _uiState.update { currentState ->
@@ -130,6 +136,12 @@ class CommentsViewModel(
         }
     }
 
+    /**
+     * Search through comment tree to find a comment by id
+     * @param id the id of the parent comment
+     * @param comments the list of comments to search through
+     * @return the comment or null if not found
+     * **/
     private fun findParentComment(id: String, comments: List<Comment>): Comment? {
         if (comments.isEmpty())
             return null
@@ -145,6 +157,11 @@ class CommentsViewModel(
         return null
     }
 
+    /**
+     * Fetch more replies to top-level or nested comments
+     * and update the comment tree
+     * @param parentID the id of the comment to fetch more replies for
+     **/
     suspend fun getMoreComments(parentID: String) {
         viewModelScope.launch {
             _uiState.update { currentState ->
@@ -163,7 +180,6 @@ class CommentsViewModel(
                             sort = currentState.commentSort
                         )
                         parentComment.replies.addAll(newComments)
-                        Log.d("MORE", "added")
                         currentState.copy(
                             networkResponse = networkResponse.copy(
                                 comments = comments
@@ -184,6 +200,11 @@ class CommentsViewModel(
         }
     }
 
+    /**
+     * Fetch a list of specific replies by their ids
+     * @param ids comma delimited list of ids to fetch
+     * @return a list of comments
+     * **/
     suspend fun moreComments(ids: String): List<Comment> {
         return try {
             redditApiRepository.getMoreComments(

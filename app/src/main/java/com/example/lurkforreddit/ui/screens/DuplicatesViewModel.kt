@@ -67,6 +67,10 @@ class DuplicatesViewModel(
         }
     }
 
+    /**
+     * Change the sort type and load the duplicate posts
+     * @param sort the type of sort (number of comments, new)
+     * **/
     suspend fun setSort(sort: DuplicatesSort) {
         _uiState.update { currentState ->
             currentState.copy(

@@ -46,26 +46,6 @@ class ProfileViewModel(
         }
     }
 
-    suspend fun setContentType(contentType: UserContentType) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                contentType = contentType,
-            )
-        }
-        getUserContent()
-    }
-
-    suspend fun setListingSort(sort: UserListingSort, topSort: TopSort? = null) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                userListingSort = sort,
-                topSort = topSort,
-            )
-        }
-        getUserContent()
-    }
-
-
     private suspend fun getUserContent() {
         viewModelScope.launch {
             _uiState.update { currentState ->
@@ -91,10 +71,38 @@ class ProfileViewModel(
                         ListingNetworkResponse.Error
                     } catch (e: HttpException) {
                         ListingNetworkResponse.Error
-                    },
+                    }
                 )
             }
         }
+    }
+
+    /**
+     * Change the content type and load the content
+     * @param contentType the type of profile content to load (submissions or comments)
+     * **/
+    suspend fun setContentType(contentType: UserContentType) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                contentType = contentType,
+            )
+        }
+        getUserContent()
+    }
+
+    /**
+     * Change the sort type
+     * @param sort the type of sort (hot, new, top, controversial)
+     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * **/
+    suspend fun setListingSort(sort: UserListingSort, topSort: TopSort? = null) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                userListingSort = sort,
+                topSort = topSort,
+            )
+        }
+        getUserContent()
     }
 
     companion object {

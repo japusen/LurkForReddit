@@ -94,6 +94,11 @@ class ListingViewModel(
         }
     }
 
+    /**
+     * Change the sort type and reload posts
+     * @param sort the type of sort (hot, rising, new, top)
+     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * **/
     suspend fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
         _uiState.update { currentState ->
             currentState.copy(
