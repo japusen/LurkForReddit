@@ -84,13 +84,16 @@ class DefaultRedditApiRepository(
     private lateinit var accessToken: AccessToken
     private lateinit var tokenHeader: String
 
+    /**
+     * Initializes the access token for api calls
+     * @throws Exception if network request fails
+     */
     override suspend fun initAccessToken() {
         try {
             val response = accessTokenService.getToken()
             if (response.isSuccessful) {
                 accessToken = response.body()!!
                 tokenHeader = "Bearer ${accessToken.accessToken}"
-                //Log.d("AccessToken", "Response:  ${response.body()}")
             } else {
                 throw Exception(response.errorBody()?.charStream()?.readText())
             }
@@ -103,7 +106,13 @@ class DefaultRedditApiRepository(
         }
     }
 
-
+    /**
+     * Network call to fetch posts from network
+     * @param subreddit the name of the subreddit to load posts from
+     * @param sort the type of sort (hot, rising, new, top)
+     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * @return Flow of PagingData Content
+     */
     override suspend fun getPosts(
         subreddit: String,
         sort: ListingSort,
@@ -128,7 +137,13 @@ class DefaultRedditApiRepository(
         ).flow
     }
 
-
+    /**
+     * Network call to fetch duplicate posts
+     * @param subreddit the name of the subreddit
+     * @param article the id of the article (post)
+     * @param sort the type of sort (number of comments, new)
+     * @return Flow of PagingData Content
+     */
     override suspend fun getPostDuplicates(
         subreddit: String,
         article: String,
@@ -153,7 +168,13 @@ class DefaultRedditApiRepository(
         ).flow
     }
 
-
+    /**
+     * Network call to fetch user submissions
+     * @param username the name of the user
+     * @param sort the type of sort (number of comments, new)
+     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * @return Flow of PagingData Content
+     */
     override suspend fun getUserSubmissions(
         username: String,
         sort: UserListingSort,
@@ -179,6 +200,13 @@ class DefaultRedditApiRepository(
     }
 
 
+    /**
+     * Network call to fetch user comments
+     * @param username the name of the user
+     * @param sort the type of sort (number of comments, new)
+     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * @return Flow of PagingData Content
+     */
     override suspend fun getUserComments(
         username: String,
         sort: UserListingSort,
@@ -204,6 +232,13 @@ class DefaultRedditApiRepository(
     }
 
 
+    /**
+     * Network call to fetch comments of a specific post
+     * @param subreddit the name of the subreddit
+     * @param article the id of the article (post)
+     * @param sort the type of sort (number of comments, new)
+     * @return Post and list of Comments
+     */
     override suspend fun getPostComments(
         subreddit: String,
         article: String,
@@ -224,16 +259,27 @@ class DefaultRedditApiRepository(
         return Pair(post, comments)
     }
 
+    /**
+     * Network call to get subreddit and usernames similar to the search query
+     * @param query the query to perform search on
+     * @return a list of SearchResults for the given query
+     */
     override suspend fun subredditAutoComplete(query: String): List<SearchResult> {
         val response = redditApiService.subredditAutoComplete(
             tokenHeader,
             query
         )
 
-        val results = parseSearchResults(response)
-        return results ?: listOf()
+        return parseSearchResults(response)
     }
 
+    /**
+     * Network call to fetch more comments
+     * @param linkID the id of the post
+     * @param childrenIDs a comma delimited list of comment ids to fetch
+     * @param sort the type of sort (best, top, new, controversial, q&a)
+     * @return a list of comments requested
+     */
     override suspend fun getMoreComments(
         linkID: String,
         childrenIDs: String,

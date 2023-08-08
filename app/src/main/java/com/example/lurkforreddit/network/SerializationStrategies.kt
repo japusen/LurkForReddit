@@ -22,75 +22,89 @@ private val json = Json {
     ignoreUnknownKeys = true
 }
 
-private val blank = json.parseToJsonElement("{}")
+private val empty = json.parseToJsonElement("{}")
 
+/**
+ * Parse the JSON response to obtain a post listing
+ * @param response the JSON response
+ * @return a post listing
+ */
 fun parsePostListing(
     response: JsonElement
 ): PostListing {
 
-    val listing = response.jsonObject.getOrDefault("data", blank)
+    val listing = response.jsonObject["data"]
 
-    val after = listing.jsonObject["after"]?.jsonPrimitive?.contentOrNull
-    val before = listing.jsonObject["before"]?.jsonPrimitive?.contentOrNull
-    val dist = listing.jsonObject["dist"]?.jsonPrimitive?.content?.toInt()
+    val after = listing?.jsonObject?.get("after")?.jsonPrimitive?.contentOrNull
+    val before = listing?.jsonObject?.get("before")?.jsonPrimitive?.contentOrNull
+    val dist = listing?.jsonObject?.get("dist")?.jsonPrimitive?.content?.toInt()
 
-    val children = listing.jsonObject.getOrDefault("children", blank)
+    val children = listing?.jsonObject?.get("children")
 
-    val posts = children.jsonArray.map {
+    val posts = children?.jsonArray?.map {
         json.decodeFromJsonElement(
             Post.serializer(),
-            it.jsonObject.getOrDefault("data", blank)
+            it.jsonObject.getOrDefault("data", empty)
         )
     }
 
-    return PostListing(after, before, dist, posts)
+    return PostListing(after, before, dist, posts ?: listOf())
 }
 
+/**
+ * Parse the JSON response to obtain a profile comment listing
+ * @param response the JSON response
+ * @return a profile comment listing
+ */
 fun parseProfileCommentListing(
     response: JsonElement
 ): ProfileCommentListing {
 
-    val listing = response.jsonObject.getOrDefault("data", blank)
+    val listing = response.jsonObject["data"]
 
-    val after = listing.jsonObject["after"]?.jsonPrimitive?.contentOrNull
-    val before = listing.jsonObject["before"]?.jsonPrimitive?.contentOrNull
-    val dist = listing.jsonObject["dist"]?.jsonPrimitive?.content?.toInt()
+    val after = listing?.jsonObject?.get("after")?.jsonPrimitive?.contentOrNull
+    val before = listing?.jsonObject?.get("before")?.jsonPrimitive?.contentOrNull
+    val dist = listing?.jsonObject?.get("dist")?.jsonPrimitive?.content?.toInt()
 
-    val children = listing.jsonObject.getOrDefault("children", blank)
+    val children = listing?.jsonObject?.get("children")
 
-    val comments = children.jsonArray.map {
+    val comments = children?.jsonArray?.map {
         json.decodeFromJsonElement(
             ProfileComment.serializer(),
-            it.jsonObject.getOrDefault("data", blank)
+            it.jsonObject.getOrDefault("data", empty)
         )
     }
 
-    return ProfileCommentListing(after, before, dist, comments)
+    return ProfileCommentListing(after, before, dist, comments ?: listOf())
 }
 
-
+/**
+ * Parse the JSON response to obtain a list of comments
+ * @param response the JSON response
+ * @return a list of Comments + More object
+ */
 fun parsePostComments(
     response: JsonElement
 ): Pair<List<Comment>, More?> {
     val comments = mutableListOf<Comment>()
     var more: More? = null
 
-    val data = response.jsonObject.getOrDefault("data", blank)
-    val children = data.jsonObject.getOrDefault("children", blank) as JsonArray
+    val data = response.jsonObject["data"]
+    val children = data?.jsonObject?.get("children") as JsonArray
 
     for (child in children) {
         val kind = json.decodeFromJsonElement(
             String.serializer(),
-            child.jsonObject.getOrDefault("kind", blank)
+            child.jsonObject.getOrDefault("kind", empty)
         )
         if (kind == "more") {
             more = json.decodeFromJsonElement(
                 More.serializer(),
-                child.jsonObject.getOrDefault("data", blank)
+                child.jsonObject.getOrDefault("data", empty)
             )
         } else {
-            val commentData = child.jsonObject.getOrDefault("data", blank)
-            val repliesData = commentData.jsonObject.getOrDefault("replies", blank)
+            val commentData = child.jsonObject.getOrDefault("data", empty)
+            val repliesData = commentData.jsonObject.getOrDefault("replies", empty)
             val replies = if (repliesData is JsonObject) {
                 parsePostComments(repliesData)
             } else {
@@ -107,32 +121,43 @@ fun parsePostComments(
     return Pair(comments, more)
 }
 
+/**
+ * Parse the JSON response to obtain a list of search results
+ * @param response the JSON response
+ * @return a list of SearchResults or empty list
+ */
 fun parseSearchResults(
     response: JsonElement
-): List<SearchResult>? {
+): List<SearchResult> {
     return response.jsonObject["subreddits"]?.jsonArray?.map {
         json.decodeFromJsonElement(
             SearchResult.serializer(),
             it
         )
-    }
+    } ?: listOf()
 }
 
+/**
+ * Parse the JSON response to obtain a list of comments
+ * @param response the JSON response
+ * @param postID the id of the post the comments are in response to
+ * @return a list of comments
+ */
 fun parseMoreComments(
     response: JsonElement,
-    root: String
+    postID: String
 ): List<Comment> {
     val comments = mutableListOf<Comment>()
     val replyTree = mutableMapOf<String, Comment>()
 
-    val data = response.jsonObject.getOrDefault("json", blank).jsonObject.getOrDefault("data", blank)
-    val things = data.jsonObject.getOrDefault("things", blank) as JsonArray
+    val data = response.jsonObject["json"]?.jsonObject?.get("data")
+    val things = data?.jsonObject?.get("things") as JsonArray
 
     /** Assemble each comment and add it to the map by it's full id */
     for (thing in things) {
         val kind = thing.jsonObject["kind"]?.jsonPrimitive?.content
         if (kind == "t1") {
-            val commentData = thing.jsonObject.getOrDefault("data", blank)
+            val commentData = thing.jsonObject.getOrDefault("data", empty)
             val commentContent = json.decodeFromJsonElement(
                 CommentContents.serializer(),
                 commentData
@@ -146,7 +171,7 @@ fun parseMoreComments(
     for (reply in replyTree) {
         val comment = reply.value
         val parentID = comment.contents?.parentID
-        if (parentID == root) {
+        if (parentID == postID) {
             comments.add(comment)
         } else {
             replyTree[parentID]?.replies?.add(comment)
@@ -156,6 +181,11 @@ fun parseMoreComments(
     return comments
 }
 
+/**
+ * Parse the JSONElement to obtain the DASH url for the reddit video
+ * @param media the JSONElement that holds the data
+ * @return the DASH url of the video or an empty string
+ */
 fun parseVredditUrl(
     media: JsonElement
 ): String {
