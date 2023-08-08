@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.model.Post
@@ -65,7 +66,7 @@ fun PostCard(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                if (!content.is_self) {
+                if (!content.isSelfPost) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = modifier
@@ -95,6 +96,7 @@ fun PostCard(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = content.subreddit,
@@ -106,6 +108,31 @@ fun PostCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.labelMedium
                         )
+                        if (content.distinguished != null && content.distinguished != "special") {
+                            val text: String
+                            val color: Color
+                            if (content.distinguished == "Moderator") {
+                                text = "[M]"
+                                color = Color.Green
+                            } else {
+                                text = "[A]"
+                                color = Color.Red
+                            }
+
+                            Text(
+                                text = text,
+                                color = color,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                        if (content.domain != null && !content.isSelfPost && !content.isGalleryPost)
+                            Text(
+                                text = content.domain,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                     }
 
                     Row(

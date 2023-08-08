@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.model
 
-import android.util.Log
 import com.example.lurkforreddit.network.parseVredditUrl
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,8 +23,10 @@ data class Post(
     override val createdUtc: Float,
     override val ups: Int,
     override val downs: Int,
-    val is_self: Boolean,
-    val is_gallery: Boolean = false,
+    @SerialName("is_self")
+    val isSelfPost: Boolean,
+    @SerialName("is_gallery")
+    val isGalleryPost: Boolean = false,
     @SerialName("post_hint")
     val postType: String? = null,
     val thumbnail: String,
@@ -55,7 +56,7 @@ data class Post(
 
     fun parseUrl(): String {
         return if (domain == "v.redd.it" && media != null)
-            parseVredditUrl(media)
+            parseVredditUrl(media).ifEmpty { url }
         else
             url
     }
