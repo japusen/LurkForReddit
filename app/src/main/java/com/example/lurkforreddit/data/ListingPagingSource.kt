@@ -7,8 +7,8 @@ import com.example.lurkforreddit.model.Listing
 import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.network.parseProfileCommentListing
-import com.example.lurkforreddit.util.PagingListing
-import com.example.lurkforreddit.util.UserContentType
+import com.example.lurkforreddit.model.PagingListing
+import com.example.lurkforreddit.model.UserContentType
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException
