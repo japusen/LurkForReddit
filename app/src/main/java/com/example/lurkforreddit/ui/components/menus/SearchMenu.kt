@@ -42,8 +42,8 @@ fun SearchMenu(
     setQuery: (String) -> Unit,
     updateSearchResults: () -> Unit,
     clearQuery: () -> Unit,
-    navigateToProfile: (String) -> Unit,
-    navigateToSubreddit: (String) -> Unit,
+    onProfileClicked: (String) -> Unit,
+    onSubredditClicked: (String) -> Unit,
     closeDrawer: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -97,9 +97,9 @@ fun SearchMenu(
                             val name = result.name
                             if (name.startsWith("u_")) {
                                 val username = name.substring(2)
-                                navigateToProfile(username)
+                                onProfileClicked(username)
                             } else {
-                                navigateToSubreddit(result.name)
+                                onSubredditClicked(result.name)
                             }
                             focusManager.clearFocus()
                             clearQuery()

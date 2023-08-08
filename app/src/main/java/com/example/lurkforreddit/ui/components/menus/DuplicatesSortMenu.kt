@@ -22,7 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
+import com.example.lurkforreddit.util.CommentSortItems
 import com.example.lurkforreddit.util.DuplicatesSort
+import com.example.lurkforreddit.util.DuplicatesSortItems
 
 @Composable
 fun DuplicatesSortMenu(
@@ -56,48 +58,29 @@ fun DuplicatesSortMenu(
                 textAlign = TextAlign.Center
             )
 
-            DropdownMenuItem(
-                text = { Text("Number of Comments") },
-                onClick = {
-                    onSortChanged(DuplicatesSort.NUMCOMMENTS)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_comment),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == DuplicatesSort.NUMCOMMENTS)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("New") },
-                onClick = {
-                    onSortChanged(DuplicatesSort.NEW)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_time),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == DuplicatesSort.NEW)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
+            for (item in DuplicatesSortItems.values()) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onSortChanged(item.sort)
+                        expanded = !expanded
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = item.iconID),
+                            contentDescription = null
+                        )
+                    },
+                    colors =
+                    if (selectedSort == item.sort)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            leadingIconColor = MaterialTheme.colorScheme.primary
+                        )
+                    else
+                        MenuDefaults.itemColors()
+                )
+            }
         }
     }
 }

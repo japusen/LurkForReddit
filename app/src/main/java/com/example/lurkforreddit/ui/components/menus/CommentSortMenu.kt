@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.util.CommentSort
+import com.example.lurkforreddit.util.CommentSortItems
 
 
 @Composable
@@ -57,111 +58,29 @@ fun CommentSortMenu(
                 textAlign = TextAlign.Center
             )
 
-            DropdownMenuItem(
-                text = { Text("Top") },
-                onClick = {
-                    onSortChanged(CommentSort.TOP)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_rising),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == CommentSort.TOP)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("Best") },
-                onClick = {
-                    onSortChanged(CommentSort.BEST)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_star),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == CommentSort.BEST)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("New") },
-                onClick = {
-                    onSortChanged(CommentSort.NEW)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_time),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == CommentSort.NEW)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("Controversial") },
-                onClick = {
-                    onSortChanged(CommentSort.CONTROVERSIAL)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_controversial),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == CommentSort.CONTROVERSIAL)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("Q&A") },
-                onClick = {
-                    onSortChanged(CommentSort.QA)
-                    expanded = !expanded
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_question_answer),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == CommentSort.QA)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
+            for (item in CommentSortItems.values()) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onSortChanged(item.sort)
+                        expanded = !expanded
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = item.iconID),
+                            contentDescription = null
+                        )
+                    },
+                    colors =
+                    if (selectedSort == item.sort)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            leadingIconColor = MaterialTheme.colorScheme.primary
+                        )
+                    else
+                        MenuDefaults.itemColors()
+                )
+            }
         }
     }
 }

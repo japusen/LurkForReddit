@@ -23,7 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.util.ListingSort
+import com.example.lurkforreddit.util.ListingSortItems
 import com.example.lurkforreddit.util.TopSort
+import com.example.lurkforreddit.util.TopSortItems
 
 @Composable
 fun ListingSortMenu(
@@ -58,70 +60,31 @@ fun ListingSortMenu(
                 textAlign = TextAlign.Center
             )
 
-            DropdownMenuItem(
-                text = { Text("Hot") },
-                onClick = {
-                    onListingSortChanged(ListingSort.HOT, null)
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_hot),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == ListingSort.HOT)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
+            for (item in ListingSortItems.values().slice(0..2)) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onListingSortChanged(item.sort, null)
+                        expanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = item.iconID),
+                            contentDescription = null
+                        )
+                    },
+                    colors =
+                    if (selectedSort == item.sort)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            leadingIconColor = MaterialTheme.colorScheme.primary
+                        )
+                    else
+                        MenuDefaults.itemColors()
 
-            )
-            DropdownMenuItem(
-                text = { Text("Rising") },
-                onClick = {
-                    onListingSortChanged(ListingSort.RISING, null)
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_rising),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == ListingSort.RISING)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("New") },
-                onClick = {
-                    onListingSortChanged(ListingSort.NEW, null)
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_time),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == ListingSort.NEW)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
+                )
+            }
+
             DropdownMenuItem(
                 text = { Text("Top") },
                 onClick = {
@@ -172,54 +135,17 @@ fun ListingSortMenu(
                     submenuExpanded = false
                 }
             )
-            DropdownMenuItem(
-                text = { Text("All") },
-                onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.ALL)
-                    expanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Year") },
-                onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.YEAR)
-                    expanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Month") },
-                onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.MONTH)
-                    expanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Week") },
-                onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.WEEK)
-                    expanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Day") },
-                onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.DAY)
-                    expanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Hour") },
-                onClick = {
-                    onListingSortChanged(ListingSort.TOP, TopSort.HOUR)
-                    expanded = false
-                    submenuExpanded = false
-                }
-            )
+
+            for (item in TopSortItems.values()) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onListingSortChanged(ListingSort.TOP, item.sort)
+                        expanded = false
+                        submenuExpanded = false
+                    }
+                )
+            }
         }
     }
 }

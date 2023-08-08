@@ -23,8 +23,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.util.TopSort
+import com.example.lurkforreddit.util.TopSortItems
 import com.example.lurkforreddit.util.UserContentType
+import com.example.lurkforreddit.util.UserContentTypeItems
 import com.example.lurkforreddit.util.UserListingSort
+import com.example.lurkforreddit.util.UserListingSortItems
 
 @Composable
 fun ProfileSortMenu(
@@ -41,7 +44,8 @@ fun ProfileSortMenu(
 
 
 
-    IconButton(onClick = { contentExpanded = true }
+    IconButton(
+        onClick = { contentExpanded = true }
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_content_type),
@@ -73,48 +77,29 @@ fun ProfileSortMenu(
                 textAlign = TextAlign.Center
             )
 
-            DropdownMenuItem(
-                text = { Text("Submissions") },
-                onClick = {
-                    onContentTypeChanged(UserContentType.SUBMITTED)
-                    contentExpanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_submissions),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (contentType == UserContentType.SUBMITTED)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("Comments") },
-                onClick = {
-                    onContentTypeChanged(UserContentType.COMMENTS)
-                    contentExpanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_comment),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (contentType == UserContentType.COMMENTS)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
+            for (item in UserContentTypeItems.values()) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onContentTypeChanged(item.contentType)
+                        contentExpanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = item.iconID),
+                            contentDescription = null
+                        )
+                    },
+                    colors =
+                    if (contentType == item.contentType)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            leadingIconColor = MaterialTheme.colorScheme.primary
+                        )
+                    else
+                        MenuDefaults.itemColors()
+                )
+            }
         }
     }
     
@@ -135,92 +120,54 @@ fun ProfileSortMenu(
                 textAlign = TextAlign.Center
             )
 
-            DropdownMenuItem(
-                text = { Text("Hot") },
-                onClick = {
-                    onSortChanged(UserListingSort.HOT, null)
-                    sortExpanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_hot),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == UserListingSort.HOT)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("New") },
-                onClick = {
-                    onSortChanged(UserListingSort.NEW, null)
-                    sortExpanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_time),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == UserListingSort.NEW)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("Controversial") },
-                onClick = {
-                    submenuExpanded = true
-                    sortExpanded = false
-                    topOrControversial = UserListingSort.CONTROVERSIAL
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_controversial),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == UserListingSort.CONTROVERSIAL)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
-            DropdownMenuItem(
-                text = { Text("Top") },
-                onClick = {
-                    submenuExpanded = true
-                    sortExpanded = false
-                    topOrControversial = UserListingSort.TOP
-                },
-                leadingIcon = {
-                    Icon(
-                        painterResource(id = R.drawable.ic_top),
-                        contentDescription = null
-                    )
-                },
-                colors =
-                if (selectedSort == UserListingSort.TOP)
-                    MenuDefaults.itemColors(
-                        textColor = MaterialTheme.colorScheme.primary,
-                        leadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                else
-                    MenuDefaults.itemColors()
-            )
+            for (item in UserListingSortItems.values().slice(0..1)) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onSortChanged(item.sort, null)
+                        sortExpanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = item.iconID),
+                            contentDescription = null
+                        )
+                    },
+                    colors =
+                    if (selectedSort == item.sort)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            leadingIconColor = MaterialTheme.colorScheme.primary
+                        )
+                    else
+                        MenuDefaults.itemColors()
+                )
+            }
+
+            for (item in UserListingSortItems.values().slice(2..3)) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        submenuExpanded = true
+                        sortExpanded = false
+                        topOrControversial = item.sort
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = item.iconID),
+                            contentDescription = null
+                        )
+                    },
+                    colors =
+                    if (selectedSort == item.sort)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.primary,
+                            leadingIconColor = MaterialTheme.colorScheme.primary
+                        )
+                    else
+                        MenuDefaults.itemColors()
+                )
+            }
         }
     }
 
@@ -250,54 +197,17 @@ fun ProfileSortMenu(
                     submenuExpanded = false
                 }
             )
-            DropdownMenuItem(
-                text = { Text("All") },
-                onClick = {
-                    onSortChanged(topOrControversial, TopSort.ALL)
-                    sortExpanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Year") },
-                onClick = {
-                    onSortChanged(topOrControversial, TopSort.YEAR)
-                    sortExpanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Month") },
-                onClick = {
-                    onSortChanged(topOrControversial, TopSort.MONTH)
-                    sortExpanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Week") },
-                onClick = {
-                    onSortChanged(topOrControversial, TopSort.WEEK)
-                    sortExpanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Day") },
-                onClick = {
-                    onSortChanged(topOrControversial, TopSort.DAY)
-                    sortExpanded = false
-                    submenuExpanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Hour") },
-                onClick = {
-                    onSortChanged(topOrControversial, TopSort.HOUR)
-                    sortExpanded = false
-                    submenuExpanded = false
-                }
-            )
+
+            for (item in TopSortItems.values()) {
+                DropdownMenuItem(
+                    text = { Text(item.text) },
+                    onClick = {
+                        onSortChanged(topOrControversial, item.sort)
+                        sortExpanded = false
+                        submenuExpanded = false
+                    }
+                )
+            }
         }
     }
 }
