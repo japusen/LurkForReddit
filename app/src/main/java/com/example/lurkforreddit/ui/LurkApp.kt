@@ -1,23 +1,9 @@
 package com.example.lurkforreddit.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,14 +15,13 @@ import androidx.navigation.navArgument
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.ui.components.ImageLink
 import com.example.lurkforreddit.ui.components.VideoPlayer
-import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
 import com.example.lurkforreddit.ui.components.menus.ProfileSortMenu
-import com.example.lurkforreddit.ui.components.menus.SearchMenu
 import com.example.lurkforreddit.ui.screens.CommentsScreen
 import com.example.lurkforreddit.ui.screens.CommentsViewModel
 import com.example.lurkforreddit.ui.screens.DuplicatesViewModel
+import com.example.lurkforreddit.ui.screens.HomeScreen
 import com.example.lurkforreddit.ui.screens.HomeViewModel
 import com.example.lurkforreddit.ui.screens.ListingScreen
 import com.example.lurkforreddit.ui.screens.ListingViewModel
@@ -46,9 +31,7 @@ import com.example.lurkforreddit.util.openPostLink
 import kotlinx.coroutines.launch
 
 @Composable
-fun LurkApp(
-    modifier: Modifier = Modifier,
-) {
+fun LurkApp() {
     val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -59,86 +42,43 @@ fun LurkApp(
         composable(route = "home") {
             val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
             val homeUiState = homeViewModel.uiState.collectAsStateWithLifecycle()
-            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-            ModalNavigationDrawer(
-                drawerContent = {
-                    SearchMenu(
-                        query = homeUiState.value.query,
-                        searchResults = homeUiState.value.searchResults,
-                        setQuery = { query ->
-                            homeViewModel.setQuery(query)
-                        },
-                        updateSearchResults = {
-                            coroutineScope.launch {
-                                homeViewModel.updateSearchResults()
-                            }
-                        },
-                        clearQuery = { homeViewModel.clearQuery() },
-                        navigateToProfile = { username ->
-                            navController.navigate("user/$username")
-                        },
-                        navigateToSubreddit = { subreddit ->
-                            navController.navigate("subreddit/$subreddit")
-                        },
-                        closeDrawer = {
-                            coroutineScope.launch {
-                                drawerState.close()
-                            }
-                        }
-                    )
+            HomeScreen(
+                query = homeUiState.value.query,
+                subreddit = homeUiState.value.subreddit,
+                selectedSort = homeUiState.value.listingSort,
+                networkResponse = homeUiState.value.networkResponse,
+                searchResults = homeUiState.value.searchResults,
+                setQuery = { query ->
+                    homeViewModel.setQuery(query)
                 },
-                drawerState = drawerState
-            ) {
-                ListingScreen(
-                    title = {
-                        Text(
-                            text = homeUiState.value.subreddit,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    },
-                    navIcon = {
-                        IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    drawerState.open()
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Menu,
-                                contentDescription = "Back"
-                            )
-                        }
-                    },
-                    actions = {
-                        ListingSortMenu(
-                            selectedSort = homeUiState.value.listingSort,
-                            onListingSortChanged = { listing, top ->
-                                coroutineScope.launch{
-                                    homeViewModel.setListingSort(listing, top)
-                                }
-                            }
-                        )
-                    },
-                    networkResponse = homeUiState.value.networkResponse,
-                    onPostClicked = { subreddit, article ->
-                        navController.navigate("details/$subreddit/$article")
-                    },
-                    onProfileClicked = { username ->
-                        navController.navigate("user/$username")
-                    },
-                    onSubredditClicked = { sub ->
-                        navController.navigate("subreddit/$sub")
-                    },
-                    onBrowserClicked = { url ->
-                        openLinkInBrowser(context, url)
-                    },
-                    openLink = { url ->
-                        openPostLink(context, navController, url)
+                clearQuery = { homeViewModel.clearQuery() },
+                updateSearchResults = {
+                    coroutineScope.launch {
+                        homeViewModel.updateSearchResults()
                     }
-                )
-            }
+                },
+                onListingSortChanged = { listing, top ->
+                    coroutineScope.launch{
+                        homeViewModel.setListingSort(listing, top)
+                    }
+                },
+                onPostClicked = { subreddit, article ->
+                    navController.navigate("details/$subreddit/$article")
+                },
+                onProfileClicked = { username ->
+                    navController.navigate("user/$username")
+                },
+                onSubredditClicked = { subreddit ->
+                    navController.navigate("subreddit/$subreddit")
+                },
+                onBrowserClicked = { url ->
+                    openLinkInBrowser(context, url)
+                },
+                onLinkClicked = { url ->
+                    openPostLink(context, navController, url)
+                }
+            )
         }
         composable(
             route = "subreddit/{subreddit}",
@@ -150,47 +90,32 @@ fun LurkApp(
             val subredditUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
 
             ListingScreen(
-                title = {
-                    Text(
-                        text = listingViewModel.subreddit,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    ListingSortMenu(
-                        selectedSort = subredditUiState.value.listingSort,
-                        onListingSortChanged = { listing, top ->
-                            coroutineScope.launch{
-                                listingViewModel.setListingSort(listing, top)
-                            }
-                        }
-                    )
-                },
+                title = listingViewModel.subreddit,
+                onBackClicked = { navController.popBackStack() },
                 networkResponse = subredditUiState.value.networkResponse,
-                onPostClicked = { sub, article ->
-                    navController.navigate("details/$sub/$article")
+                onPostClicked = { subreddit, article ->
+                    navController.navigate("details/$subreddit/$article")
                 },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
-                onSubredditClicked = {}, /* Already on the sub, no need to reload*/
+                onSubredditClicked = {}, /* Already on the sub, no need to open again*/
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
-                openLink = { url ->
+                onLinkClicked = { url ->
                     openPostLink(context, navController, url)
                 }
-            )
+            ) {
+                ListingSortMenu(
+                    selectedSort = subredditUiState.value.listingSort,
+                    onListingSortChanged = { listing, top ->
+                        coroutineScope.launch{
+                            listingViewModel.setListingSort(listing, top)
+                        }
+                    }
+                )
+            }
         }
         composable(
             route = "user/{username}",
@@ -202,53 +127,38 @@ fun LurkApp(
             val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
 
             ListingScreen(
-                title = {
-                    Text(
-                        text = profileViewModel.username,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                      ProfileSortMenu(
-                          selectedSort = profileUiState.value.userListingSort,
-                          contentType = profileUiState.value.contentType,
-                          onContentTypeChanged = { contentType ->
-                              coroutineScope.launch {
-                                  profileViewModel.setContentType(contentType)
-                              }
-                          },
-                          onSortChanged = { sort, top ->
-                              coroutineScope.launch{
-                                  profileViewModel.setListingSort(sort, top)
-                              }
-                          }
-                      )
-                },
+                title = profileViewModel.username,
                 networkResponse = profileUiState.value.networkResponse,
-                onPostClicked = { sub, article ->
-                    navController.navigate("details/$sub/$article")
+                onBackClicked = { navController.popBackStack() },
+                onPostClicked = { subreddit, article ->
+                    navController.navigate("details/$subreddit/$article")
                 },
-                onProfileClicked = {}, /* Already on userpage, no need to reload */
-                onSubredditClicked = { sub ->
-                    navController.navigate("subreddit/$sub")
+                onProfileClicked = {}, /* Already on userpage, no need to open again */
+                onSubredditClicked = { subreddit ->
+                    navController.navigate("subreddit/$subreddit")
                 },
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
-                openLink = { url ->
+                onLinkClicked = { url ->
                     openPostLink(context, navController, url)
                 }
-            )
+            ) {
+                ProfileSortMenu(
+                    selectedSort = profileUiState.value.userListingSort,
+                    contentType = profileUiState.value.contentType,
+                    onContentTypeChanged = { contentType ->
+                        coroutineScope.launch {
+                            profileViewModel.setContentType(contentType)
+                        }
+                    },
+                    onSortChanged = { sort, top ->
+                        coroutineScope.launch{
+                            profileViewModel.setListingSort(sort, top)
+                        }
+                    }
+                )
+            }
         }
         composable(
             route = "duplicates/{subreddit}/{article}",
@@ -263,49 +173,34 @@ fun LurkApp(
             val duplicatesUiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle()
 
             ListingScreen(
-                title = {
-                    Text(
-                        text = "Other Discussions",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    DuplicatesSortMenu(
-                        selectedSort = duplicatesUiState.value.sort,
-                        onSortChanged = { sort ->
-                            coroutineScope.launch {
-                                duplicatesViewModel.setSort(sort)
-                            }
-                        }
-                    )
-                },
+                title = stringResource(R.string.other_discussions),
                 networkResponse = duplicatesUiState.value.networkResponse,
-                onPostClicked = { sub, art ->
-                    navController.navigate("details/$sub/$art")
+                onBackClicked = { navController.popBackStack() },
+                onPostClicked = { subreddit, article ->
+                    navController.navigate("details/$subreddit/$article")
                 },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
-                onSubredditClicked = { sub ->
-                    navController.navigate("subreddit/$sub")
+                onSubredditClicked = { subreddit ->
+                    navController.navigate("subreddit/$subreddit")
                 },
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
-                openLink = { url ->
+                onLinkClicked = { url ->
                     openPostLink(context, navController, url)
                 }
-            )
+            ) {
+                DuplicatesSortMenu(
+                    selectedSort = duplicatesUiState.value.sort,
+                    onSortChanged = { sort ->
+                        coroutineScope.launch {
+                            duplicatesViewModel.setSort(sort)
+                        }
+                    }
+                )
+            }
         }
         composable(
             route = "details/{subreddit}/{article}",
@@ -320,48 +215,24 @@ fun LurkApp(
             val commentsUiState = commentsViewModel.uiState.collectAsStateWithLifecycle()
 
             CommentsScreen(
-                title = {
-                    Text(
-                        text = commentsViewModel.subreddit,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    CommentSortMenu(
-                        selectedSort = commentsUiState.value.commentSort,
-                        onSortChanged = { sort ->
-                            coroutineScope.launch {
-                                commentsViewModel.setCommentSort(sort)
-                            }
-                        }
-                    )
-                    IconButton(
-                        onClick = { navController.navigate("duplicates" +
-                                "/${commentsViewModel.subreddit}" +
-                                "/${commentsViewModel.article}")
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_other_discussions),
-                            contentDescription = "Other Discussions"
-                        )
-                    }
-                },
+                subreddit = commentsViewModel.subreddit,
+                selectedSort = commentsUiState.value.commentSort,
                 networkResponse = commentsUiState.value.networkResponse,
-                openLink = { url ->
+                onBackClicked = { navController.popBackStack() },
+                onDuplicatesClicked = {
+                    navController.navigate("duplicates" +
+                        "/${commentsViewModel.subreddit}" +
+                        "/${commentsViewModel.article}")
+                },
+                onSortChanged = { sort ->
+                    coroutineScope.launch {
+                        commentsViewModel.setCommentSort(sort)
+                    }
+                },
+                onLinkClicked = { url ->
                     openPostLink(context, navController, url)
                 },
-                openProfile = { username ->
+                onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
                 onMoreClicked = {
@@ -370,10 +241,10 @@ fun LurkApp(
                     }
                 },
                 onNestedMoreClicked = { id ->
-//                    TODO
-//                    coroutineScope.launch {
-//                        commentsViewModel.getMoreComments(id)
-//                    }
+                    /*TODO
+                    coroutineScope.launch {
+                        commentsViewModel.getMoreComments(id)
+                    }*/
                 }
             )
         }
