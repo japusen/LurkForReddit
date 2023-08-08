@@ -6,6 +6,12 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.navigation.NavController
 import java.net.URI
 
+/**
+ * Determines whether to launch an intent or navigate to specific route based on the link url
+ * @param context to launch an intent
+ * @param navController to navigate to routes
+ * @param url post url
+ */
 fun openPostLink(
     context: Context,
     navController: NavController,

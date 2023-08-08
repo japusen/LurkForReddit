@@ -5,6 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import java.net.URI
 
+/**
+ * Opens link in a browser intent and modifies the url if needed
+ * @param context to launch an intent
+ * @param url url to open
+ */
 fun openLinkInBrowser(
     context: Context,
     url: String
