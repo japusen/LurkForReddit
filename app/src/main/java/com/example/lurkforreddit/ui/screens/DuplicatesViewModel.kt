@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.util.DuplicatesSort
+import com.example.lurkforreddit.model.DuplicatesSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

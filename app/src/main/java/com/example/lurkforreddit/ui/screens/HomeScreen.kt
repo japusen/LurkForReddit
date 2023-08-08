@@ -25,8 +25,8 @@ import com.example.lurkforreddit.model.SearchResult
 import com.example.lurkforreddit.ui.components.ListingFeed
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
 import com.example.lurkforreddit.ui.components.menus.SearchMenu
-import com.example.lurkforreddit.util.ListingSort
-import com.example.lurkforreddit.util.TopSort
+import com.example.lurkforreddit.model.ListingSort
+import com.example.lurkforreddit.model.TopSort
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

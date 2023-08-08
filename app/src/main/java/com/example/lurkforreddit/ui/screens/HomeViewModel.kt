@@ -12,8 +12,8 @@ import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
 import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.SearchResult
-import com.example.lurkforreddit.util.ListingSort
-import com.example.lurkforreddit.util.TopSort
+import com.example.lurkforreddit.model.ListingSort
+import com.example.lurkforreddit.model.TopSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

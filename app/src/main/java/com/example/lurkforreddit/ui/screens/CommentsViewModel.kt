@@ -12,7 +12,7 @@ import com.example.lurkforreddit.data.RedditApiRepository
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.model.Post
-import com.example.lurkforreddit.util.CommentSort
+import com.example.lurkforreddit.model.CommentSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
