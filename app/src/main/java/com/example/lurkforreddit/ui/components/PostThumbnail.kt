@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,14 +20,32 @@ import com.example.lurkforreddit.R
 
 
 @Composable
-fun PostPreview(
+fun PostThumbnail(
+    thumbnail: String,
+    url: String,
+    openLink: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        PostImage(
+            thumbnail = thumbnail,
+            url = url,
+            openLink = openLink
+        )
+    }
+}
+
+@Composable
+fun PostImage(
     thumbnail: String,
     url: String,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-
     if (thumbnail == "none") {
         Image(
             alignment = Alignment.Center,

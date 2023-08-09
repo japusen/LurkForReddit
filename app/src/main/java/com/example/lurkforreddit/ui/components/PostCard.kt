@@ -1,10 +1,11 @@
 package com.example.lurkforreddit.ui.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.util.relativeTime
+import kotlinx.datetime.DateTimePeriod
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -58,7 +60,7 @@ fun PostCard(
                 onLongClick = { expanded = !expanded }
             )
     ) {
-        Column() {
+        Column {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -67,19 +69,15 @@ fun PostCard(
                     .padding(8.dp)
             ) {
                 if (!content.isSelfPost) {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    PostThumbnail(
+                        thumbnail = content.thumbnail,
+                        url = content.url,
+                        openLink = openLink,
                         modifier = modifier
                             .width(75.dp)
                             .height(75.dp)
                             .clip(RoundedCornerShape(6.dp))
-                    ) {
-                        PostPreview(
-                            thumbnail = content.thumbnail,
-                            url = content.url,
-                            openLink = openLink
-                        )
-                    }
+                    )
                 }
 
                 Column(
@@ -96,151 +94,212 @@ fun PostCard(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = content.subreddit,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.labelMedium
+                        SubredditAndAuthor(
+                            subreddit = content.subreddit,
+                            author = content.author,
+                            distinguished = content.distinguished,
+                            domain = content.domain,
+                            isSelfPost = content.isSelfPost,
+                            isGalleryPost = content.isGalleryPost
                         )
-                        Text(
-                            text = content.author,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                        if (content.distinguished != null && content.distinguished != "special") {
-                            val text: String
-                            val color: Color
-                            if (content.distinguished == "Moderator") {
-                                text = "[M]"
-                                color = Color.Green
-                            } else {
-                                text = "[A]"
-                                color = Color.Red
-                            }
-
-                            Text(
-                                text = text,
-                                color = color,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        }
-                        if (content.domain != null && !content.isSelfPost && !content.isGalleryPost)
-                            Text(
-                                text = content.domain,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.labelMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
                     }
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
+                        modifier = modifier
                     ) {
-                        if (content.over18) {
-                            Text(
-                                text = "nsfw",
-                                color = Color.Red,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        }
-                        if (content.locked) {
-                            Image(
-                                alignment = Alignment.Center,
-                                painter = painterResource(R.drawable.ic_post_locked),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                colorFilter = ColorFilter.tint(Color.Yellow),
-                                modifier = Modifier
-                                    .width(15.dp)
-                                    .height(15.dp)
-                            )
-                        }
-                        Text(
-                            text = "${content.score} points",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelSmall
+                        ExtraDetails(
+                            nsfw = content.over18,
+                            locked = content.locked,
+                            score = content.score,
+                            numComments = content.numComments,
+                            publishedTime = relativeTime(content.createdUtc)
                         )
-                        Text(
-                            text = "${content.numComments} comments",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        TimeStamp(
-                            time = relativeTime(content.createdUtc),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelSmall
-                        )
+
                         Spacer(modifier.weight(1F))
-                        IconButton(
-                            onClick = { expanded = !expanded },
-                            modifier = Modifier
-                                .height(20.dp)
-                                .width(20.dp)
-                        ) {
-                            if (expanded) {
-                                Icon(
-                                    painterResource(id = R.drawable.ic_options_hide),
-                                    contentDescription = "show options"
-                                )
-                            } else {
-                                Icon(
-                                    painterResource(id = R.drawable.ic_options_show),
-                                    contentDescription = "show options"
-                                )
-                            }
-                        }
+                        ExpandButton(
+                            expanded = expanded,
+                            onExpand = { expanded = !expanded }
+                        )
                     }
                 }
             }
-
-            if (expanded) {
+            AnimatedVisibility(visible = expanded) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
-                    IconButton(
-                        onClick = { onProfileClicked(content.author) },
-                        modifier = Modifier
-                            .weight(1F)
-                            .height(20.dp)
-                            .width(20.dp)
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_profile),
-                            contentDescription = "profile",
-                        )
-                    }
-                    IconButton(
-                        onClick = { onSubredditClicked(content.subreddit) },
-                        modifier = Modifier
-                            .weight(1F)
-                            .height(20.dp)
-                            .width(20.dp)
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_subreddit),
-                            contentDescription = "subreddits",
-                        )
-                    }
-                    IconButton(
-                        onClick = { onBrowserClicked(content.url) },
-                        modifier = Modifier
-                            .weight(1F)
-                            .height(20.dp)
-                            .width(20.dp)
-
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_open_in_browser),
-                            contentDescription = "open in browser",
-                        )
-                    }
+                    PostActions(
+                        onProfileClicked = { onProfileClicked(content.author) },
+                        onSubredditClicked = { onSubredditClicked(content.subreddit) },
+                        onBrowserClicked = { onBrowserClicked(content.url) },
+                        modifier = Modifier.weight(1F)
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SubredditAndAuthor(
+    subreddit: String,
+    author: String,
+    distinguished: String?,
+    domain: String?,
+    isSelfPost: Boolean,
+    isGalleryPost: Boolean,
+) {
+    Text(
+        text = subreddit,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.labelMedium
+    )
+    Text(
+        text = author,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.labelMedium
+    )
+    if (distinguished != null && distinguished != "special") {
+        val text: String
+        val color: Color
+        if (distinguished == "Moderator") {
+            text = "[M]"
+            color = Color.Green
+        } else {
+            text = "[A]"
+            color = Color.Red
+        }
+
+        Text(
+            text = text,
+            color = color,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+    if (domain != null && !isSelfPost && !isGalleryPost)
+        Text(
+            text = domain,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+}
+
+@Composable
+fun ExtraDetails(
+    nsfw: Boolean,
+    locked: Boolean,
+    score: Int,
+    numComments: Int,
+    publishedTime: DateTimePeriod,
+) {
+    if (nsfw) {
+        Text(
+            text = "nsfw",
+            color = Color.Red,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+    if (locked) {
+        Image(
+            alignment = Alignment.Center,
+            painter = painterResource(R.drawable.ic_post_locked),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.tint(Color.Yellow),
+            modifier = Modifier
+                .width(15.dp)
+                .height(15.dp)
+        )
+    }
+    Text(
+        text = "$score points",
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.labelSmall
+    )
+    Text(
+        text = "$numComments comments",
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.labelSmall
+    )
+    TimeStamp(
+        time = publishedTime,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.labelSmall
+    )
+}
+
+
+@Composable
+fun ExpandButton(
+    expanded: Boolean,
+    onExpand: () -> Unit
+) {
+    IconButton(
+        onClick = { onExpand() },
+        modifier = Modifier
+            .height(20.dp)
+            .width(20.dp)
+    ) {
+        AnimatedContent(targetState = expanded, label = "") { expandedState ->
+            Icon(
+                painterResource(id = if (expandedState) R.drawable.ic_options_hide else R.drawable.ic_options_show),
+                contentDescription = "options"
+            )
+        }
+    }
+}
+@Composable
+fun PostActions(
+    onProfileClicked: () -> Unit,
+    onSubredditClicked: () -> Unit,
+    onBrowserClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    ActionButton(
+        onAction = { onProfileClicked() },
+        iconID = R.drawable.ic_profile,
+        description = "open profile",
+        modifier = modifier
+    )
+    ActionButton(
+        onAction = { onSubredditClicked() },
+        iconID = R.drawable.ic_subreddit,
+        description = "open subreddit",
+        modifier = modifier
+    )
+    ActionButton(
+        onAction = { onBrowserClicked() },
+        iconID = R.drawable.ic_open_in_browser,
+        description = "open link in browser",
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ActionButton(
+    onAction: () -> Unit,
+    iconID: Int,
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = { onAction() },
+        modifier = modifier
+            .height(20.dp)
+            .width(20.dp)
+
+    ) {
+        Icon(
+            painterResource(id = iconID),
+            contentDescription = description,
+        )
     }
 }
