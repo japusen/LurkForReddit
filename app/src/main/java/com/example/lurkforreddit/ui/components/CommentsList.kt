@@ -55,10 +55,10 @@ fun CommentsList(
 
         if (more != null) {
             item {
-                MoreComments(
+                MoreCommentsIndicator(
                     padding = 0,
                     color = 0,
-                    more = more,
+                    numberOfComments = more.children.size,
                     onMoreClicked = onMoreClicked
                 )
             }

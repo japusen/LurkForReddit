@@ -2,7 +2,6 @@ package com.example.lurkforreddit.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.util.relativeTime
+import kotlinx.datetime.DateTimePeriod
 
 @Composable
 fun CommentsHeader(
@@ -45,19 +45,15 @@ fun CommentsHeader(
         ) {
 
             if (!post.isSelfPost) {
-                Box(
-                    contentAlignment = Alignment.Center,
+                PostThumbnail(
+                    thumbnail = post.thumbnail,
+                    url = post.url,
+                    openLink = openLink,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
                         .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                ) {
-                    PostPreview(
-                        thumbnail = post.thumbnail,
-                        url = post.url,
-                        openLink = openLink
-                    )
-                }
+                )
             }
 
             Column(
@@ -66,74 +62,102 @@ fun CommentsHeader(
                     .padding(8.dp)
                     .fillMaxWidth()
             ) {
-                Text(
-                    text = post.title,
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleMedium
+                
+                PostSummary(
+                    title = post.title,
+                    author = post.author,
+                    nsfw = post.over18,
+                    locked = post.locked,
+                    score = post.score,
+                    numComments = post.numComments,
+                    publishedTime = relativeTime(post.createdUtc)
                 )
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = post.author,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-
-                    if (post.over18) {
-                        Text(
-                            text = "nsfw",
-                            color = Color.Red,
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    }
-                    if (post.locked) {
-                        Image(
-                            alignment = Alignment.Center,
-                            painter = painterResource(R.drawable.ic_post_locked),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            colorFilter = ColorFilter.tint(Color.Yellow),
-                            modifier = Modifier
-                                .width(18.dp)
-                                .height(18.dp)
-                        )
-                    }
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "${post.score} points",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        text = "${post.numComments} comments",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    TimeStamp(
-                        time = relativeTime(post.createdUtc),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                }
-
                 if (post.selftext != "") {
-                    Divider(modifier = Modifier
-                        .padding(top = 4.dp)
-                    )
-                    Text(
-                        text = post.selftext,
-                        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-                    )
+                    SelfText(text = post.selftext)
                 }
             }
         }
     }
+}
+
+@Composable
+fun PostSummary(
+    title: String,
+    author: String,
+    nsfw: Boolean,
+    locked: Boolean,
+    score: Int,
+    numComments: Int,
+    publishedTime: DateTimePeriod
+) {
+    Text(
+        text = title,
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = author,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall
+        )
+
+        if (nsfw) {
+            Text(
+                text = "nsfw",
+                color = Color.Red,
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+        if (locked) {
+            Image(
+                alignment = Alignment.Center,
+                painter = painterResource(R.drawable.ic_post_locked),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.tint(Color.Yellow),
+                modifier = Modifier
+                    .width(18.dp)
+                    .height(18.dp)
+            )
+        }
+    }
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "$score points",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall
+        )
+        Text(
+            text = "$numComments comments",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall
+        )
+        TimeStamp(
+            time = publishedTime,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall
+        )
+    }
+}
+
+@Composable
+fun SelfText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Divider(modifier = Modifier.padding(top = 4.dp))
+    Text(
+        text = text,
+        modifier = modifier.padding(top = 4.dp, bottom = 8.dp)
+    )
 }

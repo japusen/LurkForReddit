@@ -26,12 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.CommentContents
 import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.util.relativeTime
+import kotlinx.datetime.DateTimePeriod
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -50,7 +50,7 @@ fun CommentCard(
     val nestedPadding = 12
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = padding.dp)
             .drawBehind {
@@ -78,7 +78,7 @@ fun CommentCard(
             showReplies = showReplies,
             numReplies = if (more != null) replies.size + 1 else replies.size,
             openProfile = openProfile,
-            modifier = Modifier
+            modifier = modifier
                 .combinedClickable(
                     enabled = true,
                     onLongClick = { showReplies = !showReplies },
@@ -87,8 +87,8 @@ fun CommentCard(
         )
 
         if (showReplies) {
-            replies.forEach { reply ->
-                if (replies.isNotEmpty()) {
+            if (replies.isNotEmpty()) {
+                replies.forEach { reply ->
                     reply.contents?.let {
                         CommentCard(
                             postAuthor = postAuthor,
@@ -103,11 +103,12 @@ fun CommentCard(
                     }
                 }
             }
+
             if (more != null) {
-                MoreComments(
+                MoreCommentsIndicator(
                     padding = nestedPadding,
                     color = color + 1,
-                    more = more,
+                    numberOfComments = more.children.size,
                     onMoreClicked = { onNestedMoreClicked(contents.id) }
                 )
             }
@@ -115,7 +116,6 @@ fun CommentCard(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun CommentContents(
     postAuthor: String,
@@ -130,56 +130,88 @@ private fun CommentContents(
             .padding(8.dp)
     ) {
 
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            val authorModifier =
-                if (postAuthor == contents.author)
-                    Modifier.background(MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(4.dp))
-                else
-                    Modifier
-            Text(
-                text = contents.author,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = authorModifier.clickable { openProfile(contents.author) }
-            )
-
-            Text(
-                text = if (contents.scoreHidden) "[score hidden]" else "${contents.score} points",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.titleMedium
-
-            )
-            TimeStamp(
-                time = relativeTime(contents.createdUtc),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            if ((!showReplies && numReplies > 0)) {
-                Badge(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(top = 0.dp)
-                ) {
-                    Text(
-                        text = "+${numReplies}",
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-            }
-
-        }
-        Text(
-            text = contents.body,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(8.dp)
+        AuthorDetails(
+            postAuthor = postAuthor,
+            commentAuthor = contents.author,
+            isScoreHidden = contents.scoreHidden,
+            score = contents.score,
+            publishedTime = relativeTime(contents.createdUtc),
+            openProfile = openProfile,
+            showReplies = showReplies,
+            numReplies = numReplies
         )
+
+        CommentBody(body = contents.body)
     }
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun AuthorDetails(
+    postAuthor: String,
+    commentAuthor: String,
+    isScoreHidden: Boolean,
+    score: Int,
+    publishedTime: DateTimePeriod,
+    openProfile: (String) -> Unit,
+    showReplies: Boolean,
+    numReplies: Int,
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        val authorModifier =
+            if (postAuthor == commentAuthor)
+                Modifier.background(MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(4.dp))
+            else
+                Modifier
+        Text(
+            text = commentAuthor,
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = authorModifier.clickable { openProfile(commentAuthor) }
+        )
+
+        Text(
+            text = if (isScoreHidden) "[score hidden]" else "$score points",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleMedium
+
+        )
+        TimeStamp(
+            time = publishedTime,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        if ((!showReplies && numReplies > 0)) {
+            Badge(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.padding(top = 0.dp)
+            ) {
+                Text(
+                    text = "+${numReplies}",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CommentBody(
+    body: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = body,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier.padding(8.dp)
+    )
 }

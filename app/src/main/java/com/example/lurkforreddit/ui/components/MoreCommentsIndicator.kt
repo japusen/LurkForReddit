@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.model.More
 
 @Composable
-fun MoreComments(
+fun MoreCommentsIndicator(
     padding: Int,
     color: Int,
-    more: More,
+    numberOfComments: Int,
     onMoreClicked: () -> Unit,
 ) {
     Column(
@@ -45,7 +45,7 @@ fun MoreComments(
     ) {
         Divider(modifier = Modifier.fillMaxWidth())
         Text(
-            text = "more comments (${more.children.size})",
+            text = "more comments ($numberOfComments)",
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
         )
