@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -188,7 +189,7 @@ fun AuthorDetails(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        if ((!showReplies && numReplies > 0)) {
+        AnimatedVisibility ((!showReplies && numReplies > 0)) {
             Badge(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
