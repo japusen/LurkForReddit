@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -89,6 +90,8 @@ fun LurkApp() {
             val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
             val subredditUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
 
+            val toast = Toast.makeText(context, "Already viewing ${listingViewModel.subreddit}", Toast.LENGTH_SHORT)
+
             ListingScreen(
                 title = listingViewModel.subreddit,
                 onBackClicked = { navController.popBackStack() },
@@ -99,7 +102,7 @@ fun LurkApp() {
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
-                onSubredditClicked = {}, /* Already on the sub, no need to open again*/
+                onSubredditClicked = { toast.show() }, /* Already on the sub, no need to open again*/
                 onBrowserClicked = { url ->
                     openLinkInBrowser(context, url)
                 },
@@ -126,6 +129,8 @@ fun LurkApp() {
             val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
             val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
 
+            val toast = Toast.makeText(context, "Already viewing ${profileViewModel.username}'s profile", Toast.LENGTH_SHORT)
+
             ListingScreen(
                 title = profileViewModel.username,
                 networkResponse = profileUiState.value.networkResponse,
@@ -133,7 +138,7 @@ fun LurkApp() {
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
                 },
-                onProfileClicked = {}, /* Already on userpage, no need to open again */
+                onProfileClicked = { toast.show()}, /* Already on userpage, no need to open again */
                 onSubredditClicked = { subreddit ->
                     navController.navigate("subreddit/$subreddit")
                 },
