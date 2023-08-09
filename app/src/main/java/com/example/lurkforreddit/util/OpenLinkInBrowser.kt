@@ -23,7 +23,7 @@ fun openLinkInBrowser(
     val uri = URI(url)
     val host = uri.host
 
-    if (host.equals("v.redd.it")) {
+    if (host.equals("v.redd.it") && modifiedUrl.contains("DASH")) {
         val index = modifiedUrl.indexOf("DASH")
         modifiedUrl = modifiedUrl.substring(0, index)
     }
