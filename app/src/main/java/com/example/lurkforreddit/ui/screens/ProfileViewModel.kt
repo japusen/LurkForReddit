@@ -9,14 +9,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.TopSort
 import com.example.lurkforreddit.model.UserContentType
 import com.example.lurkforreddit.model.UserListingSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -58,7 +61,19 @@ class ProfileViewModel(
                                     username = username,
                                     sort = currentState.userListingSort,
                                     topSort = currentState.topSort
-                                ).cachedIn(viewModelScope)
+                                )
+                                    .map { pagingData ->
+                                        pagingData.map { content ->
+                                            if (content is Post)
+                                                content.copy(
+                                                    thumbnail = content.parseThumbnail(),
+                                                    url = content.parseUrl()
+                                                )
+                                            else
+                                                content
+                                        }
+                                    }
+                                    .cachedIn(viewModelScope)
                             } else {
                                 redditApiRepository.getUserComments(
                                     username = username,

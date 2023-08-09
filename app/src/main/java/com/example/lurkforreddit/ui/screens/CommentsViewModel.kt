@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull.content
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -67,7 +68,10 @@ class CommentsViewModel(
                             sort = currentState.commentSort
                         )
                         CommentsNetworkResponse.Success(
-                            post = data.first,
+                            post = data.first.copy(
+                                thumbnail = data.first.parseThumbnail(),
+                                url = data.first.parseUrl()
+                            ),
                             comments = data.second.first,
                             more = data.second.second
                         )
