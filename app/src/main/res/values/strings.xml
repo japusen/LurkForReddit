@@ -3,6 +3,8 @@
     <string name="loading_failed">Failed to load</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading</string>
+    <string name="other_discussions">Other Discussions</string>
+    <string name="back">Back</string>
     <plurals name="timeStampSeconds">
         <item quantity="one">%d second ago</item>
         <item quantity="other">%d seconds ago</item>
