@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class More(
+    override var visible: Boolean = true,
     override val name: String,
     override val id: String,
     @SerialName("parent_id")

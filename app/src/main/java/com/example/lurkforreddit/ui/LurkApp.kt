@@ -240,6 +240,9 @@ fun LurkApp() {
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
+                onChangeVisibility = { start, depth ->
+                    commentsViewModel.changeCommentVisibility(start, depth)
+                },
                 onMoreClicked = { index ->
                     coroutineScope.launch {
                         commentsViewModel.getMoreComments(index)

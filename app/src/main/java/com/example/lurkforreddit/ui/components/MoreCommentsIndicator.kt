@@ -13,18 +13,18 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.model.More
 
 @Composable
 fun MoreCommentsIndicator(
     depth: Int,
     numberOfComments: Int,
     onMoreClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .clickable { onMoreClicked() }
-            .padding(start = (depth * 6).dp)
+            .padding(start = (depth * 4).dp, top = 4.dp, bottom = 4.dp)
             .drawBehind {
                 if (depth != 0) {
                     drawLine(

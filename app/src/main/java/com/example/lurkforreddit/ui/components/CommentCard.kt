@@ -43,7 +43,7 @@ fun CommentCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = (depth * 6).dp)
+            .padding(start = (depth * 4).dp, top = 4.dp, bottom = 4.dp)
             .drawBehind {
                 if (depth != 0) {
                     drawLine(

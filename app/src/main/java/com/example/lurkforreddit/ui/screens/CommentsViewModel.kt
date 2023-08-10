@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.screens
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
+import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.CommentSort
 import com.example.lurkforreddit.model.CommentThreadItem
 import com.example.lurkforreddit.model.More
@@ -135,6 +137,41 @@ class CommentsViewModel(
                 } else
                     currentState
             }
+        }
+    }
+
+    /**
+     * Hides / Reveals child comments in the comment thread
+     * @param start the index of the parent
+     * @param depth the depth of the parent
+     */
+    fun changeCommentVisibility(start: Int, depth: Int) {
+        _uiState.update { currentState ->
+            val networkResponse = currentState.networkResponse
+            if (networkResponse is CommentsNetworkResponse.Success) {
+                val commentThread = networkResponse.commentThread
+                currentState.copy(
+                    networkResponse = networkResponse.copy(
+                        commentThread = commentThread.toMutableList().apply {
+                            var index = start + 1
+                            while (index < size) {
+                                val item = elementAt(index)
+                                if (item.depth > depth) {
+                                    when (item) {
+                                        is Comment -> set(index, item.copy(visible = !item.visible))
+                                        is More -> set(index, item.copy(visible = !item.visible))
+                                    }
+                                    index += 1
+                                }
+                                else
+                                    break
+                            }
+                        }
+                    )
+                )
+            }
+            else
+                currentState
         }
     }
 

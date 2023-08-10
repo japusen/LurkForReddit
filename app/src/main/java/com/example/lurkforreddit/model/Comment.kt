@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 interface CommentThreadItem {
+    var visible: Boolean
     val name: String
     val id: String
     val parentID: String
@@ -36,6 +37,7 @@ data class ProfileComment(
 
 @Serializable
 data class Comment(
+    override var visible: Boolean = true,
     override val name: String,
     override val id: String,
     @SerialName("parent_id")
