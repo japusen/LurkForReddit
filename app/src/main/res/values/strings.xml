@@ -5,6 +5,7 @@
     <string name="loading">Loading</string>
     <string name="other_discussions">Other Discussions</string>
     <string name="back">Back</string>
+    <string name="replies_hidden">+</string>
     <plurals name="timeStampSeconds">
         <item quantity="one">%d second ago</item>
         <item quantity="other">%d seconds ago</item>

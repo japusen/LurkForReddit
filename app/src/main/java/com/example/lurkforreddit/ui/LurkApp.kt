@@ -73,8 +73,8 @@ fun LurkApp() {
                 onSubredditClicked = { subreddit ->
                     navController.navigate("subreddit/$subreddit")
                 },
-                onBrowserClicked = { url ->
-                    openLinkInBrowser(context, url)
+                onBrowserClicked = { url, domain ->
+                    openLinkInBrowser(context, url, domain)
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
@@ -103,8 +103,8 @@ fun LurkApp() {
                     navController.navigate("user/$username")
                 },
                 onSubredditClicked = { toast.show() }, /* Already on the sub, no need to open again*/
-                onBrowserClicked = { url ->
-                    openLinkInBrowser(context, url)
+                onBrowserClicked = { url, domain ->
+                    openLinkInBrowser(context, url, domain)
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
@@ -142,8 +142,8 @@ fun LurkApp() {
                 onSubredditClicked = { subreddit ->
                     navController.navigate("subreddit/$subreddit")
                 },
-                onBrowserClicked = { url ->
-                    openLinkInBrowser(context, url)
+                onBrowserClicked = { url, domain ->
+                    openLinkInBrowser(context, url, domain)
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
@@ -190,8 +190,8 @@ fun LurkApp() {
                 onSubredditClicked = { subreddit ->
                     navController.navigate("subreddit/$subreddit")
                 },
-                onBrowserClicked = { url ->
-                    openLinkInBrowser(context, url)
+                onBrowserClicked = { url, domain ->
+                    openLinkInBrowser(context, url, domain)
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
@@ -239,6 +239,9 @@ fun LurkApp() {
                 },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
+                },
+                onBrowserClicked = { url, domain ->
+                    openLinkInBrowser(context, url, domain)
                 },
                 onChangeVisibility = { start, depth ->
                     commentsViewModel.changeCommentVisibility(start, depth)

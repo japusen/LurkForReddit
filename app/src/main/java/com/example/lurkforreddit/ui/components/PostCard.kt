@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontVariation.width
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
@@ -46,7 +47,7 @@ fun PostCard(
     onPostClicked: () -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
-    onBrowserClicked: (String) -> Unit,
+    onBrowserClicked: (String, String) -> Unit,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -136,7 +137,7 @@ fun PostCard(
                     PostActions(
                         onProfileClicked = { onProfileClicked(content.author) },
                         onSubredditClicked = { onSubredditClicked(content.subreddit) },
-                        onBrowserClicked = { onBrowserClicked(content.url) },
+                        onBrowserClicked = { onBrowserClicked(content.url, content.domain ?: "") },
                         modifier = Modifier.weight(1F)
                     )
                 }
@@ -262,24 +263,25 @@ fun PostActions(
     onBrowserClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sizeModifier = modifier.height(20.dp).width(20.dp)
 
     ActionButton(
         onAction = { onProfileClicked() },
         iconID = R.drawable.ic_profile,
         description = "open profile",
-        modifier = modifier
+        modifier = sizeModifier
     )
     ActionButton(
         onAction = { onSubredditClicked() },
         iconID = R.drawable.ic_subreddit,
         description = "open subreddit",
-        modifier = modifier
+        modifier = sizeModifier
     )
     ActionButton(
         onAction = { onBrowserClicked() },
         iconID = R.drawable.ic_open_in_browser,
         description = "open link in browser",
-        modifier = modifier
+        modifier = sizeModifier
     )
 }
 
@@ -293,9 +295,6 @@ fun ActionButton(
     IconButton(
         onClick = { onAction() },
         modifier = modifier
-            .height(20.dp)
-            .width(20.dp)
-
     ) {
         Icon(
             painterResource(id = iconID),

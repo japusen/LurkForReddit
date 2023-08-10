@@ -32,6 +32,7 @@ fun CommentThread(
     thread: List<CommentThreadItem>,
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
+    onBrowserClicked: (String, String) -> Unit,
     onChangeVisibility: (Int, Int) -> Unit,
     onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -67,11 +68,6 @@ fun CommentThread(
                     ) + fadeIn(initialAlpha = 0.3f),
                     exit = slideOutVertically() + shrinkVertically() + fadeOut() + scaleOut(targetScale = 1.2f)
                 ) {
-                    val longClickModifier = Modifier.combinedClickable(
-                            enabled = true,
-                            onLongClick = { onChangeVisibility(index, item.depth) },
-                            onClick = {  }
-                        )
                     when(item) {
                         is Comment ->
                             CommentCard(
@@ -80,12 +76,12 @@ fun CommentThread(
                                 score = item.score,
                                 createdUtc = item.createdUtc,
                                 body = item.body,
-                                numReplies = 0,
-                                showReplies = true,
+                                permalink = item.permalink,
                                 scoreHidden = item.scoreHidden,
                                 depth = item.depth,
+                                onChangeVisibility = { onChangeVisibility(index, item.depth) },
                                 openProfile = openProfile,
-                                modifier = longClickModifier
+                                onBrowserClicked = onBrowserClicked,
                             )
                         is More ->
                             if (item.children.isNotEmpty())

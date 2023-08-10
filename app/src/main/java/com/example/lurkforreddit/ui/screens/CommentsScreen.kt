@@ -31,6 +31,7 @@ fun CommentsScreen(
     onDuplicatesClicked: () -> Unit,
     onLinkClicked: (String) -> Unit,
     onProfileClicked: (String) -> Unit,
+    onBrowserClicked: (String, String) -> Unit,
     onChangeVisibility: (Int, Int) -> Unit,
     onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -86,6 +87,7 @@ fun CommentsScreen(
                     thread = networkResponse.commentThread,
                     openLink = onLinkClicked,
                     openProfile = onProfileClicked,
+                    onBrowserClicked = onBrowserClicked,
                     onMoreClicked = onMoreClicked,
                     onChangeVisibility = onChangeVisibility,
                     modifier = modifier.padding(paddingValues)

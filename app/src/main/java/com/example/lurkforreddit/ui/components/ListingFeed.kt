@@ -18,7 +18,7 @@ fun ListingFeed(
     onPostClicked: (String, String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
-    onBrowserClicked: (String) -> Unit,
+    onBrowserClicked: (String, String) -> Unit,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {

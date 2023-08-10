@@ -1,15 +1,19 @@
 package com.example.lurkforreddit.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Divider
@@ -17,14 +21,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.lurkforreddit.R
 import com.example.lurkforreddit.util.relativeTime
 import kotlinx.datetime.DateTimePeriod
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
     postAuthor: String,
@@ -33,15 +45,25 @@ fun CommentCard(
     score: Int,
     createdUtc: Float,
     body: String,
-    numReplies: Int,
-    showReplies: Boolean,
+    permalink: String,
     scoreHidden: Boolean,
+    onChangeVisibility: () -> Unit,
     openProfile: (String) -> Unit,
+    onBrowserClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    var expanded by remember { mutableStateOf(false) }
+    var showReplies by remember { mutableStateOf(true) }
     Column(
         modifier = modifier
+            .combinedClickable(
+                enabled = true,
+                onLongClick = {
+                    onChangeVisibility()
+                    showReplies = !showReplies
+                },
+                onClick = { expanded = !expanded }
+            )
             .fillMaxWidth()
             .padding(start = (depth * 4).dp, top = 4.dp, bottom = 4.dp)
             .drawBehind {
@@ -62,18 +84,37 @@ fun CommentCard(
             }
     ) {
         Divider(modifier = Modifier.fillMaxWidth())
+
         AuthorDetails(
             postAuthor = postAuthor,
             commentAuthor = commentAuthor,
             isScoreHidden = scoreHidden,
             score = score,
             publishedTime = relativeTime(createdUtc),
-            openProfile = openProfile,
             showReplies = showReplies,
-            numReplies = numReplies
         )
 
         CommentBody(body = body)
+
+        AnimatedVisibility(visible = expanded) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 8.dp)
+            ) {
+                CommentActions(
+                    onProfileClicked = { openProfile(commentAuthor) },
+                    onBrowserClicked = {
+                        onBrowserClicked(
+                            "www.reddit.com$permalink",
+                            "reddit.com"
+                        )
+                    },
+                    modifier = Modifier.weight(1F)
+                )
+            }
+        }
+
         Divider(modifier = Modifier.fillMaxWidth())
     }
 }
@@ -86,9 +127,7 @@ fun AuthorDetails(
     isScoreHidden: Boolean,
     score: Int,
     publishedTime: DateTimePeriod,
-    openProfile: (String) -> Unit,
     showReplies: Boolean,
-    numReplies: Int,
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -105,7 +144,7 @@ fun AuthorDetails(
             text = commentAuthor,
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleMedium,
-            modifier = authorModifier.clickable { openProfile(commentAuthor) }
+            modifier = authorModifier
         )
 
         Text(
@@ -122,14 +161,14 @@ fun AuthorDetails(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        AnimatedVisibility ((!showReplies && numReplies > 0)) {
+        AnimatedVisibility (!showReplies) {
             Badge(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(top = 0.dp)
             ) {
                 Text(
-                    text = "+${numReplies}",
+                    text = stringResource(R.string.replies_hidden),
                     style = MaterialTheme.typography.labelMedium,
                 )
             }
@@ -147,5 +186,29 @@ fun CommentBody(
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier.padding(8.dp)
+    )
+}
+
+@Composable
+fun CommentActions(
+    onProfileClicked: () -> Unit,
+    onBrowserClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sizeModifier = modifier
+        .height(20.dp)
+        .width(20.dp)
+
+    ActionButton(
+        onAction = { onProfileClicked() },
+        iconID = R.drawable.ic_profile,
+        description = "open profile",
+        modifier = sizeModifier
+    )
+    ActionButton(
+        onAction = { onBrowserClicked() },
+        iconID = R.drawable.ic_open_in_browser,
+        description = "open comment in browser",
+        modifier = sizeModifier
     )
 }

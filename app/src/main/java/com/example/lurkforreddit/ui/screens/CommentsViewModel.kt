@@ -1,6 +1,5 @@
 package com.example.lurkforreddit.ui.screens
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

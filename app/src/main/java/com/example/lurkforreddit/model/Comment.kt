@@ -59,4 +59,5 @@ data class Comment(
     val bodyHtml: String,
     @SerialName("link_id")
     val linkID: String,
+    val permalink: String,
 ) : Content, CommentThreadItem, Created
