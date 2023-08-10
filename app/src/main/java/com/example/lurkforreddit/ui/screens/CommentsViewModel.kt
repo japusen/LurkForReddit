@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.ui.screens
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -113,6 +114,7 @@ class CommentsViewModel(
                         val comments = networkResponse.comments
                         val newComments = redditApiRepository.getMoreComments(
                             linkID = article,
+                            parentID = "t3_$article",
                             childrenIDs = ids,
                             sort = currentState.commentSort
                         )
@@ -173,20 +175,27 @@ class CommentsViewModel(
                 if (networkResponse is CommentsNetworkResponse.Success) {
 
                     val parentComment = findParentComment(parentID, networkResponse.comments)
-                    val more = parentComment?.more
+                    var more = parentComment?.more
                     val ids = more!!.getIDs(MORE_COMMENTS_AMOUNT)
+                    more = more.copy(
+                        count = more.count,
+                        children = more.children
+                    )
 
                     try {
                         val comments = networkResponse.comments
                         val newComments = redditApiRepository.getMoreComments(
                             linkID = article,
+                            parentID = "t1_$parentID",
                             childrenIDs = ids,
                             sort = currentState.commentSort
                         )
-                        parentComment.replies.addAll(newComments)
+                        Log.d("MORE", "new comments: $newComments")
                         currentState.copy(
                             networkResponse = networkResponse.copy(
-                                comments = comments
+                                comments = comments.map { comment ->
+                                    comment.insert(parentID, newComments)
+                                }
                             )
                         )
                     } catch (e: IOException) {
@@ -209,10 +218,11 @@ class CommentsViewModel(
      * @param ids comma delimited list of ids to fetch
      * @return a list of comments
      * **/
-    suspend fun moreComments(ids: String): List<Comment> {
+    suspend fun moreComments(parentID: String, ids: String): List<Comment> {
         return try {
             redditApiRepository.getMoreComments(
                 linkID = article,
+                parentID = "t1_$parentID",
                 childrenIDs = ids,
                 sort = _uiState.value.commentSort
             )

@@ -67,6 +67,7 @@ interface RedditApiRepository {
 
     suspend fun getMoreComments(
         linkID: String,
+        parentID: String,
         childrenIDs: String,
         sort: CommentSort,
     ): List<Comment>
@@ -282,6 +283,7 @@ class DefaultRedditApiRepository(
      */
     override suspend fun getMoreComments(
         linkID: String,
+        parentID: String,
         childrenIDs: String,
         sort: CommentSort
     ): List<Comment> {
@@ -291,6 +293,6 @@ class DefaultRedditApiRepository(
             childrenIDs,
             sort.value
         )
-        return parseMoreComments(response, "t3_$linkID")
+        return parseMoreComments(response, parentID)
     }
 }

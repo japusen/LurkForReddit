@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.model
 
+import android.util.Log
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,22 @@ data class Comment(
     val contents: CommentContents?,
     val replies: MutableList<Comment>,
     val more: More?
-)
+) {
+    fun insert(parentID: String, comments: List<Comment>): Comment {
+        if (contents?.id == parentID) {
+            Log.d("MORE", "insert to ${this.contents.body}")
+            return this.copy(
+                replies = replies.apply {
+                    addAll(comments)
+                }
+            )
+        }
+
+        replies.map { comment -> comment.insert(parentID, comments) }
+
+        return this
+    }
+}
 
 @Serializable
 data class ProfileComment(

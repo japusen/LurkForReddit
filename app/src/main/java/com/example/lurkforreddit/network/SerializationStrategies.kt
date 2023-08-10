@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import android.util.Log
 import com.example.lurkforreddit.model.Comment
 import com.example.lurkforreddit.model.CommentContents
 import com.example.lurkforreddit.model.More
@@ -140,12 +141,12 @@ fun parseSearchResults(
 /**
  * Parse the JSON response to obtain a list of comments
  * @param response the JSON response
- * @param postID the id of the post the comments are in response to
+ * @param parentID the id of the post the comments are in response to
  * @return a list of comments
  */
 fun parseMoreComments(
     response: JsonElement,
-    postID: String
+    parentID: String
 ): List<Comment> {
     val comments = mutableListOf<Comment>()
     val replyTree = mutableMapOf<String, Comment>()
@@ -166,15 +167,16 @@ fun parseMoreComments(
         }
     }
 
+    Log.d("MORE", "reply tree: $replyTree")
     /** if a reply has the root as it's parent, add it to the list of comments
      otherwise find it's parent in the map and add it to the parent's replies **/
     for (reply in replyTree) {
         val comment = reply.value
-        val parentID = comment.contents?.parentID
-        if (parentID == postID) {
+        val replyParentID = comment.contents?.parentID
+        if (replyParentID == parentID) {
             comments.add(comment)
         } else {
-            replyTree[parentID]?.replies?.add(comment)
+            replyTree[replyParentID]?.replies?.add(comment)
         }
     }
 
