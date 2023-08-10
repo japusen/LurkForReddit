@@ -38,10 +38,6 @@ fun CommentThread(
             )
         }
 
-        item {
-            Text(text = "Thread Size: ${thread.size}", modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.titleMedium)
-        }
-
         items(thread.size) { index ->
             thread[index].let { item ->
                 when(item) {
