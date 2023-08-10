@@ -21,8 +21,6 @@ data class Post(
     override val created: Float,
     @SerialName("created_utc")
     override val createdUtc: Float,
-    override val ups: Int,
-    override val downs: Int,
     @SerialName("is_self")
     val isSelfPost: Boolean,
     @SerialName("is_gallery")
@@ -43,7 +41,7 @@ data class Post(
     @SerialName("over_18")
     val over18: Boolean,
     val media: JsonElement? = null
-) : Content, Created, Votable {
+) : Content, Created {
 
     fun parseThumbnail(): String {
         return if (preview != null)

@@ -38,8 +38,6 @@ data class ProfileComment(
     override val created: Float,
     @SerialName("created_utc")
     override val createdUtc: Float,
-    override val ups: Int,
-    override val downs: Int,
     @SerialName("link_title")
     val linkTitle: String,
     @SerialName("link_id")
@@ -49,7 +47,7 @@ data class ProfileComment(
     val body: String,
     @SerialName("body_html")
     val bodyHtml: String,
-) : Content, Created, Votable
+) : Content, Created
 
 @Serializable
 data class CommentContents(
@@ -63,8 +61,6 @@ data class CommentContents(
     override val created: Float,
     @SerialName("created_utc")
     override val createdUtc: Float,
-    override val ups: Int,
-    override val downs: Int,
     @SerialName("score_hidden")
     val scoreHidden: Boolean,
     val body: String,
@@ -74,4 +70,4 @@ data class CommentContents(
     val linkID: String,
     @SerialName("parent_id")
     val parentID: String,
-) : Content, Created, Votable
+) : Content, Created
