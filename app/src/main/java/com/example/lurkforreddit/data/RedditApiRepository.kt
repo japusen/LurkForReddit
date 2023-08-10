@@ -6,23 +6,22 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.lurkforreddit.data.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
 import com.example.lurkforreddit.model.AccessToken
-import com.example.lurkforreddit.model.Comment
+import com.example.lurkforreddit.model.CommentSort
+import com.example.lurkforreddit.model.CommentThreadItem
 import com.example.lurkforreddit.model.Content
-import com.example.lurkforreddit.model.More
+import com.example.lurkforreddit.model.DuplicatesSort
+import com.example.lurkforreddit.model.ListingSort
+import com.example.lurkforreddit.model.PagingListing
 import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.SearchResult
+import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.model.UserListingSort
 import com.example.lurkforreddit.network.AccessTokenService
 import com.example.lurkforreddit.network.RedditApiService
 import com.example.lurkforreddit.network.parseMoreComments
 import com.example.lurkforreddit.network.parsePostComments
 import com.example.lurkforreddit.network.parsePostListing
 import com.example.lurkforreddit.network.parseSearchResults
-import com.example.lurkforreddit.model.CommentSort
-import com.example.lurkforreddit.model.DuplicatesSort
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.PagingListing
-import com.example.lurkforreddit.model.TopSort
-import com.example.lurkforreddit.model.UserListingSort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.jsonArray
 import retrofit2.HttpException
@@ -59,7 +58,7 @@ interface RedditApiRepository {
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<Post, Pair<List<Comment>, More?>>
+    ): Pair<Post, MutableList<CommentThreadItem>>
 
     suspend fun subredditAutoComplete(
         query: String,
@@ -70,7 +69,7 @@ interface RedditApiRepository {
         parentID: String,
         childrenIDs: String,
         sort: CommentSort,
-    ): List<Comment>
+    ): MutableList<CommentThreadItem>
 
     companion object {
         const val NETWORK_PAGE_SIZE = 25
@@ -244,7 +243,7 @@ class DefaultRedditApiRepository(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<Post, Pair<List<Comment>, More?>> {
+    ): Pair<Post, MutableList<CommentThreadItem>> {
 
         val response = redditApiService.getPostComments(
             tokenHeader,
@@ -255,9 +254,11 @@ class DefaultRedditApiRepository(
 
         val listing = parsePostListing(response.jsonArray[0])
         val post = listing.children[0]
-        val comments = parsePostComments(response.jsonArray[1])
 
-        return Pair(post, comments)
+        val commentThread = mutableListOf<CommentThreadItem>()
+        parsePostComments(response.jsonArray[1], commentThread)
+
+        return Pair(post, commentThread)
     }
 
     /**
@@ -286,13 +287,15 @@ class DefaultRedditApiRepository(
         parentID: String,
         childrenIDs: String,
         sort: CommentSort
-    ): List<Comment> {
+    ): MutableList<CommentThreadItem> {
         val response = redditApiService.getMoreComments(
             tokenHeader,
             "t3_$linkID",
             childrenIDs,
             sort.value
         )
-        return parseMoreComments(response, parentID)
+        val commentThread = mutableListOf<CommentThreadItem>()
+        parseMoreComments(response, commentThread)
+        return commentThread
     }
 }

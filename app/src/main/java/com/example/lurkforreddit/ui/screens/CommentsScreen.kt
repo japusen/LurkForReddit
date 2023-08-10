@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.components.CommentsList
+import com.example.lurkforreddit.ui.components.CommentThread
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.model.CommentSort
 
@@ -31,8 +31,7 @@ fun CommentsScreen(
     onDuplicatesClicked: () -> Unit,
     onLinkClicked: (String) -> Unit,
     onProfileClicked: (String) -> Unit,
-    onMoreClicked: () -> Unit,
-    onNestedMoreClicked: (String) -> Unit,
+    onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -81,14 +80,12 @@ fun CommentsScreen(
         when (networkResponse) {
             is CommentsNetworkResponse.Loading -> LoadingScreen(modifier)
             is CommentsNetworkResponse.Success -> {
-                CommentsList(
+                CommentThread(
                     post = networkResponse.post,
-                    comments = networkResponse.comments,
-                    more = networkResponse.more,
+                    thread = networkResponse.commentThread,
                     openLink = onLinkClicked,
                     openProfile = onProfileClicked,
                     onMoreClicked = onMoreClicked,
-                    onNestedMoreClicked = onNestedMoreClicked,
                     modifier = modifier.padding(paddingValues)
                 )
             }

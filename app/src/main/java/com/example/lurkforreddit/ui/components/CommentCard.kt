@@ -1,10 +1,8 @@
 package com.example.lurkforreddit.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -19,47 +17,39 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.model.Comment
-import com.example.lurkforreddit.model.CommentContents
-import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.util.relativeTime
 import kotlinx.datetime.DateTimePeriod
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
     postAuthor: String,
-    contents: CommentContents,
-    replies: List<Comment>,
-    more: More?,
-    padding: Int,
-    color: Int,
+    commentAuthor: String,
+    depth: Int,
+    score: Int,
+    createdUtc: Float,
+    body: String,
+    numReplies: Int,
+    showReplies: Boolean,
+    scoreHidden: Boolean,
     openProfile: (String) -> Unit,
-    onNestedMoreClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showReplies by rememberSaveable { mutableStateOf(true) }
-    val nestedPadding = 12
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = padding.dp)
+            .padding(start = (depth * 6).dp)
             .drawBehind {
-                if (color != 0) {
+                if (depth != 0) {
                     drawLine(
                         start = Offset(x = 0f, y = 0f),
                         end = Offset(x = 0f, y = size.height),
-                        color = when (color % 4) {
+                        color = when (depth % 4) {
                             0 -> Color.Magenta
                             1 -> Color.Blue
                             2 -> Color.Green
@@ -71,78 +61,20 @@ fun CommentCard(
                 }
             }
     ) {
-        Divider()
-
-        CommentContents(
-            postAuthor = postAuthor,
-            contents = contents,
-            showReplies = showReplies,
-            numReplies = if (more != null) replies.size + 1 else replies.size,
-            openProfile = openProfile,
-            modifier = modifier
-                .combinedClickable(
-                    enabled = true,
-                    onLongClick = { showReplies = !showReplies },
-                    onClick = {  }
-                )
-        )
-
-        if (showReplies) {
-            if (replies.isNotEmpty()) {
-                replies.forEach { reply ->
-                    reply.contents?.let {
-                        CommentCard(
-                            postAuthor = postAuthor,
-                            contents = it,
-                            replies = reply.replies.toMutableList(),
-                            more = reply.more,
-                            padding = nestedPadding,
-                            color = color + 1,
-                            openProfile = openProfile,
-                            onNestedMoreClicked = onNestedMoreClicked
-                        )
-                    }
-                }
-            }
-
-            if (more != null) {
-                MoreCommentsIndicator(
-                    padding = nestedPadding,
-                    color = color + 1,
-                    numberOfComments = more.children.size,
-                    onMoreClicked = { onNestedMoreClicked(contents.id) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun CommentContents(
-    postAuthor: String,
-    contents: CommentContents,
-    showReplies: Boolean,
-    numReplies: Int,
-    openProfile: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .padding(8.dp)
-    ) {
-
+        Divider(modifier = Modifier.fillMaxWidth())
         AuthorDetails(
             postAuthor = postAuthor,
-            commentAuthor = contents.author,
-            isScoreHidden = contents.scoreHidden,
-            score = contents.score,
-            publishedTime = relativeTime(contents.createdUtc),
+            commentAuthor = commentAuthor,
+            isScoreHidden = scoreHidden,
+            score = score,
+            publishedTime = relativeTime(createdUtc),
             openProfile = openProfile,
             showReplies = showReplies,
             numReplies = numReplies
         )
 
-        CommentBody(body = contents.body)
+        CommentBody(body = body)
+        Divider(modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -162,6 +94,7 @@ fun AuthorDetails(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
     ) {
         val authorModifier =
             if (postAuthor == commentAuthor)

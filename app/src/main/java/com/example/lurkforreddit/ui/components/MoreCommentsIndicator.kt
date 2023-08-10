@@ -17,21 +17,20 @@ import com.example.lurkforreddit.model.More
 
 @Composable
 fun MoreCommentsIndicator(
-    padding: Int,
-    color: Int,
+    depth: Int,
     numberOfComments: Int,
     onMoreClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .clickable { onMoreClicked() }
-            .padding(start = padding.dp)
+            .padding(start = (depth * 6).dp)
             .drawBehind {
-                if (color != 0) {
+                if (depth != 0) {
                     drawLine(
                         start = Offset(x = 0f, y = 0f),
                         end = Offset(x = 0f, y = size.height),
-                        color = when (color % 4) {
+                        color = when (depth % 4) {
                             0 -> Color.Magenta
                             1 -> Color.Blue
                             2 -> Color.Green
@@ -49,5 +48,6 @@ fun MoreCommentsIndicator(
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
         )
+        Divider(modifier = Modifier.fillMaxWidth())
     }
 }

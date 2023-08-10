@@ -1,29 +1,14 @@
 package com.example.lurkforreddit.model
 
-import android.util.Log
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
-data class Comment(
-    val contents: CommentContents?,
-    val replies: MutableList<Comment>,
-    val more: More?
-) {
-    fun insert(parentID: String, comments: List<Comment>): Comment {
-        if (contents?.id == parentID) {
-            Log.d("MORE", "insert to ${this.contents.body}")
-            return this.copy(
-                replies = replies.apply {
-                    addAll(comments)
-                }
-            )
-        }
-
-        replies.map { comment -> comment.insert(parentID, comments) }
-
-        return this
-    }
+interface CommentThreadItem {
+    val name: String
+    val id: String
+    val parentID: String
+    val depth: Int
 }
 
 @Serializable
@@ -50,8 +35,12 @@ data class ProfileComment(
 ) : Content, Created
 
 @Serializable
-data class CommentContents(
+data class Comment(
+    override val name: String,
     override val id: String,
+    @SerialName("parent_id")
+    override val parentID: String,
+    override val depth: Int,
     override val author: String,
     override val distinguished: String? = null,
     override val score: Int,
@@ -68,6 +57,4 @@ data class CommentContents(
     val bodyHtml: String,
     @SerialName("link_id")
     val linkID: String,
-    @SerialName("parent_id")
-    val parentID: String,
-) : Content, Created
+) : Content, CommentThreadItem, Created

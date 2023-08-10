@@ -1,8 +1,7 @@
 package com.example.lurkforreddit.network
 
-import android.util.Log
 import com.example.lurkforreddit.model.Comment
-import com.example.lurkforreddit.model.CommentContents
+import com.example.lurkforreddit.model.CommentThreadItem
 import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.model.Post
 import com.example.lurkforreddit.model.PostListing
@@ -80,18 +79,16 @@ fun parseProfileCommentListing(
 }
 
 /**
- * Parse the JSON response to obtain a list of comments
- * @param response the JSON response
- * @return a list of Comments + More object
+ * Recursively parse the JSON response to obtain a list of CommentThreadItems
+ * @param children the JSON Array
+ * @return a MutableList of CommentThreadItems
  */
 fun parsePostComments(
-    response: JsonElement
-): Pair<List<Comment>, More?> {
-    val comments = mutableListOf<Comment>()
-    var more: More? = null
-
+    response: JsonElement,
+    commentThread: MutableList<CommentThreadItem>,
+) {
     val data = response.jsonObject["data"]
-    val children = data?.jsonObject?.get("children") as JsonArray
+    val children = data?.jsonObject?.getOrDefault("children", "[]") as JsonArray
 
     for (child in children) {
         val kind = json.decodeFromJsonElement(
@@ -99,27 +96,58 @@ fun parsePostComments(
             child.jsonObject.getOrDefault("kind", empty)
         )
         if (kind == "more") {
-            more = json.decodeFromJsonElement(
+            val more = json.decodeFromJsonElement(
                 More.serializer(),
                 child.jsonObject.getOrDefault("data", empty)
             )
+            commentThread.add(more)
         } else {
             val commentData = child.jsonObject.getOrDefault("data", empty)
-            val repliesData = commentData.jsonObject.getOrDefault("replies", empty)
-            val replies = if (repliesData is JsonObject) {
-                parsePostComments(repliesData)
-            } else {
-                Pair(mutableListOf(), null)
-            }
-            val commentContent = json.decodeFromJsonElement(
-                CommentContents.serializer(),
+            val comment = json.decodeFromJsonElement(
+                Comment.serializer(),
                 commentData
             )
-            comments.add(Comment(commentContent, replies.first.toMutableList(), replies.second))
+            commentThread.add(comment)
+
+            val replies = commentData.jsonObject.getOrDefault("replies", empty)
+            if (replies is JsonObject)
+                parsePostComments(replies, commentThread)
         }
     }
+}
 
-    return Pair(comments, more)
+/**
+ * Recursively parse the JSON response to obtain a list of CommentThreadItems
+ * @param children the JSON Array
+ * @return a MutableList of CommentThreadItems
+ */
+fun parseMoreComments(
+    response: JsonElement,
+    commentThread: MutableList<CommentThreadItem>,
+) {
+    val data = response.jsonObject["json"]?.jsonObject?.get("data")
+    val things = data?.jsonObject?.getOrDefault("things", "[]") as JsonArray
+
+    for (thing in things) {
+        val kind = json.decodeFromJsonElement(
+            String.serializer(),
+            thing.jsonObject.getOrDefault("kind", empty)
+        )
+        if (kind == "more") {
+            val more = json.decodeFromJsonElement(
+                More.serializer(),
+                thing.jsonObject.getOrDefault("data", empty)
+            )
+            commentThread.add(more)
+        } else {
+            val commentData = thing.jsonObject.getOrDefault("data", empty)
+            val comment = json.decodeFromJsonElement(
+                Comment.serializer(),
+                commentData
+            )
+            commentThread.add(comment)
+        }
+    }
 }
 
 /**
@@ -136,51 +164,6 @@ fun parseSearchResults(
             it
         )
     } ?: listOf()
-}
-
-/**
- * Parse the JSON response to obtain a list of comments
- * @param response the JSON response
- * @param parentID the id of the post the comments are in response to
- * @return a list of comments
- */
-fun parseMoreComments(
-    response: JsonElement,
-    parentID: String
-): List<Comment> {
-    val comments = mutableListOf<Comment>()
-    val replyTree = mutableMapOf<String, Comment>()
-
-    val data = response.jsonObject["json"]?.jsonObject?.get("data")
-    val things = data?.jsonObject?.get("things") as JsonArray
-
-    /** Assemble each comment and add it to the map by it's full id */
-    for (thing in things) {
-        val kind = thing.jsonObject["kind"]?.jsonPrimitive?.content
-        if (kind == "t1") {
-            val commentData = thing.jsonObject.getOrDefault("data", empty)
-            val commentContent = json.decodeFromJsonElement(
-                CommentContents.serializer(),
-                commentData
-            )
-            replyTree["t1_${commentContent.id}"] = Comment(commentContent, mutableListOf(), null)
-        }
-    }
-
-    Log.d("MORE", "reply tree: $replyTree")
-    /** if a reply has the root as it's parent, add it to the list of comments
-     otherwise find it's parent in the map and add it to the parent's replies **/
-    for (reply in replyTree) {
-        val comment = reply.value
-        val replyParentID = comment.contents?.parentID
-        if (replyParentID == parentID) {
-            comments.add(comment)
-        } else {
-            replyTree[replyParentID]?.replies?.add(comment)
-        }
-    }
-
-    return comments
 }
 
 /**

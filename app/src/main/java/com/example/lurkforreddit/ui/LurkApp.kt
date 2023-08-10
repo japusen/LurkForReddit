@@ -240,14 +240,9 @@ fun LurkApp() {
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
-                onMoreClicked = {
+                onMoreClicked = { index ->
                     coroutineScope.launch {
-                        commentsViewModel.getMoreComments()
-                    }
-                },
-                onNestedMoreClicked = { id ->
-                    coroutineScope.launch {
-                        commentsViewModel.getMoreComments(id)
+                        commentsViewModel.getMoreComments(index)
                     }
                 }
             )

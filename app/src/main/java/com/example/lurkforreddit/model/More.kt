@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class More(
-    val name: String,
-    val count: Int,
-    val id: String,
+    override val name: String,
+    override val id: String,
     @SerialName("parent_id")
-    val parentID: String,
+    override val parentID: String,
+    override val depth: Int,
     var children: List<String>
-) {
+): CommentThreadItem {
     fun getIDs(count: Int): String {
         val ids: String
         if (children.size > count) {
