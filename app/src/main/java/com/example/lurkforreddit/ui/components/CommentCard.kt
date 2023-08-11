@@ -47,7 +47,7 @@ fun CommentCard(
     body: String,
     permalink: String,
     scoreHidden: Boolean,
-    onChangeVisibility: () -> Unit,
+    onChangeVisibility: (Boolean) -> Unit,
     openProfile: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
@@ -59,23 +59,27 @@ fun CommentCard(
             .combinedClickable(
                 enabled = true,
                 onLongClick = {
-                    onChangeVisibility()
                     showReplies = !showReplies
+                    onChangeVisibility(showReplies)
                 },
                 onClick = { expanded = !expanded }
             )
             .fillMaxWidth()
-            .padding(start = (depth * 4).dp, top = 4.dp, bottom = 4.dp)
+            .padding(start = (depth * 8).dp, top = 2.dp, bottom = 2.dp)
             .drawBehind {
                 if (depth != 0) {
                     drawLine(
                         start = Offset(x = 0f, y = 0f),
                         end = Offset(x = 0f, y = size.height),
-                        color = when (depth % 4) {
+                        color = when (depth % 7) {
                             0 -> Color.Magenta
-                            1 -> Color.Blue
-                            2 -> Color.Green
-                            else -> Color.Red
+                            1 -> Color(75, 0, 130)
+                            2 -> Color.Blue
+                            3 -> Color.Green
+                            4 -> Color.Yellow
+                            5 -> Color(255, 127, 0)
+                            6 -> Color.Red
+                            else -> Color(148, 0, 211)
                         },
                         strokeWidth = 3.0F,
                         alpha = 0.75F

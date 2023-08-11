@@ -9,8 +9,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +23,6 @@ import com.example.lurkforreddit.model.CommentThreadItem
 import com.example.lurkforreddit.model.More
 import com.example.lurkforreddit.model.Post
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentThread(
     post: Post,
@@ -33,7 +30,7 @@ fun CommentThread(
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
-    onChangeVisibility: (Int, Int) -> Unit,
+    onChangeVisibility: (Boolean, Int, Int) -> Unit,
     onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -79,7 +76,9 @@ fun CommentThread(
                                 permalink = item.permalink,
                                 scoreHidden = item.scoreHidden,
                                 depth = item.depth,
-                                onChangeVisibility = { onChangeVisibility(index, item.depth) },
+                                onChangeVisibility = { visible ->
+                                    onChangeVisibility(visible, index, item.depth)
+                                },
                                 openProfile = openProfile,
                                 onBrowserClicked = onBrowserClicked,
                             )

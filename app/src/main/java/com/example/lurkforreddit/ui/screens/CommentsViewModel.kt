@@ -144,7 +144,7 @@ class CommentsViewModel(
      * @param start the index of the parent
      * @param depth the depth of the parent
      */
-    fun changeCommentVisibility(start: Int, depth: Int) {
+    fun changeCommentVisibility(visible: Boolean, start: Int, depth: Int) {
         _uiState.update { currentState ->
             val networkResponse = currentState.networkResponse
             if (networkResponse is CommentsNetworkResponse.Success) {
@@ -157,8 +157,8 @@ class CommentsViewModel(
                                 val item = elementAt(index)
                                 if (item.depth > depth) {
                                     when (item) {
-                                        is Comment -> set(index, item.copy(visible = !item.visible))
-                                        is More -> set(index, item.copy(visible = !item.visible))
+                                        is Comment -> set(index, item.copy(visible = visible))
+                                        is More -> set(index, item.copy(visible = visible))
                                     }
                                     index += 1
                                 }

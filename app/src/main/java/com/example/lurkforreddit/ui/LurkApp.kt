@@ -243,8 +243,8 @@ fun LurkApp() {
                 onBrowserClicked = { url, domain ->
                     openLinkInBrowser(context, url, domain)
                 },
-                onChangeVisibility = { start, depth ->
-                    commentsViewModel.changeCommentVisibility(start, depth)
+                onChangeVisibility = { visible, start, depth ->
+                    commentsViewModel.changeCommentVisibility(visible, start, depth)
                 },
                 onMoreClicked = { index ->
                     coroutineScope.launch {
