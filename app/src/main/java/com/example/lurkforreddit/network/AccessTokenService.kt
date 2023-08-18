@@ -1,5 +1,6 @@
 package com.example.lurkforreddit.network
 
+import com.example.lurkforreddit.BuildConfig
 import com.example.lurkforreddit.model.AccessToken
 import retrofit2.Response
 import retrofit2.http.Field
@@ -10,7 +11,7 @@ import java.util.Base64
 
 private const val GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client"
 private const val DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE"
-private const val CLIENT_ID = "6ibP_L7dIcbjgtlCjgLacA"
+private const val CLIENT_ID = BuildConfig.REDDIT_CLIENT_ID
 private const val PW = ""
 private const val CREDENTIALS = "$CLIENT_ID:$PW"
 
