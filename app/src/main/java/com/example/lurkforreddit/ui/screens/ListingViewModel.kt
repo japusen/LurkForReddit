@@ -54,12 +54,10 @@ class ListingViewModel(
     val subreddit: String = savedStateHandle["subreddit"] ?: "All"
 
     init {
-        viewModelScope.launch {
-            loadPosts()
-        }
+        loadPosts()
     }
 
-    private suspend fun loadPosts() {
+    private fun loadPosts() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -99,7 +97,7 @@ class ListingViewModel(
      * @param sort the type of sort (hot, rising, new, top)
      * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
      * **/
-    suspend fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
+    fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
         _uiState.update { currentState ->
             currentState.copy(
                 listingSort = sort,

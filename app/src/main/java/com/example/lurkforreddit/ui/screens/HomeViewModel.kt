@@ -47,7 +47,7 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun loadPosts() {
+    private fun loadPosts() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -86,7 +86,7 @@ class HomeViewModel(
      * Change the current subreddit and reload posts
      * @param subreddit subreddit name
      *  **/
-    suspend fun setSubreddit(subreddit: String) {
+    fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 subreddit = subreddit,
@@ -100,7 +100,7 @@ class HomeViewModel(
      * @param sort the type of sort (hot, rising, new, top)
      * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
      * **/
-    suspend fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
+    fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
         _uiState.update { currentState ->
             currentState.copy(
                 listingSort = sort,
@@ -137,11 +137,13 @@ class HomeViewModel(
     /**
      * Fetch search results for the current query
      */
-    suspend fun updateSearchResults() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                searchResults = redditApiRepository.subredditAutoComplete(currentState.query)
-            )
+    fun updateSearchResults() {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    searchResults = redditApiRepository.subredditAutoComplete(currentState.query)
+                )
+            }
         }
     }
 
