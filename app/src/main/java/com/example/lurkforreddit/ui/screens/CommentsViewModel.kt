@@ -51,10 +51,12 @@ class CommentsViewModel(
     val article: String = savedStateHandle["article"] ?: ""
 
     init {
-        loadPostComments()
+        viewModelScope.launch {
+            loadPostComments()
+        }
     }
 
-    private fun loadPostComments() {
+    private suspend fun loadPostComments() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -85,7 +87,7 @@ class CommentsViewModel(
      * Change the sort of the comments and reload comments
      * @param sort the type of sort (best, top, new, controversial, q&a)
      * **/
-    fun setCommentSort(sort: CommentSort) {
+    suspend fun setCommentSort(sort: CommentSort) {
         _uiState.update { currentState ->
             currentState.copy(
                 commentSort = sort
@@ -97,7 +99,7 @@ class CommentsViewModel(
     /**
      * Fetch more comments and update the comment tree
      * **/
-    fun getMoreComments(index: Int) {
+    suspend fun getMoreComments(index: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 val networkResponse = currentState.networkResponse

@@ -44,10 +44,12 @@ class ProfileViewModel(
     val username: String = savedStateHandle["username"] ?: ""
 
     init {
-        getUserContent()
+        viewModelScope.launch {
+            getUserContent()
+        }
     }
 
-    private fun getUserContent() {
+    private suspend fun getUserContent() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -94,7 +96,7 @@ class ProfileViewModel(
      * Change the content type and load the content
      * @param contentType the type of profile content to load (submissions or comments)
      * **/
-    fun setContentType(contentType: UserContentType) {
+    suspend fun setContentType(contentType: UserContentType) {
         _uiState.update { currentState ->
             currentState.copy(
                 contentType = contentType,
@@ -108,7 +110,7 @@ class ProfileViewModel(
      * @param sort the type of sort (hot, new, top, controversial)
      * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
      * **/
-    fun setListingSort(sort: UserListingSort, topSort: TopSort? = null) {
+    suspend fun setListingSort(sort: UserListingSort, topSort: TopSort? = null) {
         _uiState.update { currentState ->
             currentState.copy(
                 userListingSort = sort,

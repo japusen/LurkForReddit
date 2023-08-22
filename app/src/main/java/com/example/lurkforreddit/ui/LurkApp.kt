@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LurkApp() {
+    val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     val context = LocalContext.current
     NavHost(
@@ -54,10 +55,14 @@ fun LurkApp() {
                 },
                 clearQuery = { homeViewModel.clearQuery() },
                 updateSearchResults = {
-                    homeViewModel.updateSearchResults()
+                    coroutineScope.launch {
+                        homeViewModel.updateSearchResults()
+                    }
                 },
                 onListingSortChanged = { listing, top ->
-                    homeViewModel.setListingSort(listing, top)
+                    coroutineScope.launch{
+                        homeViewModel.setListingSort(listing, top)
+                    }
                 },
                 onPostClicked = { subreddit, article ->
                     navController.navigate("details/$subreddit/$article")
@@ -108,7 +113,9 @@ fun LurkApp() {
                 ListingSortMenu(
                     selectedSort = subredditUiState.value.listingSort,
                     onListingSortChanged = { listing, top ->
-                        listingViewModel.setListingSort(listing, top)
+                        coroutineScope.launch{
+                            listingViewModel.setListingSort(listing, top)
+                        }
                     }
                 )
             }
@@ -146,10 +153,14 @@ fun LurkApp() {
                     selectedSort = profileUiState.value.userListingSort,
                     contentType = profileUiState.value.contentType,
                     onContentTypeChanged = { contentType ->
-                        profileViewModel.setContentType(contentType)
+                        coroutineScope.launch {
+                            profileViewModel.setContentType(contentType)
+                        }
                     },
                     onSortChanged = { sort, top ->
-                        profileViewModel.setListingSort(sort, top)
+                        coroutineScope.launch{
+                            profileViewModel.setListingSort(sort, top)
+                        }
                     }
                 )
             }
@@ -188,7 +199,11 @@ fun LurkApp() {
             ) {
                 DuplicatesSortMenu(
                     selectedSort = duplicatesUiState.value.sort,
-                    onSortChanged = { sort -> duplicatesViewModel.setSort(sort) }
+                    onSortChanged = { sort ->
+                        coroutineScope.launch {
+                            duplicatesViewModel.setSort(sort)
+                        }
+                    }
                 )
             }
         }
@@ -215,7 +230,9 @@ fun LurkApp() {
                         "/${commentsViewModel.article}")
                 },
                 onSortChanged = { sort ->
-                    commentsViewModel.setCommentSort(sort)
+                    coroutineScope.launch {
+                        commentsViewModel.setCommentSort(sort)
+                    }
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
@@ -230,7 +247,9 @@ fun LurkApp() {
                     commentsViewModel.changeCommentVisibility(visible, start, depth)
                 },
                 onMoreClicked = { index ->
-                    commentsViewModel.getMoreComments(index)
+                    coroutineScope.launch {
+                        commentsViewModel.getMoreComments(index)
+                    }
                 }
             )
         }

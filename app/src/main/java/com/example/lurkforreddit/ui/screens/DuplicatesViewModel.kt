@@ -41,9 +41,11 @@ class DuplicatesViewModel(
     private val article: String = savedStateHandle["article"] ?: ""
 
     init {
-        loadDuplicates()
+        viewModelScope.launch {
+            loadDuplicates()
+        }
     }
-    private fun loadDuplicates() {
+    private suspend fun loadDuplicates() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -80,7 +82,7 @@ class DuplicatesViewModel(
      * Change the sort type and load the duplicate posts
      * @param sort the type of sort (number of comments, new)
      * **/
-    fun setSort(sort: DuplicatesSort) {
+    suspend fun setSort(sort: DuplicatesSort) {
         _uiState.update { currentState ->
             currentState.copy(
                 sort = sort,
