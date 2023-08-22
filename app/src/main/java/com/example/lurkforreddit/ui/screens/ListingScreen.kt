@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.ui.components.ListingFeed
+import com.example.lurkforreddit.ui.viewmodels.ListingNetworkResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

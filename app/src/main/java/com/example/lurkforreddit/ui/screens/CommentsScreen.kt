@@ -19,6 +19,7 @@ import com.example.lurkforreddit.R
 import com.example.lurkforreddit.ui.components.CommentThread
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
 import com.example.lurkforreddit.model.CommentSort
+import com.example.lurkforreddit.ui.viewmodels.CommentsNetworkResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
