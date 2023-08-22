@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.screens
+package com.example.lurkforreddit.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -44,12 +44,10 @@ class ProfileViewModel(
     val username: String = savedStateHandle["username"] ?: ""
 
     init {
-        viewModelScope.launch {
-            getUserContent()
-        }
+        getUserContent()
     }
 
-    private suspend fun getUserContent() {
+    private fun getUserContent() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -96,7 +94,7 @@ class ProfileViewModel(
      * Change the content type and load the content
      * @param contentType the type of profile content to load (submissions or comments)
      * **/
-    suspend fun setContentType(contentType: UserContentType) {
+    fun setContentType(contentType: UserContentType) {
         _uiState.update { currentState ->
             currentState.copy(
                 contentType = contentType,
@@ -110,7 +108,7 @@ class ProfileViewModel(
      * @param sort the type of sort (hot, new, top, controversial)
      * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
      * **/
-    suspend fun setListingSort(sort: UserListingSort, topSort: TopSort? = null) {
+    fun setListingSort(sort: UserListingSort, topSort: TopSort? = null) {
         _uiState.update { currentState ->
             currentState.copy(
                 userListingSort = sort,

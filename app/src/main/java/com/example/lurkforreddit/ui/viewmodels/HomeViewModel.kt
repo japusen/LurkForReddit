@@ -1,10 +1,8 @@
-package com.example.lurkforreddit.ui.screens
+package com.example.lurkforreddit.ui.viewmodels
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -12,8 +10,10 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.DuplicatesSort
 import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.model.SearchResult
+import com.example.lurkforreddit.model.ListingSort
+import com.example.lurkforreddit.model.TopSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,43 +24,46 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-data class DuplicatesUiState(
+data class HomeUiState(
     val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
+    val subreddit: String = "All",
+    val listingSort: ListingSort = ListingSort.HOT,
+    val topSort: TopSort? = null,
+    val query: String = "",
+    val searchResults: List<SearchResult> = listOf()
 )
 
-class DuplicatesViewModel(
+class HomeViewModel(
     private val redditApiRepository: RedditApiRepository,
-    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(DuplicatesUiState())
-    val uiState: StateFlow<DuplicatesUiState> = _uiState.asStateFlow()
-
-    private val subreddit: String = savedStateHandle["subreddit"] ?: ""
-    private val article: String = savedStateHandle["article"] ?: ""
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            loadDuplicates()
+            redditApiRepository.initAccessToken()
+            loadPosts()
         }
     }
-    private suspend fun loadDuplicates() {
+
+    private fun loadPosts() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
                         ListingNetworkResponse.Success(
-                            redditApiRepository.getPostDuplicates(
-                                subreddit = subreddit,
-                                article = article,
-                                sort = currentState.sort,
+                            redditApiRepository.getPosts(
+                                subreddit = currentState.subreddit,
+                                sort = currentState.listingSort,
+                                topSort = currentState.topSort
                             )
                                 .map { pagingData ->
                                     pagingData.map { content ->
                                         if (content is Post)
                                             content.copy(
                                                 thumbnail = content.parseThumbnail(),
+                                                url = content.parseUrl()
                                             )
                                         else
                                             content
@@ -75,32 +78,83 @@ class DuplicatesViewModel(
                     }
                 )
             }
+
         }
     }
 
     /**
-     * Change the sort type and load the duplicate posts
-     * @param sort the type of sort (number of comments, new)
-     * **/
-    suspend fun setSort(sort: DuplicatesSort) {
+     * Change the current subreddit and reload posts
+     * @param subreddit subreddit name
+     *  **/
+    fun setSubreddit(subreddit: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                sort = sort,
+                subreddit = subreddit,
             )
         }
-        loadDuplicates()
+        loadPosts()
     }
 
+    /**
+     * Change the sort type and reload posts
+     * @param sort the type of sort (hot, rising, new, top)
+     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * **/
+    fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                listingSort = sort,
+                topSort = topSort,
+            )
+        }
+        loadPosts()
+    }
+
+    /**
+     * Update the search query
+     * @param query the search query
+     */
+    fun setQuery(query: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                query = query,
+            )
+        }
+    }
+
+    /**
+     * Clear the search query
+     */
+    fun clearQuery() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                query = "",
+                searchResults = listOf()
+            )
+        }
+    }
+
+    /**
+     * Fetch search results for the current query
+     */
+    fun updateSearchResults() {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    searchResults = redditApiRepository.subredditAutoComplete(currentState.query)
+                )
+            }
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
-                val savedStateHandle = createSavedStateHandle()
-                DuplicatesViewModel(
+
+                HomeViewModel(
                     redditApiRepository = redditApiRepository,
-                    savedStateHandle = savedStateHandle
                 )
             }
         }

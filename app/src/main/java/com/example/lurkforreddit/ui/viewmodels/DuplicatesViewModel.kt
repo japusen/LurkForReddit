@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.screens
+package com.example.lurkforreddit.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -8,16 +8,12 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.Content
+import com.example.lurkforreddit.model.DuplicatesSort
 import com.example.lurkforreddit.model.Post
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.TopSort
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,54 +24,41 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-sealed interface ListingNetworkResponse {
-    data class Success(
-        val listingContent: Flow<PagingData<Content>>,
-    ) : ListingNetworkResponse
-
-    object Error : ListingNetworkResponse
-    object Loading : ListingNetworkResponse
-}
-
-data class ListingUiState(
+data class DuplicatesUiState(
     val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val listingSort: ListingSort = ListingSort.HOT,
-    val topSort: TopSort? = null,
+    val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
 )
 
-class ListingViewModel(
+class DuplicatesViewModel(
     private val redditApiRepository: RedditApiRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ListingUiState())
-    val uiState: StateFlow<ListingUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(DuplicatesUiState())
+    val uiState: StateFlow<DuplicatesUiState> = _uiState.asStateFlow()
 
-    val subreddit: String = savedStateHandle["subreddit"] ?: "All"
+    private val subreddit: String = savedStateHandle["subreddit"] ?: ""
+    private val article: String = savedStateHandle["article"] ?: ""
 
     init {
-        viewModelScope.launch {
-            loadPosts()
-        }
+        loadDuplicates()
     }
-
-    private suspend fun loadPosts() {
+    private fun loadDuplicates() {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
                         ListingNetworkResponse.Success(
-                            redditApiRepository.getPosts(
+                            redditApiRepository.getPostDuplicates(
                                 subreddit = subreddit,
-                                sort = currentState.listingSort,
-                                topSort = currentState.topSort
+                                article = article,
+                                sort = currentState.sort,
                             )
                                 .map { pagingData ->
                                     pagingData.map { content ->
                                         if (content is Post)
                                             content.copy(
                                                 thumbnail = content.parseThumbnail(),
-                                                url = content.parseUrl()
                                             )
                                         else
                                             content
@@ -90,24 +73,22 @@ class ListingViewModel(
                     }
                 )
             }
-
         }
     }
 
     /**
-     * Change the sort type and reload posts
-     * @param sort the type of sort (hot, rising, new, top)
-     * @param topSort the time frame if the sort is top (hour, day, week, month, year, all)
+     * Change the sort type and load the duplicate posts
+     * @param sort the type of sort (number of comments, new)
      * **/
-    suspend fun setListingSort(sort: ListingSort, topSort: TopSort? = null) {
+    fun setSort(sort: DuplicatesSort) {
         _uiState.update { currentState ->
             currentState.copy(
-                listingSort = sort,
-                topSort = topSort,
+                sort = sort,
             )
         }
-        loadPosts()
+        loadDuplicates()
     }
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -115,8 +96,7 @@ class ListingViewModel(
                 val application = (this[APPLICATION_KEY] as LurkApplication)
                 val redditApiRepository = application.container.redditApiRepository
                 val savedStateHandle = createSavedStateHandle()
-
-                ListingViewModel(
+                DuplicatesViewModel(
                     redditApiRepository = redditApiRepository,
                     savedStateHandle = savedStateHandle
                 )
