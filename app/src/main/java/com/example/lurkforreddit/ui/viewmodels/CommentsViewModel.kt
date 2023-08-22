@@ -61,7 +61,7 @@ class CommentsViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        val data = redditApiRepository.getPostComments(
+                        val data = redditApiRepository.getCommentThread(
                             subreddit = subreddit,
                             article = article,
                             sort = currentState.commentSort

@@ -13,7 +13,6 @@ import com.example.lurkforreddit.domain.model.UserListingSort
 import kotlinx.coroutines.flow.Flow
 
 interface RedditApiRepository {
-    suspend fun initAccessToken()
 
     suspend fun getPosts(
         subreddit: String,
@@ -39,7 +38,7 @@ interface RedditApiRepository {
         topSort: TopSort? = null
     ): Flow<PagingData<Content>>
 
-    suspend fun getPostComments(
+    suspend fun getCommentThread(
         subreddit: String,
         article: String,
         sort: CommentSort

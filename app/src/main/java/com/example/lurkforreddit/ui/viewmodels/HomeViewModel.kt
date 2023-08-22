@@ -41,10 +41,7 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            redditApiRepository.initAccessToken()
-            loadPosts()
-        }
+        loadPosts()
     }
 
     private fun loadPosts() {

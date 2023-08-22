@@ -2,7 +2,9 @@ package com.example.lurkforreddit.di
 
 import com.example.lurkforreddit.data.remote.AccessTokenService
 import com.example.lurkforreddit.data.remote.RedditApiService
+import com.example.lurkforreddit.data.repository.DefaultAccessTokenRepository
 import com.example.lurkforreddit.data.repository.DefaultRedditApiRepository
+import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -11,6 +13,7 @@ import retrofit2.Retrofit
 
 interface AppContainer {
     val redditApiRepository: RedditApiRepository
+    val accessTokenRepository: AccessTokenRepository
 }
 
 class DefaultAppContainer : AppContainer {
@@ -39,7 +42,11 @@ class DefaultAppContainer : AppContainer {
         apiRetrofit.create(RedditApiService::class.java)
     }
 
+    override val accessTokenRepository: AccessTokenRepository by lazy {
+        DefaultAccessTokenRepository(tokenRetrofitService)
+    }
+
     override val redditApiRepository: RedditApiRepository by lazy {
-        DefaultRedditApiRepository(tokenRetrofitService, apiRetrofitService)
+        DefaultRedditApiRepository(accessTokenRepository, apiRetrofitService)
     }
 }
