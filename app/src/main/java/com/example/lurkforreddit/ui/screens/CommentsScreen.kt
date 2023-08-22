@@ -16,9 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.components.CommentThread
+import com.example.lurkforreddit.ui.components.comment.CommentThread
 import com.example.lurkforreddit.ui.components.menus.CommentSortMenu
-import com.example.lurkforreddit.model.CommentSort
+import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.ui.viewmodels.CommentsNetworkResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +84,7 @@ fun CommentsScreen(
             is CommentsNetworkResponse.Loading -> LoadingScreen(modifier)
             is CommentsNetworkResponse.Success -> {
                 CommentThread(
-                    post = networkResponse.post,
+                    postDto = networkResponse.postDto,
                     thread = networkResponse.commentThread,
                     openLink = onLinkClicked,
                     openProfile = onProfileClicked,

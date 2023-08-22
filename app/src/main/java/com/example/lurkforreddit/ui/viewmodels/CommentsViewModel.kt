@@ -8,12 +8,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.Comment
-import com.example.lurkforreddit.model.CommentSort
-import com.example.lurkforreddit.model.CommentThreadItem
-import com.example.lurkforreddit.model.More
-import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.data.remote.model.CommentDto
+import com.example.lurkforreddit.domain.model.CommentSort
+import com.example.lurkforreddit.domain.model.CommentThreadItem
+import com.example.lurkforreddit.data.remote.model.MoreDto
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +26,7 @@ private const val MORE_COMMENTS_AMOUNT = 50
 
 sealed interface CommentsNetworkResponse {
     data class Success(
-        val post: Post,
+        val postDto: PostDto,
         val commentThread: List<CommentThreadItem>
     ) : CommentsNetworkResponse
 
@@ -67,7 +67,7 @@ class CommentsViewModel(
                             sort = currentState.commentSort
                         )
                         CommentsNetworkResponse.Success(
-                            post = data.first.copy(
+                            postDto = data.first.copy(
                                 thumbnail = data.first.parseThumbnail(),
                                 url = data.first.parseUrl()
                             ),
@@ -106,8 +106,8 @@ class CommentsViewModel(
                 if (networkResponse is CommentsNetworkResponse.Success) {
                     val commentThread = networkResponse.commentThread
                     try {
-                        val more = commentThread[index] as More
-                        val ids = more.getIDs(MORE_COMMENTS_AMOUNT)
+                        val moreDto = commentThread[index] as MoreDto
+                        val ids = moreDto.getIDs(MORE_COMMENTS_AMOUNT)
 
                         val newComments = redditApiRepository.getMoreComments(
                             linkID = article,
@@ -118,7 +118,7 @@ class CommentsViewModel(
                         currentState.copy(
                             networkResponse = networkResponse.copy(
                                 commentThread = commentThread.toMutableList().apply {
-                                    if (more.children.isEmpty())
+                                    if (moreDto.children.isEmpty())
                                         removeAt(index)
                                     addAll(index, newComments)
                                 }
@@ -157,8 +157,8 @@ class CommentsViewModel(
                                 val item = elementAt(index)
                                 if (item.depth > depth) {
                                     when (item) {
-                                        is Comment -> set(index, item.copy(visible = visible))
-                                        is More -> set(index, item.copy(visible = visible))
+                                        is CommentDto -> set(index, item.copy(visible = visible))
+                                        is MoreDto -> set(index, item.copy(visible = visible))
                                     }
                                     index += 1
                                 }

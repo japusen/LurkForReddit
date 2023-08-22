@@ -12,11 +12,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.Content
-import com.example.lurkforreddit.model.Post
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.domain.model.Content
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.TopSort
+import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,7 +70,7 @@ class ListingViewModel(
                             )
                                 .map { pagingData ->
                                     pagingData.map { content ->
-                                        if (content is Post)
+                                        if (content is PostDto)
                                             content.copy(
                                                 thumbnail = content.parseThumbnail(),
                                                 url = content.parseUrl()

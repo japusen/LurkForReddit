@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.components
+package com.example.lurkforreddit.ui.components.comment
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
+import com.example.lurkforreddit.ui.components.post.ActionButton
+import com.example.lurkforreddit.ui.components.TimeStamp
 import com.example.lurkforreddit.util.relativeTime
 import kotlinx.datetime.DateTimePeriod
 

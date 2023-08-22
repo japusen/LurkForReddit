@@ -1,9 +1,9 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.data.remote.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchResult(
+data class SearchResultDto(
     val name: String,
     val communityIcon: String,
     val icon: String,

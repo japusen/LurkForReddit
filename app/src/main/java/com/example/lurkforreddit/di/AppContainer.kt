@@ -1,7 +1,9 @@
-package com.example.lurkforreddit.data
+package com.example.lurkforreddit.di
 
-import com.example.lurkforreddit.network.AccessTokenService
-import com.example.lurkforreddit.network.RedditApiService
+import com.example.lurkforreddit.data.remote.AccessTokenService
+import com.example.lurkforreddit.data.remote.RedditApiService
+import com.example.lurkforreddit.data.repository.DefaultRedditApiRepository
+import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType

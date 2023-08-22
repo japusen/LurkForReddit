@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.components
+package com.example.lurkforreddit.ui.components.comment
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

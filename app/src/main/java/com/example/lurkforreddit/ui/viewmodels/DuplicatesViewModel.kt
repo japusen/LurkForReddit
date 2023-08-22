@@ -11,9 +11,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.DuplicatesSort
-import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.domain.model.DuplicatesSort
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,7 +56,7 @@ class DuplicatesViewModel(
                             )
                                 .map { pagingData ->
                                     pagingData.map { content ->
-                                        if (content is Post)
+                                        if (content is PostDto)
                                             content.copy(
                                                 thumbnail = content.parseThumbnail(),
                                             )

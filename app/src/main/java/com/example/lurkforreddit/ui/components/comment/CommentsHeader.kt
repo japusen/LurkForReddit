@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.components
+package com.example.lurkforreddit.ui.components.comment
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -24,13 +24,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.ui.components.post.PostThumbnail
+import com.example.lurkforreddit.ui.components.TimeStamp
 import com.example.lurkforreddit.util.relativeTime
 import kotlinx.datetime.DateTimePeriod
 
 @Composable
 fun CommentsHeader(
-    post: Post,
+    postDto: PostDto,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,10 +46,10 @@ fun CommentsHeader(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            if (!post.isSelfPost) {
+            if (!postDto.isSelfPost) {
                 PostThumbnail(
-                    thumbnail = post.thumbnail,
-                    url = post.url,
+                    thumbnail = postDto.thumbnail,
+                    url = postDto.url,
                     openLink = openLink,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -64,17 +66,17 @@ fun CommentsHeader(
             ) {
                 
                 PostSummary(
-                    title = post.title,
-                    author = post.author,
-                    nsfw = post.over18,
-                    locked = post.locked,
-                    score = post.score,
-                    numComments = post.numComments,
-                    publishedTime = relativeTime(post.createdUtc)
+                    title = postDto.title,
+                    author = postDto.author,
+                    nsfw = postDto.over18,
+                    locked = postDto.locked,
+                    score = postDto.score,
+                    numComments = postDto.numComments,
+                    publishedTime = relativeTime(postDto.createdUtc)
                 )
 
-                if (post.selftext != "") {
-                    SelfText(text = post.selftext)
+                if (postDto.selftext != "") {
+                    SelfText(text = postDto.selftext)
                 }
             }
         }

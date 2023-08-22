@@ -1,11 +1,12 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.data.remote.model
 
+import com.example.lurkforreddit.domain.model.CommentThreadItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class More(
+data class MoreDto(
     override var visible: Boolean = true,
     override val name: String,
     override val id: String,

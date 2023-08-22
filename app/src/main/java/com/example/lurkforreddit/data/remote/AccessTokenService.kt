@@ -1,7 +1,7 @@
-package com.example.lurkforreddit.network
+package com.example.lurkforreddit.data.remote
 
 import com.example.lurkforreddit.BuildConfig
-import com.example.lurkforreddit.model.AccessToken
+import com.example.lurkforreddit.data.remote.model.AccessTokenDto
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -27,5 +27,5 @@ interface AccessTokenService {
         @Header("Authorization") credentials: String = encodedCredentials(),
         @Field("grant_type") grantType: String = GRANT_TYPE,
         @Field("device_id") deviceId: String = DEVICE_ID
-    ): Response<AccessToken>
+    ): Response<AccessTokenDto>
 }

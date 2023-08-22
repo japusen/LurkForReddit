@@ -22,8 +22,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.TopSort
 
 @Composable
 fun ListingSortMenu(

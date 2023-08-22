@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.components
+package com.example.lurkforreddit.ui.components.post
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -31,11 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontVariation.width
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.ui.components.TimeStamp
 import com.example.lurkforreddit.util.relativeTime
 import kotlinx.datetime.DateTimePeriod
 
@@ -43,7 +43,7 @@ import kotlinx.datetime.DateTimePeriod
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostCard(
-    content: Post,
+    content: PostDto,
     onPostClicked: () -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,

@@ -2,13 +2,13 @@ package com.example.lurkforreddit.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.lurkforreddit.model.Content
-import com.example.lurkforreddit.model.Listing
-import com.example.lurkforreddit.network.RedditApiService
-import com.example.lurkforreddit.network.parsePostListing
-import com.example.lurkforreddit.network.parseProfileCommentListing
-import com.example.lurkforreddit.model.PagingListing
-import com.example.lurkforreddit.model.UserContentType
+import com.example.lurkforreddit.domain.model.Content
+import com.example.lurkforreddit.domain.model.Listing
+import com.example.lurkforreddit.data.remote.RedditApiService
+import com.example.lurkforreddit.data.json.parsePostListing
+import com.example.lurkforreddit.data.json.parseProfileCommentListing
+import com.example.lurkforreddit.domain.model.PagingListing
+import com.example.lurkforreddit.domain.model.UserContentType
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import retrofit2.HttpException

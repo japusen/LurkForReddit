@@ -21,12 +21,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.model.SearchResult
+import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import com.example.lurkforreddit.ui.components.ListingFeed
 import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
 import com.example.lurkforreddit.ui.components.menus.SearchMenu
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.ui.viewmodels.ListingNetworkResponse
 import kotlinx.coroutines.launch
 
@@ -37,7 +37,7 @@ fun HomeScreen(
     subreddit: String,
     selectedSort: ListingSort,
     networkResponse: ListingNetworkResponse,
-    searchResults: List<SearchResult>,
+    searchResultDtos: List<SearchResultDto>,
     updateSearchResults: () -> Unit,
     setQuery: (String) -> Unit,
     clearQuery: () -> Unit,
@@ -56,7 +56,7 @@ fun HomeScreen(
         drawerContent = {
             SearchMenu(
                 query = query,
-                searchResults = searchResults,
+                searchResultDtos = searchResultDtos,
                 setQuery = setQuery,
                 updateSearchResults = updateSearchResults,
                 clearQuery = clearQuery,

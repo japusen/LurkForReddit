@@ -1,87 +1,41 @@
-package com.example.lurkforreddit.data
+package com.example.lurkforreddit.data.repository
 
 import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.lurkforreddit.data.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
-import com.example.lurkforreddit.model.AccessToken
-import com.example.lurkforreddit.model.CommentSort
-import com.example.lurkforreddit.model.CommentThreadItem
-import com.example.lurkforreddit.model.Content
-import com.example.lurkforreddit.model.DuplicatesSort
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.PagingListing
-import com.example.lurkforreddit.model.Post
-import com.example.lurkforreddit.model.SearchResult
-import com.example.lurkforreddit.model.TopSort
-import com.example.lurkforreddit.model.UserListingSort
-import com.example.lurkforreddit.network.AccessTokenService
-import com.example.lurkforreddit.network.RedditApiService
-import com.example.lurkforreddit.network.parseMoreComments
-import com.example.lurkforreddit.network.parsePostComments
-import com.example.lurkforreddit.network.parsePostListing
-import com.example.lurkforreddit.network.parseSearchResults
+import com.example.lurkforreddit.data.ListingPagingSource
+import com.example.lurkforreddit.data.json.parseMoreComments
+import com.example.lurkforreddit.data.json.parsePostComments
+import com.example.lurkforreddit.data.json.parsePostListing
+import com.example.lurkforreddit.data.json.parseSearchResults
+import com.example.lurkforreddit.data.remote.AccessTokenService
+import com.example.lurkforreddit.data.remote.RedditApiService
+import com.example.lurkforreddit.data.remote.model.AccessTokenDto
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.CommentSort
+import com.example.lurkforreddit.domain.model.CommentThreadItem
+import com.example.lurkforreddit.domain.model.Content
+import com.example.lurkforreddit.domain.model.DuplicatesSort
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.PagingListing
+import com.example.lurkforreddit.domain.model.TopSort
+import com.example.lurkforreddit.domain.model.UserListingSort
+import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.RedditApiRepository.Companion.NETWORK_PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.jsonArray
 import retrofit2.HttpException
 import java.io.IOException
 
-interface RedditApiRepository {
-    suspend fun initAccessToken()
-
-    suspend fun getPosts(
-        subreddit: String,
-        sort: ListingSort,
-        topSort: TopSort? = null
-    ): Flow<PagingData<Content>>
-
-    suspend fun getPostDuplicates(
-        subreddit: String,
-        article: String,
-        sort: DuplicatesSort
-    ): Flow<PagingData<Content>>
-
-    suspend fun getUserSubmissions(
-        username: String,
-        sort: UserListingSort,
-        topSort: TopSort? = null
-    ): Flow<PagingData<Content>>
-
-    suspend fun getUserComments(
-        username: String,
-        sort: UserListingSort,
-        topSort: TopSort? = null
-    ): Flow<PagingData<Content>>
-
-    suspend fun getPostComments(
-        subreddit: String,
-        article: String,
-        sort: CommentSort
-    ): Pair<Post, MutableList<CommentThreadItem>>
-
-    suspend fun subredditAutoComplete(
-        query: String,
-    ): List<SearchResult>
-
-    suspend fun getMoreComments(
-        linkID: String,
-        parentID: String,
-        childrenIDs: String,
-        sort: CommentSort,
-    ): MutableList<CommentThreadItem>
-
-    companion object {
-        const val NETWORK_PAGE_SIZE = 25
-    }
-}
 
 class DefaultRedditApiRepository(
     private val accessTokenService: AccessTokenService,
     private val redditApiService: RedditApiService
 ) : RedditApiRepository {
 
-    private lateinit var accessToken: AccessToken
+    private lateinit var accessTokenDto: AccessTokenDto
     private lateinit var tokenHeader: String
 
     /**
@@ -92,8 +46,8 @@ class DefaultRedditApiRepository(
         try {
             val response = accessTokenService.getToken()
             if (response.isSuccessful) {
-                accessToken = response.body()!!
-                tokenHeader = "Bearer ${accessToken.accessToken}"
+                accessTokenDto = response.body()!!
+                tokenHeader = "Bearer ${accessTokenDto.accessToken}"
             } else {
                 throw Exception(response.errorBody()?.charStream()?.readText())
             }
@@ -243,7 +197,7 @@ class DefaultRedditApiRepository(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<Post, MutableList<CommentThreadItem>> {
+    ): Pair<PostDto, MutableList<CommentThreadItem>> {
 
         val response = redditApiService.getPostComments(
             tokenHeader,
@@ -266,7 +220,7 @@ class DefaultRedditApiRepository(
      * @param query the query to perform search on
      * @return a list of SearchResults for the given query
      */
-    override suspend fun subredditAutoComplete(query: String): List<SearchResult> {
+    override suspend fun subredditAutoComplete(query: String): List<SearchResultDto> {
         val response = redditApiService.subredditAutoComplete(
             tokenHeader,
             query

@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.domain.model
 
 enum class ListingSort(val value: String) {
     HOT("hot"),

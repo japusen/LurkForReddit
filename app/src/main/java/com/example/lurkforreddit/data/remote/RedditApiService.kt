@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.network
+package com.example.lurkforreddit.data.remote
 
 import kotlinx.serialization.json.JsonElement
 import retrofit2.http.GET

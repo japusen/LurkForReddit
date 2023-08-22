@@ -39,7 +39,7 @@ fun ImageLink(
         containerColor = Color.Black
     ) { paddingValues ->
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {

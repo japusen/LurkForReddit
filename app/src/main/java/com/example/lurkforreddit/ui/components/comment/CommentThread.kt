@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.components
+package com.example.lurkforreddit.ui.components.comment
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -18,14 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.model.Comment
-import com.example.lurkforreddit.model.CommentThreadItem
-import com.example.lurkforreddit.model.More
-import com.example.lurkforreddit.model.Post
+import com.example.lurkforreddit.data.remote.model.CommentDto
+import com.example.lurkforreddit.domain.model.CommentThreadItem
+import com.example.lurkforreddit.data.remote.model.MoreDto
+import com.example.lurkforreddit.data.remote.model.PostDto
 
 @Composable
 fun CommentThread(
-    post: Post,
+    postDto: PostDto,
     thread: List<CommentThreadItem>,
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
@@ -43,7 +43,7 @@ fun CommentThread(
 
         item {
             CommentsHeader(
-                post = post,
+                postDto = postDto,
                 openLink = openLink
             )
         }
@@ -66,9 +66,9 @@ fun CommentThread(
                     exit = slideOutVertically() + shrinkVertically() + fadeOut() + scaleOut(targetScale = 1.2f)
                 ) {
                     when(item) {
-                        is Comment ->
+                        is CommentDto ->
                             CommentCard(
-                                postAuthor = post.author,
+                                postAuthor = postDto.author,
                                 commentAuthor = item.author,
                                 score = item.score,
                                 createdUtc = item.createdUtc,
@@ -82,7 +82,7 @@ fun CommentThread(
                                 openProfile = openProfile,
                                 onBrowserClicked = onBrowserClicked,
                             )
-                        is More ->
+                        is MoreDto ->
                             if (item.children.isNotEmpty())
                                 MoreCommentsIndicator(
                                     depth = item.depth,

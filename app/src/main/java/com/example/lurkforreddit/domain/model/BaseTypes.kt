@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.domain.model
 
 interface Created {
     val created: Float
@@ -19,4 +19,12 @@ interface Listing {
     val before: String?
     val dist: Int?
     val children: List<Content>
+}
+
+interface CommentThreadItem {
+    var visible: Boolean
+    val name: String
+    val id: String
+    val parentID: String
+    val depth: Int
 }

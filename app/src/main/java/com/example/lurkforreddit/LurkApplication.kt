@@ -5,9 +5,8 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-import coil.decode.VideoFrameDecoder
-import com.example.lurkforreddit.data.AppContainer
-import com.example.lurkforreddit.data.DefaultAppContainer
+import com.example.lurkforreddit.di.AppContainer
+import com.example.lurkforreddit.di.DefaultAppContainer
 
 class LurkApplication: Application(), ImageLoaderFactory {
     lateinit var container: AppContainer

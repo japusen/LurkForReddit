@@ -1,6 +1,8 @@
-package com.example.lurkforreddit.model
+package com.example.lurkforreddit.data.remote.model
 
-import com.example.lurkforreddit.network.parseVredditUrl
+import com.example.lurkforreddit.data.json.parseVredditUrl
+import com.example.lurkforreddit.domain.model.Content
+import com.example.lurkforreddit.domain.model.Created
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -10,7 +12,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 
 @Serializable
-data class Post(
+data class PostDto(
     override val id: String,
     override val author: String,
     override val distinguished: String? = null,

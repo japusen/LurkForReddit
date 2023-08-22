@@ -9,11 +9,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.RedditApiRepository
-import com.example.lurkforreddit.model.Post
-import com.example.lurkforreddit.model.SearchResult
-import com.example.lurkforreddit.model.ListingSort
-import com.example.lurkforreddit.model.TopSort
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.TopSort
+import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +30,7 @@ data class HomeUiState(
     val listingSort: ListingSort = ListingSort.HOT,
     val topSort: TopSort? = null,
     val query: String = "",
-    val searchResults: List<SearchResult> = listOf()
+    val searchResultDtos: List<SearchResultDto> = listOf()
 )
 
 class HomeViewModel(
@@ -60,7 +60,7 @@ class HomeViewModel(
                             )
                                 .map { pagingData ->
                                     pagingData.map { content ->
-                                        if (content is Post)
+                                        if (content is PostDto)
                                             content.copy(
                                                 thumbnail = content.parseThumbnail(),
                                                 url = content.parseUrl()
@@ -129,7 +129,7 @@ class HomeViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 query = "",
-                searchResults = listOf()
+                searchResultDtos = listOf()
             )
         }
     }
@@ -141,7 +141,7 @@ class HomeViewModel(
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
-                    searchResults = redditApiRepository.subredditAutoComplete(currentState.query)
+                    searchResultDtos = redditApiRepository.subredditAutoComplete(currentState.query)
                 )
             }
         }

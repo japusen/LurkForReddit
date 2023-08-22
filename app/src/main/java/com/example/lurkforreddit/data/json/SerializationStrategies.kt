@@ -1,13 +1,13 @@
-package com.example.lurkforreddit.network
+package com.example.lurkforreddit.data.json
 
-import com.example.lurkforreddit.model.Comment
-import com.example.lurkforreddit.model.CommentThreadItem
-import com.example.lurkforreddit.model.More
-import com.example.lurkforreddit.model.Post
-import com.example.lurkforreddit.model.PostListing
-import com.example.lurkforreddit.model.ProfileComment
-import com.example.lurkforreddit.model.ProfileCommentListing
-import com.example.lurkforreddit.model.SearchResult
+import com.example.lurkforreddit.data.remote.model.CommentDto
+import com.example.lurkforreddit.data.remote.model.PostListingDto
+import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
+import com.example.lurkforreddit.data.remote.model.ProfileCommentListingDto
+import com.example.lurkforreddit.domain.model.CommentThreadItem
+import com.example.lurkforreddit.data.remote.model.MoreDto
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -31,7 +31,7 @@ private val empty = json.parseToJsonElement("{}")
  */
 fun parsePostListing(
     response: JsonElement
-): PostListing {
+): PostListingDto {
 
     val listing = response.jsonObject["data"]
 
@@ -41,14 +41,14 @@ fun parsePostListing(
 
     val children = listing?.jsonObject?.get("children")
 
-    val posts = children?.jsonArray?.map {
+    val postDtos = children?.jsonArray?.map {
         json.decodeFromJsonElement(
-            Post.serializer(),
+            PostDto.serializer(),
             it.jsonObject.getOrDefault("data", empty)
         )
     }
 
-    return PostListing(after, before, dist, posts ?: listOf())
+    return PostListingDto(after, before, dist, postDtos ?: listOf())
 }
 
 /**
@@ -58,7 +58,7 @@ fun parsePostListing(
  */
 fun parseProfileCommentListing(
     response: JsonElement
-): ProfileCommentListing {
+): ProfileCommentListingDto {
 
     val listing = response.jsonObject["data"]
 
@@ -70,12 +70,12 @@ fun parseProfileCommentListing(
 
     val comments = children?.jsonArray?.map {
         json.decodeFromJsonElement(
-            ProfileComment.serializer(),
+            ProfileCommentDto.serializer(),
             it.jsonObject.getOrDefault("data", empty)
         )
     }
 
-    return ProfileCommentListing(after, before, dist, comments ?: listOf())
+    return ProfileCommentListingDto(after, before, dist, comments ?: listOf())
 }
 
 /**
@@ -96,18 +96,18 @@ fun parsePostComments(
             child.jsonObject.getOrDefault("kind", empty)
         )
         if (kind == "more") {
-            val more = json.decodeFromJsonElement(
-                More.serializer(),
+            val moreDto = json.decodeFromJsonElement(
+                MoreDto.serializer(),
                 child.jsonObject.getOrDefault("data", empty)
             )
-            commentThread.add(more)
+            commentThread.add(moreDto)
         } else {
             val commentData = child.jsonObject.getOrDefault("data", empty)
-            val comment = json.decodeFromJsonElement(
-                Comment.serializer(),
+            val commentDto = json.decodeFromJsonElement(
+                CommentDto.serializer(),
                 commentData
             )
-            commentThread.add(comment)
+            commentThread.add(commentDto)
 
             val replies = commentData.jsonObject.getOrDefault("replies", empty)
             if (replies is JsonObject)
@@ -134,18 +134,18 @@ fun parseMoreComments(
             thing.jsonObject.getOrDefault("kind", empty)
         )
         if (kind == "more") {
-            val more = json.decodeFromJsonElement(
-                More.serializer(),
+            val moreDto = json.decodeFromJsonElement(
+                MoreDto.serializer(),
                 thing.jsonObject.getOrDefault("data", empty)
             )
-            commentThread.add(more)
+            commentThread.add(moreDto)
         } else {
             val commentData = thing.jsonObject.getOrDefault("data", empty)
-            val comment = json.decodeFromJsonElement(
-                Comment.serializer(),
+            val commentDto = json.decodeFromJsonElement(
+                CommentDto.serializer(),
                 commentData
             )
-            commentThread.add(comment)
+            commentThread.add(commentDto)
         }
     }
 }
@@ -157,10 +157,10 @@ fun parseMoreComments(
  */
 fun parseSearchResults(
     response: JsonElement
-): List<SearchResult> {
+): List<SearchResultDto> {
     return response.jsonObject["subreddits"]?.jsonArray?.map {
         json.decodeFromJsonElement(
-            SearchResult.serializer(),
+            SearchResultDto.serializer(),
             it
         )
     } ?: listOf()
