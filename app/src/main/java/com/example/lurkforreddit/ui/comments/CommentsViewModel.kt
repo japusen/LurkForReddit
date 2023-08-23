@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.remote.model.CommentDto
+import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.model.Comment
 import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
-import com.example.lurkforreddit.data.remote.model.MoreDto
-import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.model.More
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -104,8 +104,8 @@ class CommentsViewModel(
                 if (networkResponse is CommentsNetworkResponse.Success) {
                     val commentThread = networkResponse.commentThread
                     try {
-                        val moreDto = commentThread[index] as MoreDto
-                        val ids = moreDto.getIDs(MORE_COMMENTS_AMOUNT)
+                        val more = commentThread[index] as More
+                        val ids = more.getIDs(MORE_COMMENTS_AMOUNT)
 
                         val newComments = commentThreadRepository.getMoreComments(
                             linkID = article,
@@ -116,7 +116,7 @@ class CommentsViewModel(
                         currentState.copy(
                             networkResponse = networkResponse.copy(
                                 commentThread = commentThread.toMutableList().apply {
-                                    if (moreDto.children.isEmpty())
+                                    if (more.children.isEmpty())
                                         removeAt(index)
                                     addAll(index, newComments)
                                 }
@@ -155,8 +155,8 @@ class CommentsViewModel(
                                 val item = elementAt(index)
                                 if (item.depth > depth) {
                                     when (item) {
-                                        is CommentDto -> set(index, item.copy(visible = visible))
-                                        is MoreDto -> set(index, item.copy(visible = visible))
+                                        is Comment -> set(index, item.copy(visible = visible))
+                                        is More -> set(index, item.copy(visible = visible))
                                     }
                                     index += 1
                                 }

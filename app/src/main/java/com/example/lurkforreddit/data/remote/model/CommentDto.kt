@@ -9,19 +9,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CommentDto(
-    override var visible: Boolean = true,
-    override val name: String,
+    override val visible: Boolean = true,
     override val id: String,
-    @SerialName("parent_id")
-    override val parentID: String,
     override val depth: Int,
     override val author: String,
     override val distinguished: String? = null,
     override val score: Int,
     override val subreddit: String,
-    @SerialName("subreddit_id")
-    override val subredditID: String,
-    override val created: Float,
     @SerialName("created_utc")
     override val createdUtc: Float,
     @SerialName("score_hidden")
@@ -29,7 +23,6 @@ data class CommentDto(
     val body: String,
     @SerialName("body_html")
     val bodyHtml: String,
-    @SerialName("link_id")
-    val linkID: String,
+    @SerialName("permalink")
     val permalink: String,
 ) : Content, CommentThreadItem, Created

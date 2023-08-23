@@ -1,5 +1,7 @@
 package com.example.lurkforreddit.data.json
 
+import com.example.lurkforreddit.data.mappers.toComment
+import com.example.lurkforreddit.data.mappers.toMore
 import com.example.lurkforreddit.data.remote.model.CommentDto
 import com.example.lurkforreddit.data.remote.model.PostListingDto
 import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
@@ -34,11 +36,7 @@ fun parsePostListing(
 ): PostListingDto {
 
     val listing = response.jsonObject["data"]
-
     val after = listing?.jsonObject?.get("after")?.jsonPrimitive?.contentOrNull
-    val before = listing?.jsonObject?.get("before")?.jsonPrimitive?.contentOrNull
-    val dist = listing?.jsonObject?.get("dist")?.jsonPrimitive?.content?.toInt()
-
     val children = listing?.jsonObject?.get("children")
 
     val postDtos = children?.jsonArray?.map {
@@ -48,7 +46,7 @@ fun parsePostListing(
         )
     }
 
-    return PostListingDto(after, before, dist, postDtos ?: listOf())
+    return PostListingDto(after, postDtos ?: listOf())
 }
 
 /**
@@ -61,11 +59,7 @@ fun parseProfileCommentListing(
 ): ProfileCommentListingDto {
 
     val listing = response.jsonObject["data"]
-
     val after = listing?.jsonObject?.get("after")?.jsonPrimitive?.contentOrNull
-    val before = listing?.jsonObject?.get("before")?.jsonPrimitive?.contentOrNull
-    val dist = listing?.jsonObject?.get("dist")?.jsonPrimitive?.content?.toInt()
-
     val children = listing?.jsonObject?.get("children")
 
     val comments = children?.jsonArray?.map {
@@ -75,12 +69,12 @@ fun parseProfileCommentListing(
         )
     }
 
-    return ProfileCommentListingDto(after, before, dist, comments ?: listOf())
+    return ProfileCommentListingDto(after, comments ?: listOf())
 }
 
 /**
  * Recursively parse the JSON response to obtain a list of CommentThreadItems
- * @param children the JSON Array
+ * @param response the JSON Element
  * @return a MutableList of CommentThreadItems
  */
 fun parsePostComments(
@@ -100,14 +94,16 @@ fun parsePostComments(
                 MoreDto.serializer(),
                 child.jsonObject.getOrDefault("data", empty)
             )
-            commentThread.add(moreDto)
+            val more = moreDto.toMore()
+            commentThread.add(more)
         } else {
             val commentData = child.jsonObject.getOrDefault("data", empty)
             val commentDto = json.decodeFromJsonElement(
                 CommentDto.serializer(),
                 commentData
             )
-            commentThread.add(commentDto)
+            val comment = commentDto.toComment()
+            commentThread.add(comment)
 
             val replies = commentData.jsonObject.getOrDefault("replies", empty)
             if (replies is JsonObject)
@@ -118,7 +114,7 @@ fun parsePostComments(
 
 /**
  * Recursively parse the JSON response to obtain a list of CommentThreadItems
- * @param children the JSON Array
+ * @param response the JSON Element
  * @return a MutableList of CommentThreadItems
  */
 fun parseMoreComments(
@@ -138,14 +134,16 @@ fun parseMoreComments(
                 MoreDto.serializer(),
                 thing.jsonObject.getOrDefault("data", empty)
             )
-            commentThread.add(moreDto)
+            val more = moreDto.toMore()
+            commentThread.add(more)
         } else {
             val commentData = thing.jsonObject.getOrDefault("data", empty)
             val commentDto = json.decodeFromJsonElement(
                 CommentDto.serializer(),
                 commentData
             )
-            commentThread.add(commentDto)
+            val comment = commentDto.toComment()
+            commentThread.add(comment)
         }
     }
 }

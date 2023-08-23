@@ -34,9 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.ui.common.ActionButton
-import com.example.lurkforreddit.ui.common.TimeStamp
-import com.example.lurkforreddit.util.relativeTime
-import kotlinx.datetime.DateTimePeriod
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -45,7 +42,7 @@ fun CommentCard(
     commentAuthor: String,
     depth: Int,
     score: Int,
-    createdUtc: Float,
+    time: String,
     body: String,
     permalink: String,
     scoreHidden: Boolean,
@@ -96,7 +93,7 @@ fun CommentCard(
             commentAuthor = commentAuthor,
             isScoreHidden = scoreHidden,
             score = score,
-            publishedTime = relativeTime(createdUtc),
+            publishedTime = time,
             showReplies = showReplies,
         )
 
@@ -132,7 +129,7 @@ fun AuthorDetails(
     commentAuthor: String,
     isScoreHidden: Boolean,
     score: Int,
-    publishedTime: DateTimePeriod,
+    publishedTime: String,
     showReplies: Boolean,
 ) {
     FlowRow(
@@ -159,8 +156,8 @@ fun AuthorDetails(
             style = MaterialTheme.typography.titleMedium
 
         )
-        TimeStamp(
-            time = publishedTime,
+        Text(
+            text = publishedTime,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleMedium
         )
