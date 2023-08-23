@@ -10,14 +10,13 @@ import com.example.lurkforreddit.domain.model.PagingListing
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.model.UserListingSort
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
-import com.example.lurkforreddit.domain.repository.ProfileContentRepository
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 
-class ProfileContentRepositoryImpl(
+class ProfileRepositoryImpl(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
-): ProfileContentRepository {
+): ProfileRepository {
 
     /**
      * Network call to fetch user submissions
@@ -36,7 +35,7 @@ class ProfileContentRepositoryImpl(
 
         return Pager(
             config = PagingConfig(
-                pageSize = RedditApiRepository.NETWORK_PAGE_SIZE,
+                pageSize = NETWORK_PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
@@ -70,7 +69,7 @@ class ProfileContentRepositoryImpl(
 
         return Pager(
             config = PagingConfig(
-                pageSize = RedditApiRepository.NETWORK_PAGE_SIZE,
+                pageSize = NETWORK_PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
@@ -84,5 +83,9 @@ class ProfileContentRepositoryImpl(
                 )
             }
         ).flow
+    }
+
+    companion object {
+        const val NETWORK_PAGE_SIZE = 25
     }
 }

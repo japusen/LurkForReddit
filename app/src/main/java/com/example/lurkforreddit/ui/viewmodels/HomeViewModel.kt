@@ -13,7 +13,8 @@ import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.TopSort
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.PostRepository
+import com.example.lurkforreddit.domain.repository.SearchResultsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +35,8 @@ data class HomeUiState(
 )
 
 class HomeViewModel(
-    private val redditApiRepository: RedditApiRepository,
+    private val postRepository: PostRepository,
+    private val searchResultsRepository: SearchResultsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -50,7 +52,7 @@ class HomeViewModel(
                 currentState.copy(
                     networkResponse = try {
                         ListingNetworkResponse.Success(
-                            redditApiRepository.getPosts(
+                            postRepository.getPosts(
                                 subreddit = currentState.subreddit,
                                 sort = currentState.listingSort,
                                 topSort = currentState.topSort
@@ -138,7 +140,7 @@ class HomeViewModel(
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
-                    searchResultDtos = redditApiRepository.subredditAutoComplete(currentState.query)
+                    searchResultDtos = searchResultsRepository.getSearchResults(currentState.query)
                 )
             }
         }
@@ -148,10 +150,12 @@ class HomeViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
-                val redditApiRepository = application.container.redditApiRepository
+                val postRepository = application.container.postRepository
+                val searchResultRepository = application.container.searchResultsRepository
 
                 HomeViewModel(
-                    redditApiRepository = redditApiRepository,
+                    postRepository = postRepository,
+                    searchResultsRepository = searchResultRepository
                 )
             }
         }

@@ -15,7 +15,7 @@ import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.model.UserContentType
 import com.example.lurkforreddit.domain.model.UserListingSort
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +34,7 @@ data class ProfileUiState(
 )
 
 class ProfileViewModel(
-    private val redditApiRepository: RedditApiRepository,
+    private val profileRepository: ProfileRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -55,7 +55,7 @@ class ProfileViewModel(
                         ListingNetworkResponse.Success(
                             listingContent =
                             if (currentState.contentType == UserContentType.SUBMITTED) {
-                                redditApiRepository.getUserSubmissions(
+                                profileRepository.getUserSubmissions(
                                     username = username,
                                     sort = currentState.userListingSort,
                                     topSort = currentState.topSort
@@ -73,7 +73,7 @@ class ProfileViewModel(
                                     }
                                     .cachedIn(viewModelScope)
                             } else {
-                                redditApiRepository.getUserComments(
+                                profileRepository.getUserComments(
                                     username = username,
                                     sort = currentState.userListingSort,
                                     topSort = currentState.topSort
@@ -122,10 +122,10 @@ class ProfileViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
-                val redditApiRepository = application.container.redditApiRepository
+                val profileContentRepository = application.container.profileRepository
                 val savedStateHandle = createSavedStateHandle()
                 ProfileViewModel(
-                    redditApiRepository = redditApiRepository,
+                    profileRepository = profileContentRepository,
                     savedStateHandle = savedStateHandle
                 )
             }

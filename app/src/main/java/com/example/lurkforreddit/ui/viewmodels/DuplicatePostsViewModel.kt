@@ -13,7 +13,7 @@ import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.domain.model.DuplicatesSort
 import com.example.lurkforreddit.data.remote.model.PostDto
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,8 +29,8 @@ data class DuplicatesUiState(
     val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
 )
 
-class DuplicatesViewModel(
-    private val redditApiRepository: RedditApiRepository,
+class DuplicatePostsViewModel(
+    private val duplicatePostsRepository: DuplicatePostsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -49,7 +49,7 @@ class DuplicatesViewModel(
                 currentState.copy(
                     networkResponse = try {
                         ListingNetworkResponse.Success(
-                            redditApiRepository.getPostDuplicates(
+                            duplicatePostsRepository.getDuplicatePosts(
                                 subreddit = subreddit,
                                 article = article,
                                 sort = currentState.sort,
@@ -94,10 +94,10 @@ class DuplicatesViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
-                val redditApiRepository = application.container.redditApiRepository
+                val duplicatePostsRepository = application.container.duplicatePostsRepository
                 val savedStateHandle = createSavedStateHandle()
-                DuplicatesViewModel(
-                    redditApiRepository = redditApiRepository,
+                DuplicatePostsViewModel(
+                    duplicatePostsRepository = duplicatePostsRepository,
                     savedStateHandle = savedStateHandle
                 )
             }

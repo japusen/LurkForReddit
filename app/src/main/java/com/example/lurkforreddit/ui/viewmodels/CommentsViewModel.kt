@@ -13,7 +13,7 @@ import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.data.remote.model.MoreDto
 import com.example.lurkforreddit.data.remote.model.PostDto
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.CommentThreadRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,7 +40,7 @@ data class CommentsUiState(
 )
 
 class CommentsViewModel(
-    private val redditApiRepository: RedditApiRepository,
+    private val commentThreadRepository: CommentThreadRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -51,9 +51,7 @@ class CommentsViewModel(
     val article: String = savedStateHandle["article"] ?: ""
 
     init {
-        viewModelScope.launch {
-            loadPostComments()
-        }
+        loadPostComments()
     }
 
     private fun loadPostComments() {
@@ -61,7 +59,7 @@ class CommentsViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        val data = redditApiRepository.getCommentThread(
+                        val data = commentThreadRepository.getCommentThread(
                             subreddit = subreddit,
                             article = article,
                             sort = currentState.commentSort
@@ -109,7 +107,7 @@ class CommentsViewModel(
                         val moreDto = commentThread[index] as MoreDto
                         val ids = moreDto.getIDs(MORE_COMMENTS_AMOUNT)
 
-                        val newComments = redditApiRepository.getMoreComments(
+                        val newComments = commentThreadRepository.getMoreComments(
                             linkID = article,
                             parentID = "t3_$article",
                             childrenIDs = ids,
@@ -179,10 +177,10 @@ class CommentsViewModel(
             initializer {
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LurkApplication)
-                val redditApiRepository = application.container.redditApiRepository
+                val commentThreadRepository = application.container.commentThreadRepository
                 val savedStateHandle = createSavedStateHandle()
                 CommentsViewModel(
-                    redditApiRepository = redditApiRepository,
+                    commentThreadRepository = commentThreadRepository,
                     savedStateHandle = savedStateHandle
                 )
             }

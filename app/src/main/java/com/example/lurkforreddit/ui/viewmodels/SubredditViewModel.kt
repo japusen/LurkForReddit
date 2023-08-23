@@ -16,7 +16,7 @@ import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.TopSort
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
+import com.example.lurkforreddit.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,8 +43,8 @@ data class ListingUiState(
     val topSort: TopSort? = null,
 )
 
-class ListingViewModel(
-    private val redditApiRepository: RedditApiRepository,
+class SubredditViewModel(
+    private val postRepository: PostRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -63,7 +63,7 @@ class ListingViewModel(
                 currentState.copy(
                     networkResponse = try {
                         ListingNetworkResponse.Success(
-                            redditApiRepository.getPosts(
+                            postRepository.getPosts(
                                 subreddit = subreddit,
                                 sort = currentState.listingSort,
                                 topSort = currentState.topSort
@@ -111,11 +111,11 @@ class ListingViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as LurkApplication)
-                val redditApiRepository = application.container.redditApiRepository
+                val postRepository = application.container.postRepository
                 val savedStateHandle = createSavedStateHandle()
 
-                ListingViewModel(
-                    redditApiRepository = redditApiRepository,
+                SubredditViewModel(
+                    postRepository = postRepository,
                     savedStateHandle = savedStateHandle
                 )
             }

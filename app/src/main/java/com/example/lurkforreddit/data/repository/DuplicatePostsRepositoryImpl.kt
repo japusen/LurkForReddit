@@ -10,7 +10,6 @@ import com.example.lurkforreddit.domain.model.DuplicatesSort
 import com.example.lurkforreddit.domain.model.PagingListing
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import kotlinx.coroutines.flow.Flow
 
 class DuplicatePostsRepositoryImpl(
@@ -35,7 +34,7 @@ class DuplicatePostsRepositoryImpl(
 
         return Pager(
             config = PagingConfig(
-                pageSize = RedditApiRepository.NETWORK_PAGE_SIZE,
+                pageSize = NETWORK_PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
@@ -49,5 +48,9 @@ class DuplicatePostsRepositoryImpl(
                 )
             }
         ).flow
+    }
+
+    companion object {
+        const val NETWORK_PAGE_SIZE = 25
     }
 }

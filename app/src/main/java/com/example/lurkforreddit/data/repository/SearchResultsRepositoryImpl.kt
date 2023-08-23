@@ -4,12 +4,12 @@ import com.example.lurkforreddit.data.json.parseSearchResults
 import com.example.lurkforreddit.data.remote.RedditApiService
 import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
-import com.example.lurkforreddit.domain.repository.SearchResultRepository
+import com.example.lurkforreddit.domain.repository.SearchResultsRepository
 
-class SearchResultRepositoryImpl(
+class SearchResultsRepositoryImpl(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
-): SearchResultRepository {
+): SearchResultsRepository {
 
     /**
      * Network call to get subreddit and usernames similar to the search query

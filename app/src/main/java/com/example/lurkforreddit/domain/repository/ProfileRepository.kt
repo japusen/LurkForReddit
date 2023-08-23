@@ -6,7 +6,7 @@ import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.model.UserListingSort
 import kotlinx.coroutines.flow.Flow
 
-interface ProfileContentRepository {
+interface ProfileRepository {
     suspend fun getUserSubmissions(
         username: String,
         sort: UserListingSort,

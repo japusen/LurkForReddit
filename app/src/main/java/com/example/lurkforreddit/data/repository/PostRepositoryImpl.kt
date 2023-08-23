@@ -11,7 +11,6 @@ import com.example.lurkforreddit.domain.model.PagingListing
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.PostRepository
-import com.example.lurkforreddit.domain.repository.RedditApiRepository
 import kotlinx.coroutines.flow.Flow
 
 class PostRepositoryImpl(
@@ -36,7 +35,7 @@ class PostRepositoryImpl(
 
         return Pager(
             config = PagingConfig(
-                pageSize = RedditApiRepository.NETWORK_PAGE_SIZE,
+                pageSize = NETWORK_PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
@@ -50,5 +49,9 @@ class PostRepositoryImpl(
                 )
             }
         ).flow
+    }
+
+    companion object {
+        const val NETWORK_PAGE_SIZE = 25
     }
 }
