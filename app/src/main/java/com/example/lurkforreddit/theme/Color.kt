@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.theme
+package com.example.lurkforreddit.theme
 
 import androidx.compose.ui.graphics.Color
 

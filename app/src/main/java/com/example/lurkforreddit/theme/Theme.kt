@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.theme
+package com.example.lurkforreddit.theme
 
 import android.app.Activity
 import android.os.Build
