@@ -24,15 +24,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.ui.common.PostThumbnail
-import com.example.lurkforreddit.ui.common.TimeStamp
-import com.example.lurkforreddit.util.relativeTime
-import kotlinx.datetime.DateTimePeriod
 
 @Composable
 fun CommentsHeader(
-    postDto: PostDto,
+    post: Post,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,10 +43,10 @@ fun CommentsHeader(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            if (!postDto.isSelfPost) {
+            if (!post.isSelfPost) {
                 PostThumbnail(
-                    thumbnail = postDto.thumbnail,
-                    url = postDto.url,
+                    thumbnail = post.thumbnail,
+                    url = post.url,
                     openLink = openLink,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -66,17 +63,17 @@ fun CommentsHeader(
             ) {
                 
                 PostSummary(
-                    title = postDto.title,
-                    author = postDto.author,
-                    nsfw = postDto.over18,
-                    locked = postDto.locked,
-                    score = postDto.score,
-                    numComments = postDto.numComments,
-                    publishedTime = relativeTime(postDto.createdUtc)
+                    title = post.title,
+                    author = post.author,
+                    nsfw = post.nsfw,
+                    locked = post.locked,
+                    score = post.score,
+                    numComments = post.numComments,
+                    publishedTime = post.time
                 )
 
-                if (postDto.selftext != "") {
-                    SelfText(text = postDto.selftext)
+                if (post.selftext != "") {
+                    SelfText(text = post.selftext)
                 }
             }
         }
@@ -91,7 +88,7 @@ fun PostSummary(
     locked: Boolean,
     score: Int,
     numComments: Int,
-    publishedTime: DateTimePeriod
+    publishedTime: String
 ) {
     Text(
         text = title,
@@ -144,8 +141,8 @@ fun PostSummary(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleSmall
         )
-        TimeStamp(
-            time = publishedTime,
+        Text(
+            text = publishedTime,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleSmall
         )

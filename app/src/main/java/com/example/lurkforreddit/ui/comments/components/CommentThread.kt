@@ -18,14 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.domain.model.Comment
 import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.domain.model.More
+import com.example.lurkforreddit.domain.model.Post
 
 @Composable
 fun CommentThread(
-    postDto: PostDto,
+    post: Post,
     thread: List<CommentThreadItem>,
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
@@ -43,7 +43,7 @@ fun CommentThread(
 
         item {
             CommentsHeader(
-                postDto = postDto,
+                post = post,
                 openLink = openLink
             )
         }
@@ -68,7 +68,7 @@ fun CommentThread(
                     when(item) {
                         is Comment ->
                             CommentCard(
-                                postAuthor = postDto.author,
+                                postAuthor = post.author,
                                 commentAuthor = item.author,
                                 score = item.score,
                                 time = item.time,

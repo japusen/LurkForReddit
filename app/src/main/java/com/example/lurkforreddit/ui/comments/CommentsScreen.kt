@@ -85,7 +85,7 @@ fun CommentsScreen(
             is CommentsNetworkResponse.Loading -> LoadingScreen(modifier)
             is CommentsNetworkResponse.Success -> {
                 CommentThread(
-                    postDto = networkResponse.postDto,
+                    post = networkResponse.post,
                     thread = networkResponse.commentThread,
                     openLink = onLinkClicked,
                     openProfile = onProfileClicked,

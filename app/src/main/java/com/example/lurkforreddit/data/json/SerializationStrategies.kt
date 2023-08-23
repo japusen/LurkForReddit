@@ -2,14 +2,15 @@ package com.example.lurkforreddit.data.json
 
 import com.example.lurkforreddit.data.mappers.toComment
 import com.example.lurkforreddit.data.mappers.toMore
+import com.example.lurkforreddit.data.mappers.toPost
 import com.example.lurkforreddit.data.remote.model.CommentDto
-import com.example.lurkforreddit.data.remote.model.PostListingDto
 import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
 import com.example.lurkforreddit.data.remote.model.ProfileCommentListingDto
 import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.data.remote.model.MoreDto
 import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.PostListing
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -33,20 +34,21 @@ private val empty = json.parseToJsonElement("{}")
  */
 fun parsePostListing(
     response: JsonElement
-): PostListingDto {
+): PostListing {
 
     val listing = response.jsonObject["data"]
     val after = listing?.jsonObject?.get("after")?.jsonPrimitive?.contentOrNull
     val children = listing?.jsonObject?.get("children")
 
-    val postDtos = children?.jsonArray?.map {
-        json.decodeFromJsonElement(
+    val posts = children?.jsonArray?.map {
+        val postDto = json.decodeFromJsonElement(
             PostDto.serializer(),
             it.jsonObject.getOrDefault("data", empty)
         )
+        postDto.toPost()
     }
 
-    return PostListingDto(after, postDtos ?: listOf())
+    return PostListing(after, posts ?: listOf())
 }
 
 /**

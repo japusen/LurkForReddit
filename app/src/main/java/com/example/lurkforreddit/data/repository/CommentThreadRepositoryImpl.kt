@@ -4,9 +4,9 @@ import com.example.lurkforreddit.data.json.parseMoreComments
 import com.example.lurkforreddit.data.json.parsePostComments
 import com.example.lurkforreddit.data.json.parsePostListing
 import com.example.lurkforreddit.data.remote.RedditApiService
-import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
 import kotlinx.serialization.json.jsonArray
@@ -27,7 +27,7 @@ class CommentThreadRepositoryImpl(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<PostDto, MutableList<CommentThreadItem>> {
+    ): Pair<Post, MutableList<CommentThreadItem>> {
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
@@ -38,8 +38,8 @@ class CommentThreadRepositoryImpl(
             sort.value
         )
 
-        val listing = parsePostListing(response.jsonArray[0])
-        val post = listing.children[0]
+        val postListing = parsePostListing(response.jsonArray[0])
+        val post = postListing.children[0]
 
         val commentThread = mutableListOf<CommentThreadItem>()
         parsePostComments(response.jsonArray[1], commentThread)

@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.domain.model.Comment
 import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.domain.model.More
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +26,7 @@ private const val MORE_COMMENTS_AMOUNT = 50
 
 sealed interface CommentsNetworkResponse {
     data class Success(
-        val postDto: PostDto,
+        val post: Post,
         val commentThread: List<CommentThreadItem>
     ) : CommentsNetworkResponse
 
@@ -65,10 +65,7 @@ class CommentsViewModel(
                             sort = currentState.commentSort
                         )
                         CommentsNetworkResponse.Success(
-                            postDto = data.first.copy(
-                                thumbnail = data.first.parseThumbnail(),
-                                url = data.first.parseUrl()
-                            ),
+                            post = data.first,
                             commentThread = data.second,
                         )
                     } catch (e: IOException) {

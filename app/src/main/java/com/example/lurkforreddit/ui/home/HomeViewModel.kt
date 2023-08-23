@@ -7,9 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.TopSort
@@ -19,7 +17,6 @@ import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -57,19 +54,7 @@ class HomeViewModel(
                                 subreddit = currentState.subreddit,
                                 sort = currentState.listingSort,
                                 topSort = currentState.topSort
-                            )
-                                .map { pagingData ->
-                                    pagingData.map { content ->
-                                        if (content is PostDto)
-                                            content.copy(
-                                                thumbnail = content.parseThumbnail(),
-                                                url = content.parseUrl()
-                                            )
-                                        else
-                                            content
-                                    }
-                                }
-                                .cachedIn(viewModelScope)
+                            ).cachedIn(viewModelScope)
                         )
                     } catch (e: IOException) {
                         ListingNetworkResponse.Error

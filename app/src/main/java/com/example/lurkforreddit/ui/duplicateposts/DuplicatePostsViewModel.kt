@@ -13,6 +13,7 @@ import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.domain.model.DuplicatesSort
 import com.example.lurkforreddit.data.remote.model.PostDto
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
 import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,18 +55,7 @@ class DuplicatePostsViewModel(
                                 subreddit = subreddit,
                                 article = article,
                                 sort = currentState.sort,
-                            )
-                                .map { pagingData ->
-                                    pagingData.map { content ->
-                                        if (content is PostDto)
-                                            content.copy(
-                                                thumbnail = content.parseThumbnail(),
-                                            )
-                                        else
-                                            content
-                                    }
-                                }
-                                .cachedIn(viewModelScope)
+                            ).cachedIn(viewModelScope)
                         )
                     } catch (e: IOException) {
                         ListingNetworkResponse.Error

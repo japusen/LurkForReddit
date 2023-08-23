@@ -34,15 +34,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.data.remote.model.PostDto
-import com.example.lurkforreddit.util.relativeTime
-import kotlinx.datetime.DateTimePeriod
+import com.example.lurkforreddit.domain.model.Post
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostCard(
-    content: PostDto,
+    post: Post,
     onPostClicked: () -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
@@ -68,10 +66,10 @@ fun PostCard(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                if (!content.isSelfPost) {
+                if (!post.isSelfPost) {
                     PostThumbnail(
-                        thumbnail = content.thumbnail,
-                        url = content.url,
+                        thumbnail = post.thumbnail,
+                        url = post.url,
                         openLink = openLink,
                         modifier = modifier
                             .width(75.dp)
@@ -86,7 +84,7 @@ fun PostCard(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = content.title,
+                        text = post.title,
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleSmall
                     )
@@ -97,12 +95,12 @@ fun PostCard(
                         modifier = modifier.fillMaxWidth()
                     ) {
                         SubredditAndAuthor(
-                            subreddit = content.subreddit,
-                            author = content.author,
-                            distinguished = content.distinguished,
-                            domain = content.domain,
-                            isSelfPost = content.isSelfPost,
-                            isGalleryPost = content.isGalleryPost
+                            subreddit = post.subreddit,
+                            author = post.author,
+                            distinguished = post.distinguished,
+                            domain = post.domain,
+                            isSelfPost = post.isSelfPost,
+                            isGalleryPost = post.isGalleryPost
                         )
                     }
 
@@ -112,11 +110,11 @@ fun PostCard(
                         modifier = modifier
                     ) {
                         ExtraDetails(
-                            nsfw = content.over18,
-                            locked = content.locked,
-                            score = content.score,
-                            numComments = content.numComments,
-                            publishedTime = relativeTime(content.createdUtc)
+                            nsfw = post.nsfw,
+                            locked = post.locked,
+                            score = post.score,
+                            numComments = post.numComments,
+                            publishedTime = post.time
                         )
 
                         Spacer(modifier.weight(1F))
@@ -134,9 +132,9 @@ fun PostCard(
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
                     PostActions(
-                        onProfileClicked = { onProfileClicked(content.author) },
-                        onSubredditClicked = { onSubredditClicked(content.subreddit) },
-                        onBrowserClicked = { onBrowserClicked(content.url, content.domain ?: "") },
+                        onProfileClicked = { onProfileClicked(post.author) },
+                        onSubredditClicked = { onSubredditClicked(post.subreddit) },
+                        onBrowserClicked = { onBrowserClicked(post.url, post.domain ?: "") },
                         modifier = Modifier.weight(1F)
                     )
                 }
@@ -197,7 +195,7 @@ fun ExtraDetails(
     locked: Boolean,
     score: Int,
     numComments: Int,
-    publishedTime: DateTimePeriod,
+    publishedTime: String,
 ) {
     if (nsfw) {
         Text(
@@ -228,8 +226,8 @@ fun ExtraDetails(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.labelSmall
     )
-    TimeStamp(
-        time = publishedTime,
+    Text(
+        text = publishedTime,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.labelSmall
     )
