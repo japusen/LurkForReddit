@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException
 
-class DefaultAccessTokenRepository(
+class AccessTokenRepositoryImpl(
     private val accessTokenService: AccessTokenService
 ): AccessTokenRepository {
 

@@ -20,7 +20,7 @@ interface RedditApiRepository {
         topSort: TopSort? = null
     ): Flow<PagingData<Content>>
 
-    suspend fun getPostDuplicates(
+    suspend fun getDuplicatePosts(
         subreddit: String,
         article: String,
         sort: DuplicatesSort
@@ -44,7 +44,7 @@ interface RedditApiRepository {
         sort: CommentSort
     ): Pair<PostDto, MutableList<CommentThreadItem>>
 
-    suspend fun subredditAutoComplete(
+    suspend fun getSearchResults(
         query: String,
     ): List<SearchResultDto>
 

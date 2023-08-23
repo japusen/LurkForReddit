@@ -3,7 +3,7 @@ package com.example.lurkforreddit.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.lurkforreddit.data.ListingPagingSource
+import com.example.lurkforreddit.data.pagingsource.ListingPagingSource
 import com.example.lurkforreddit.data.json.parseMoreComments
 import com.example.lurkforreddit.data.json.parsePostComments
 import com.example.lurkforreddit.data.json.parsePostListing
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.jsonArray
 
 
-class DefaultRedditApiRepository(
+class RedditApiRepositoryImpl(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ) : RedditApiRepository {
@@ -71,7 +71,7 @@ class DefaultRedditApiRepository(
      * @param sort the type of sort (number of comments, new)
      * @return Flow of PagingData Content
      */
-    override suspend fun getPostDuplicates(
+    override suspend fun getDuplicatePosts(
         subreddit: String,
         article: String,
         sort: DuplicatesSort
@@ -201,7 +201,7 @@ class DefaultRedditApiRepository(
      * @param query the query to perform search on
      * @return a list of SearchResults for the given query
      */
-    override suspend fun subredditAutoComplete(query: String): List<SearchResultDto> {
+    override suspend fun getSearchResults(query: String): List<SearchResultDto> {
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
