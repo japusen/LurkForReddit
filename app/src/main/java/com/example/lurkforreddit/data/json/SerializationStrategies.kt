@@ -3,9 +3,10 @@ package com.example.lurkforreddit.data.json
 import com.example.lurkforreddit.data.mappers.toComment
 import com.example.lurkforreddit.data.mappers.toMore
 import com.example.lurkforreddit.data.mappers.toPost
+import com.example.lurkforreddit.data.mappers.toProfileComment
 import com.example.lurkforreddit.data.remote.model.CommentDto
 import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
-import com.example.lurkforreddit.data.remote.model.ProfileCommentListingDto
+import com.example.lurkforreddit.domain.model.ProfileCommentListing
 import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.data.remote.model.MoreDto
 import com.example.lurkforreddit.data.remote.model.PostDto
@@ -58,20 +59,21 @@ fun parsePostListing(
  */
 fun parseProfileCommentListing(
     response: JsonElement
-): ProfileCommentListingDto {
+): ProfileCommentListing {
 
     val listing = response.jsonObject["data"]
     val after = listing?.jsonObject?.get("after")?.jsonPrimitive?.contentOrNull
     val children = listing?.jsonObject?.get("children")
 
     val comments = children?.jsonArray?.map {
-        json.decodeFromJsonElement(
+        val profileCommentDto = json.decodeFromJsonElement(
             ProfileCommentDto.serializer(),
             it.jsonObject.getOrDefault("data", empty)
         )
+        profileCommentDto.toProfileComment()
     }
 
-    return ProfileCommentListingDto(after, comments ?: listOf())
+    return ProfileCommentListing(after, comments ?: listOf())
 }
 
 /**

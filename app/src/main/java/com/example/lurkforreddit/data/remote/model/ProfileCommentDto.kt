@@ -13,9 +13,6 @@ data class ProfileCommentDto(
     override val distinguished: String? = null,
     override val score: Int,
     override val subreddit: String,
-    @SerialName("subreddit_id")
-    override val subredditID: String,
-    override val created: Float,
     @SerialName("created_utc")
     override val createdUtc: Float,
     @SerialName("link_title")

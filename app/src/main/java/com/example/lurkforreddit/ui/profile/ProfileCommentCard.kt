@@ -13,11 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
+import com.example.lurkforreddit.domain.model.ProfileComment
 
 @Composable
 fun ProfileCommentCard(
-    content: ProfileCommentDto,
+    comment: ProfileComment,
     onCommentClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -33,7 +33,7 @@ fun ProfileCommentCard(
                 .padding(10.dp)
         ) {
             Text(
-                text = content.linkTitle,
+                text = comment.postTitle,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelMedium
             )
@@ -43,17 +43,22 @@ fun ProfileCommentCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = content.subreddit,
+                    text = comment.subreddit,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.labelSmall
                 )
                 Text(
-                    text = content.author,
+                    text = comment.author,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.labelSmall
                 )
                 Text(
-                    text = "${content.score} points",
+                    text = "${comment.score} points",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall
+                )
+                Text(
+                    text = comment.time,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.labelSmall
                 )
@@ -62,7 +67,7 @@ fun ProfileCommentCard(
             Divider(modifier = Modifier.padding(top = 4.dp, bottom = 4.dp))
 
             Text(
-                text = content.body,
+                text = comment.body,
                 style = MaterialTheme.typography.bodyLarge,
             )
         }

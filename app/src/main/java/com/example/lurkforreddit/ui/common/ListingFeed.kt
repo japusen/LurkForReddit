@@ -8,9 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
-import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
 import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.Post
+import com.example.lurkforreddit.domain.model.ProfileComment
 import com.example.lurkforreddit.ui.profile.ProfileCommentCard
 
 @Composable
@@ -42,9 +42,9 @@ fun ListingFeed(
                             openLink = openLink
                         )
                     }
-                    is ProfileCommentDto -> {
+                    is ProfileComment -> {
                         ProfileCommentCard(
-                            content = content,
+                            comment = content,
                             onCommentClicked = { onPostClicked(content.subreddit, content.linkID.substring(3)) },
                         )
                     }
