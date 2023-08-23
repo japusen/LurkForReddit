@@ -7,11 +7,6 @@ enum class ListingSort(val value: String) {
     TOP("top")
 }
 
-enum class UserContentType(val value: String) {
-    SUBMITTED("submitted"),
-    COMMENTS("comments")
-}
-
 enum class UserListingSort(val value: String) {
     HOT("hot"),
     NEW("new"),
@@ -40,11 +35,3 @@ enum class DuplicatesSort(val value: String) {
     NUMCOMMENTS("num_comments"),
     NEW("new")
 }
-
-enum class PagingListing(val value: String) {
-    POSTS("posts"),
-    DUPLICATES("duplicates"),
-    USERSUBMISSIONS("user_submissions"),
-    USERCOMMENTS("user_comments")
-}
-
