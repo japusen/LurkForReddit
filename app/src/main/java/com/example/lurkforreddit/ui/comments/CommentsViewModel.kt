@@ -22,8 +22,6 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-private const val MORE_COMMENTS_AMOUNT = 50
-
 sealed interface CommentsNetworkResponse {
     data class Success(
         val post: Post,
@@ -50,6 +48,8 @@ class CommentsViewModel(
     val subreddit: String = savedStateHandle["subreddit"] ?: ""
     val article: String = savedStateHandle["article"] ?: ""
 
+    private val maxNumOfComments = 50
+
     init {
         loadPostComments()
     }
@@ -66,7 +66,7 @@ class CommentsViewModel(
                         )
                         CommentsNetworkResponse.Success(
                             post = data.first,
-                            commentThread = data.second,
+                            commentThread = data.second
                         )
                     } catch (e: IOException) {
                         CommentsNetworkResponse.Error
@@ -97,39 +97,35 @@ class CommentsViewModel(
     fun getMoreComments(index: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
-                val networkResponse = currentState.networkResponse
-                if (networkResponse is CommentsNetworkResponse.Success) {
-                    val commentThread = networkResponse.commentThread
-                    try {
-                        val more = commentThread[index] as More
-                        val ids = more.getIDs(MORE_COMMENTS_AMOUNT)
+                currentState.copy(
+                    networkResponse = try {
+                        val networkResponse = currentState.networkResponse
+                        if (networkResponse is CommentsNetworkResponse.Success) {
+                            val more = networkResponse.commentThread[index] as More
+                            val ids = more.getIDs(maxNumOfComments)
 
-                        val newComments = commentThreadRepository.getMoreComments(
-                            linkID = article,
-                            parentID = "t3_$article",
-                            childrenIDs = ids,
-                            sort = currentState.commentSort
-                        )
-                        currentState.copy(
-                            networkResponse = networkResponse.copy(
-                                commentThread = commentThread.toMutableList().apply {
+                            val newReplies = commentThreadRepository.addComments(
+                                index = index,
+                                linkID = article,
+                                ids = ids,
+                                sort = currentState.commentSort
+                            )
+                            networkResponse.copy(
+                                commentThread = networkResponse.commentThread.toMutableList().apply {
                                     if (more.children.isEmpty())
                                         removeAt(index)
-                                    addAll(index, newComments)
+                                    addAll(index, newReplies)
                                 }
                             )
-                        )
+                        } else {
+                            CommentsNetworkResponse.Error
+                        }
                     } catch (e: IOException) {
-                        currentState.copy(
-                            networkResponse = CommentsNetworkResponse.Error
-                        )
+                        CommentsNetworkResponse.Error
                     } catch (e: HttpException) {
-                        currentState.copy(
-                            networkResponse = CommentsNetworkResponse.Error
-                        )
+                        CommentsNetworkResponse.Error
                     }
-                } else
-                    currentState
+                )
             }
         }
     }

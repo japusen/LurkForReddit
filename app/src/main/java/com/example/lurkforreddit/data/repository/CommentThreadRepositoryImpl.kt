@@ -38,11 +38,14 @@ class CommentThreadRepositoryImpl(
             sort.value
         )
 
-        val postListing = parsePostListing(response.jsonArray[0])
+        val postListingJson = response.jsonArray[0]
+        val postListing = parsePostListing(postListingJson)
+        // the post is in an one-item list
         val post = postListing.children[0]
 
-        val commentThread = mutableListOf<CommentThreadItem>()
-        parsePostComments(response.jsonArray[1], commentThread)
+        val commentThreadJson = response.jsonArray[1]
+        val commentThread: MutableList<CommentThreadItem> = mutableListOf()
+        parsePostComments(commentThreadJson, commentThread)
 
         return Pair(post, commentThread)
     }
@@ -50,14 +53,13 @@ class CommentThreadRepositoryImpl(
     /**
      * Network call to fetch more comments
      * @param linkID the id of the post
-     * @param childrenIDs a comma delimited list of comment ids to fetch
      * @param sort the type of sort (best, top, new, controversial, q&a)
      * @return a list of comments requested
      */
-    override suspend fun getMoreComments(
+    override suspend fun addComments(
+        index: Int,
         linkID: String,
-        parentID: String,
-        childrenIDs: String,
+        ids: String,
         sort: CommentSort
     ): MutableList<CommentThreadItem> {
 
@@ -66,11 +68,13 @@ class CommentThreadRepositoryImpl(
         val response = redditApiService.fetchMoreComments(
             tokenHeader,
             "t3_$linkID",
-            childrenIDs,
+            ids,
             sort.value
         )
-        val commentThread = mutableListOf<CommentThreadItem>()
-        parseMoreComments(response, commentThread)
-        return commentThread
+
+        val newComments = mutableListOf<CommentThreadItem>()
+        parseMoreComments(response, newComments)
+
+        return newComments
     }
 }

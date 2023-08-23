@@ -12,6 +12,7 @@ import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.data.remote.model.MoreDto
 import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.More
 import com.example.lurkforreddit.domain.model.PostListing
 import com.example.lurkforreddit.domain.model.SearchResult
 import kotlinx.serialization.builtins.serializer
@@ -100,8 +101,9 @@ fun parsePostComments(
                 MoreDto.serializer(),
                 child.jsonObject.getOrDefault("data", empty)
             )
-            val more = moreDto.toMore()
-            commentThread.add(more)
+            // Only add non empty More objects
+            if (moreDto.children.isNotEmpty())
+                commentThread.add(moreDto.toMore())
         } else {
             val commentData = child.jsonObject.getOrDefault("data", empty)
             val commentDto = json.decodeFromJsonElement(
@@ -125,7 +127,7 @@ fun parsePostComments(
  */
 fun parseMoreComments(
     response: JsonElement,
-    commentThread: MutableList<CommentThreadItem>,
+    newComments: MutableList<CommentThreadItem>,
 ) {
     val data = response.jsonObject["json"]?.jsonObject?.get("data")
     val things = data?.jsonObject?.getOrDefault("things", "[]") as JsonArray
@@ -140,8 +142,10 @@ fun parseMoreComments(
                 MoreDto.serializer(),
                 thing.jsonObject.getOrDefault("data", empty)
             )
-            val more = moreDto.toMore()
-            commentThread.add(more)
+            // Check for empty More objects
+            if (moreDto.children.isNotEmpty())
+                newComments.add(moreDto.toMore())
+
         } else {
             val commentData = thing.jsonObject.getOrDefault("data", empty)
             val commentDto = json.decodeFromJsonElement(
@@ -149,7 +153,7 @@ fun parseMoreComments(
                 commentData
             )
             val comment = commentDto.toComment()
-            commentThread.add(comment)
+            newComments.add(comment)
         }
     }
 }

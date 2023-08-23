@@ -11,10 +11,10 @@ interface CommentThreadRepository {
         sort: CommentSort
     ): Pair<Post, MutableList<CommentThreadItem>>
 
-    suspend fun getMoreComments(
+    suspend fun addComments(
+        index: Int,
         linkID: String,
-        parentID: String,
-        childrenIDs: String,
+        ids: String,
         sort: CommentSort,
     ): MutableList<CommentThreadItem>
 }
