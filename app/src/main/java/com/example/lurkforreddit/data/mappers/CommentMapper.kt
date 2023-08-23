@@ -2,7 +2,7 @@ package com.example.lurkforreddit.data.mappers
 
 import com.example.lurkforreddit.data.remote.model.CommentDto
 import com.example.lurkforreddit.domain.model.Comment
-import com.example.lurkforreddit.util.relativeTimeString
+import com.example.lurkforreddit.util.relativeTime
 
 fun CommentDto.toComment(): Comment {
     return Comment(
@@ -12,7 +12,7 @@ fun CommentDto.toComment(): Comment {
         author = author,
         subreddit = subreddit,
         score = score,
-        time = relativeTimeString(createdUtc),
+        time = relativeTime(createdUtc),
         text = body,
         permalink = permalink,
         isScoreHidden = scoreHidden,

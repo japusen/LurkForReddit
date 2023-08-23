@@ -2,7 +2,7 @@ package com.example.lurkforreddit.data.mappers
 
 import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.domain.model.Post
-import com.example.lurkforreddit.util.relativeTimeString
+import com.example.lurkforreddit.util.relativeTime
 
 fun PostDto.toPost(): Post {
     return Post(
@@ -11,7 +11,7 @@ fun PostDto.toPost(): Post {
         distinguished = distinguished,
         score = score,
         subreddit = subreddit,
-        time = relativeTimeString(createdUtc),
+        time = relativeTime(createdUtc),
         isSelfPost = isSelfPost,
         isGalleryPost = isGalleryPost,
         thumbnail = parseThumbnail(),
