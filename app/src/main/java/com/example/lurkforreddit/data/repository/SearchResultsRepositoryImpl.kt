@@ -20,7 +20,7 @@ class SearchResultsRepositoryImpl(
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
-        val response = redditApiService.subredditAutoComplete(
+        val response = redditApiService.fetchSearchResults(
             tokenHeader,
             query
         )

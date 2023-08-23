@@ -24,7 +24,7 @@ class AccessTokenRepositoryImpl(
         // block network requests until token is initialized
         runBlocking {
             accessTokenHeader = try {
-                val accessTokenDto = accessTokenService.getToken()
+                val accessTokenDto = accessTokenService.fetchAccessToken()
                 "Bearer ${accessTokenDto.accessToken}"
             } catch (e: IOException) {
                 Log.d("TOKEN", e.toString())

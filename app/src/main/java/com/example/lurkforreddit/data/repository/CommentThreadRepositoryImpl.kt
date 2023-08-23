@@ -31,7 +31,7 @@ class CommentThreadRepositoryImpl(
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
-        val response = redditApiService.getPostComments(
+        val response = redditApiService.fetchCommentThread(
             tokenHeader,
             subreddit,
             article,
@@ -63,7 +63,7 @@ class CommentThreadRepositoryImpl(
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
-        val response = redditApiService.getMoreComments(
+        val response = redditApiService.fetchMoreComments(
             tokenHeader,
             "t3_$linkID",
             childrenIDs,

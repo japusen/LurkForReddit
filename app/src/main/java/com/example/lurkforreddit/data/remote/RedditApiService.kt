@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface RedditApiService {
     @GET("/r/{subreddit}/{sort}")
-    suspend fun getSubredditPosts(
+    suspend fun fetchSubredditPosts(
         @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("sort") sort: String,
@@ -20,7 +20,7 @@ interface RedditApiService {
     ): JsonElement
 
     @GET("/r/{subreddit}/duplicates/{article}")
-    suspend fun getPostDuplicates(
+    suspend fun fetchPostDuplicates(
         @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
@@ -31,7 +31,7 @@ interface RedditApiService {
     ): JsonElement
 
     @GET("/user/{username}/{data}")
-    suspend fun getUserContent(
+    suspend fun fetchUserContent(
         @Header("Authorization") tokenHeader: String,
         @Path("username") username: String,
         @Path("data") contentType: String,
@@ -43,7 +43,7 @@ interface RedditApiService {
     ): JsonElement
 
     @GET("/r/{subreddit}/comments/{article}")
-    suspend fun getPostComments(
+    suspend fun fetchCommentThread(
         @Header("Authorization") tokenHeader: String,
         @Path("subreddit") subreddit: String,
         @Path("article") article: String,
@@ -52,7 +52,7 @@ interface RedditApiService {
     ): JsonElement
 
     @GET("/api/subreddit_autocomplete")
-    suspend fun subredditAutoComplete(
+    suspend fun fetchSearchResults(
         @Header("Authorization") tokenHeader: String,
         @Query("query") query: String,
         @Query("include_over_18") nsfw: Boolean = true,
@@ -61,7 +61,7 @@ interface RedditApiService {
     ): JsonElement
 
     @GET("/api/morechildren")
-    suspend fun getMoreComments(
+    suspend fun fetchMoreComments(
         @Header("Authorization") tokenHeader: String,
         @Query("link_id") linkID: String,
         @Query("children") childrenIDs: String,
