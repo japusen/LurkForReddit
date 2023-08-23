@@ -13,19 +13,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.components.ImageLink
-import com.example.lurkforreddit.ui.components.VideoPlayer
-import com.example.lurkforreddit.ui.components.menus.DuplicatesSortMenu
-import com.example.lurkforreddit.ui.components.menus.ListingSortMenu
-import com.example.lurkforreddit.ui.components.menus.ProfileSortMenu
-import com.example.lurkforreddit.ui.screens.CommentsScreen
-import com.example.lurkforreddit.ui.viewmodels.CommentsViewModel
-import com.example.lurkforreddit.ui.viewmodels.DuplicatesViewModel
-import com.example.lurkforreddit.ui.screens.HomeScreen
-import com.example.lurkforreddit.ui.viewmodels.HomeViewModel
-import com.example.lurkforreddit.ui.screens.ListingScreen
-import com.example.lurkforreddit.ui.viewmodels.ListingViewModel
-import com.example.lurkforreddit.ui.viewmodels.ProfileViewModel
+import com.example.lurkforreddit.ui.common.ImageLink
+import com.example.lurkforreddit.ui.common.VideoPlayer
+import com.example.lurkforreddit.ui.duplicateposts.DuplicatesSortMenu
+import com.example.lurkforreddit.ui.common.ListingSortMenu
+import com.example.lurkforreddit.ui.profile.ProfileSortMenu
+import com.example.lurkforreddit.ui.comments.CommentsScreen
+import com.example.lurkforreddit.ui.comments.CommentsViewModel
+import com.example.lurkforreddit.ui.duplicateposts.DuplicatePostsViewModel
+import com.example.lurkforreddit.ui.home.HomeScreen
+import com.example.lurkforreddit.ui.home.HomeViewModel
+import com.example.lurkforreddit.ui.common.screens.ListingScreen
+import com.example.lurkforreddit.ui.subreddit.SubredditViewModel
+import com.example.lurkforreddit.ui.profile.ProfileViewModel
 import com.example.lurkforreddit.util.openLinkInBrowser
 import com.example.lurkforreddit.util.openPostLink
 
@@ -80,13 +80,13 @@ fun LurkApp() {
                 navArgument("subreddit") { type = NavType.StringType },
             )
         ) {
-            val listingViewModel: ListingViewModel = viewModel(factory = ListingViewModel.Factory)
-            val subredditUiState = listingViewModel.uiState.collectAsStateWithLifecycle()
+            val subredditViewModel: SubredditViewModel = viewModel(factory = SubredditViewModel.Factory)
+            val subredditUiState = subredditViewModel.uiState.collectAsStateWithLifecycle()
 
-            val toast = Toast.makeText(context, "Already viewing ${listingViewModel.subreddit}", Toast.LENGTH_SHORT)
+            val toast = Toast.makeText(context, "Already viewing ${subredditViewModel.subreddit}", Toast.LENGTH_SHORT)
 
             ListingScreen(
-                title = listingViewModel.subreddit,
+                title = subredditViewModel.subreddit,
                 onBackClicked = { navController.popBackStack() },
                 networkResponse = subredditUiState.value.networkResponse,
                 onPostClicked = { subreddit, article ->
@@ -106,7 +106,7 @@ fun LurkApp() {
                 ListingSortMenu(
                     selectedSort = subredditUiState.value.listingSort,
                     onListingSortChanged = { listing, top ->
-                        listingViewModel.setListingSort(listing, top)
+                        subredditViewModel.setListingSort(listing, top)
                     }
                 )
             }
@@ -160,9 +160,9 @@ fun LurkApp() {
             )
         ) {
 
-            val duplicatesViewModel: DuplicatesViewModel =
-                viewModel(factory = DuplicatesViewModel.Factory)
-            val duplicatesUiState = duplicatesViewModel.uiState.collectAsStateWithLifecycle()
+            val duplicatePostsViewModel: DuplicatePostsViewModel =
+                viewModel(factory = DuplicatePostsViewModel.Factory)
+            val duplicatesUiState = duplicatePostsViewModel.uiState.collectAsStateWithLifecycle()
 
             ListingScreen(
                 title = stringResource(R.string.other_discussions),
@@ -187,7 +187,7 @@ fun LurkApp() {
                 DuplicatesSortMenu(
                     selectedSort = duplicatesUiState.value.sort,
                     onSortChanged = { sort ->
-                        duplicatesViewModel.setSort(sort)
+                        duplicatePostsViewModel.setSort(sort)
                     }
                 )
             }
