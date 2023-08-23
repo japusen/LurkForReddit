@@ -1,9 +1,9 @@
 package com.example.lurkforreddit.domain.repository
 
-import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.SearchResult
 
 interface SearchResultsRepository {
     suspend fun getSearchResults(
         query: String,
-    ): List<SearchResultDto>
+    ): List<SearchResult>
 }

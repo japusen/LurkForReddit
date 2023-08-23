@@ -4,6 +4,7 @@ import com.example.lurkforreddit.data.mappers.toComment
 import com.example.lurkforreddit.data.mappers.toMore
 import com.example.lurkforreddit.data.mappers.toPost
 import com.example.lurkforreddit.data.mappers.toProfileComment
+import com.example.lurkforreddit.data.mappers.toSearchResult
 import com.example.lurkforreddit.data.remote.model.CommentDto
 import com.example.lurkforreddit.data.remote.model.ProfileCommentDto
 import com.example.lurkforreddit.domain.model.ProfileCommentListing
@@ -12,6 +13,7 @@ import com.example.lurkforreddit.data.remote.model.MoreDto
 import com.example.lurkforreddit.data.remote.model.PostDto
 import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import com.example.lurkforreddit.domain.model.PostListing
+import com.example.lurkforreddit.domain.model.SearchResult
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -159,12 +161,13 @@ fun parseMoreComments(
  */
 fun parseSearchResults(
     response: JsonElement
-): List<SearchResultDto> {
+): List<SearchResult> {
     return response.jsonObject["subreddits"]?.jsonArray?.map {
-        json.decodeFromJsonElement(
+        val searchResultDto = json.decodeFromJsonElement(
             SearchResultDto.serializer(),
             it
         )
+        searchResultDto.toSearchResult()
     } ?: listOf()
 }
 

@@ -8,8 +8,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.data.remote.model.SearchResultDto
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
@@ -29,7 +29,7 @@ data class HomeUiState(
     val listingSort: ListingSort = ListingSort.HOT,
     val topSort: TopSort? = null,
     val query: String = "",
-    val searchResultDtos: List<SearchResultDto> = listOf()
+    val searchResult: List<SearchResult> = listOf()
 )
 
 class HomeViewModel(
@@ -114,7 +114,7 @@ class HomeViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 query = "",
-                searchResultDtos = listOf()
+                searchResult = listOf()
             )
         }
     }
@@ -126,7 +126,7 @@ class HomeViewModel(
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
-                    searchResultDtos = searchResultsRepository.getSearchResults(currentState.query)
+                    searchResult = searchResultsRepository.getSearchResults(currentState.query)
                 )
             }
         }

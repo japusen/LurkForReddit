@@ -46,7 +46,7 @@ fun LurkApp() {
                 subreddit = homeUiState.value.subreddit,
                 selectedSort = homeUiState.value.listingSort,
                 networkResponse = homeUiState.value.networkResponse,
-                searchResultDtos = homeUiState.value.searchResultDtos,
+                searchResult = homeUiState.value.searchResult,
                 setQuery = { query ->
                     homeViewModel.setQuery(query)
                 },

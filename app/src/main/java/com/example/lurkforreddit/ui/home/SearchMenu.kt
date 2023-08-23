@@ -32,13 +32,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.SearchResult
 import kotlinx.coroutines.launch
 
 @Composable
 fun SearchMenu(
     query: String,
-    searchResultDtos: List<SearchResultDto>,
+    searchResult: List<SearchResult>,
     setQuery: (String) -> Unit,
     updateSearchResults: () -> Unit,
     clearQuery: () -> Unit,
@@ -86,7 +86,7 @@ fun SearchMenu(
                 modifier = Modifier
                     .fillMaxWidth()
             )
-            for (result in searchResultDtos) {
+            for (result in searchResult) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,

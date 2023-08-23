@@ -2,7 +2,7 @@ package com.example.lurkforreddit.data.repository
 
 import com.example.lurkforreddit.data.json.parseSearchResults
 import com.example.lurkforreddit.data.remote.RedditApiService
-import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
 
@@ -16,7 +16,7 @@ class SearchResultsRepositoryImpl(
      * @param query the query to perform search on
      * @return a list of SearchResults for the given query
      */
-    override suspend fun getSearchResults(query: String): List<SearchResultDto> {
+    override suspend fun getSearchResults(query: String): List<SearchResult> {
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 

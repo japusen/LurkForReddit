@@ -21,11 +21,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.data.remote.model.SearchResultDto
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.SearchResult
+import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.ui.common.ListingFeed
 import com.example.lurkforreddit.ui.common.ListingSortMenu
-import com.example.lurkforreddit.domain.model.ListingSort
-import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.ui.common.screens.ErrorScreen
 import com.example.lurkforreddit.ui.common.screens.LoadingScreen
 import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
@@ -38,7 +38,7 @@ fun HomeScreen(
     subreddit: String,
     selectedSort: ListingSort,
     networkResponse: ListingNetworkResponse,
-    searchResultDtos: List<SearchResultDto>,
+    searchResult: List<SearchResult>,
     updateSearchResults: () -> Unit,
     setQuery: (String) -> Unit,
     clearQuery: () -> Unit,
@@ -57,7 +57,7 @@ fun HomeScreen(
         drawerContent = {
             SearchMenu(
                 query = query,
-                searchResultDtos = searchResultDtos,
+                searchResult = searchResult,
                 setQuery = setQuery,
                 updateSearchResults = updateSearchResults,
                 clearQuery = clearQuery,
