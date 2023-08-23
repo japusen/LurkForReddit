@@ -3,11 +3,12 @@ package com.example.lurkforreddit.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.lurkforreddit.data.pagingsource.ListingPagingSource
+import com.example.lurkforreddit.data.paging.ProfilePagingSource
 import com.example.lurkforreddit.data.remote.RedditApiService
+import com.example.lurkforreddit.data.repository.NetworkPageSize.NETWORK_PAGE_SIZE
 import com.example.lurkforreddit.domain.model.Content
-import com.example.lurkforreddit.domain.model.PagingListing
 import com.example.lurkforreddit.domain.model.TopSort
+import com.example.lurkforreddit.domain.model.UserContentType
 import com.example.lurkforreddit.domain.model.UserListingSort
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.ProfileRepository
@@ -39,8 +40,8 @@ class ProfileRepositoryImpl(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
-                ListingPagingSource(
-                    listingType = PagingListing.USERSUBMISSIONS,
+                ProfilePagingSource(
+                    type = UserContentType.SUBMITTED,
                     service = redditApiService,
                     tokenHeader = tokenHeader,
                     username = username,
@@ -73,8 +74,8 @@ class ProfileRepositoryImpl(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
-                ListingPagingSource(
-                    listingType = PagingListing.USERCOMMENTS,
+                ProfilePagingSource(
+                    type = UserContentType.COMMENTS,
                     service = redditApiService,
                     tokenHeader = tokenHeader,
                     username = username,
@@ -83,9 +84,5 @@ class ProfileRepositoryImpl(
                 )
             }
         ).flow
-    }
-
-    companion object {
-        const val NETWORK_PAGE_SIZE = 25
     }
 }
