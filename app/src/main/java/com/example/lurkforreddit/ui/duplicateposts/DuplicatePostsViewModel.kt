@@ -9,17 +9,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.domain.model.DuplicatesSort
-import com.example.lurkforreddit.data.remote.model.PostDto
-import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
 import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException

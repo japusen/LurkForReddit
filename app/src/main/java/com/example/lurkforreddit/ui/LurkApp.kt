@@ -1,6 +1,8 @@
 package com.example.lurkforreddit.ui
 
 import android.widget.Toast
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -13,19 +15,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.ui.common.ImageLink
-import com.example.lurkforreddit.ui.common.VideoPlayer
-import com.example.lurkforreddit.ui.duplicateposts.DuplicatesSortMenu
-import com.example.lurkforreddit.ui.common.ListingSortMenu
-import com.example.lurkforreddit.ui.profile.ProfileSortMenu
 import com.example.lurkforreddit.ui.comments.CommentsScreen
 import com.example.lurkforreddit.ui.comments.CommentsViewModel
+import com.example.lurkforreddit.ui.common.ImageLink
+import com.example.lurkforreddit.ui.common.ListingSortMenu
+import com.example.lurkforreddit.ui.common.VideoPlayer
+import com.example.lurkforreddit.ui.common.screens.ListingScreen
 import com.example.lurkforreddit.ui.duplicateposts.DuplicatePostsViewModel
+import com.example.lurkforreddit.ui.duplicateposts.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.home.HomeScreen
 import com.example.lurkforreddit.ui.home.HomeViewModel
-import com.example.lurkforreddit.ui.common.screens.ListingScreen
-import com.example.lurkforreddit.ui.subreddit.SubredditViewModel
+import com.example.lurkforreddit.ui.profile.ProfileSortMenu
 import com.example.lurkforreddit.ui.profile.ProfileViewModel
+import com.example.lurkforreddit.ui.subreddit.SubredditViewModel
 import com.example.lurkforreddit.util.openLinkInBrowser
 import com.example.lurkforreddit.util.openPostLink
 
@@ -33,11 +35,22 @@ import com.example.lurkforreddit.util.openPostLink
 fun LurkApp() {
     val navController = rememberNavController()
     val context = LocalContext.current
+
+    val enterTransition = fadeIn(
+            // Overwrites the default animation with tween
+            animationSpec = tween(durationMillis = 200)
+        )
+
+
     NavHost(
         navController = navController,
         startDestination = "home",
     ) {
-        composable(route = "home") {
+
+        composable(
+            route = "home",
+            enterTransition = { enterTransition }
+        ) {
             val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
             val homeUiState = homeViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -78,7 +91,8 @@ fun LurkApp() {
             route = "subreddit/{subreddit}",
             arguments = listOf(
                 navArgument("subreddit") { type = NavType.StringType },
-            )
+            ),
+            enterTransition = { enterTransition }
         ) {
             val subredditViewModel: SubredditViewModel = viewModel(factory = SubredditViewModel.Factory)
             val subredditUiState = subredditViewModel.uiState.collectAsStateWithLifecycle()
@@ -115,7 +129,8 @@ fun LurkApp() {
             route = "user/{username}",
             arguments = listOf(
                 navArgument("username") { type = NavType.StringType },
-            )
+            ),
+            enterTransition = { enterTransition }
         ) {
             val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
             val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
@@ -157,7 +172,8 @@ fun LurkApp() {
             arguments = listOf(
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }
-            )
+            ),
+            enterTransition = { enterTransition }
         ) {
 
             val duplicatePostsViewModel: DuplicatePostsViewModel =
@@ -197,7 +213,8 @@ fun LurkApp() {
             arguments = listOf(
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }
-            )
+            ),
+            enterTransition = { enterTransition }
         ) {
 
             val commentsViewModel: CommentsViewModel =
@@ -226,8 +243,8 @@ fun LurkApp() {
                 onBrowserClicked = { url, domain ->
                     openLinkInBrowser(context, url, domain)
                 },
-                onChangeVisibility = { visible, start, depth ->
-                    commentsViewModel.changeCommentVisibility(visible, start, depth)
+                onChangeVisibility = { start, depth ->
+                    commentsViewModel.changeCommentVisibility(start, depth)
                 },
                 onMoreClicked = { index ->
                     commentsViewModel.getMoreComments(index)
@@ -238,7 +255,8 @@ fun LurkApp() {
             route = "image/{url}",
             arguments = listOf(
                 navArgument("url") { type = NavType.StringType },
-            )
+            ),
+            enterTransition = { enterTransition }
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
             ImageLink(url)
@@ -247,7 +265,8 @@ fun LurkApp() {
             route = "video/{url}",
             arguments = listOf(
                 navArgument("url") { type = NavType.StringType },
-            )
+            ),
+            enterTransition = { enterTransition }
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
             VideoPlayer(url.toUri())
