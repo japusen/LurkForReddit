@@ -34,7 +34,7 @@ fun CommentsScreen(
     onLinkClicked: (String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
-    onChangeVisibility: (Int, Int) -> Unit,
+    onChangeVisibility: (Boolean, Int, Int) -> Unit,
     onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {

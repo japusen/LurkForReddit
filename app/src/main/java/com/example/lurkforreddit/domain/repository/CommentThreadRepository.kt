@@ -18,6 +18,7 @@ interface CommentThreadRepository {
     ): List<CommentThreadItem>
 
     suspend fun changeCommentVisibility(
+        show: Boolean,
         index: Int,
         depth: Int
     ): List<CommentThreadItem>

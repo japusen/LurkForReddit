@@ -46,7 +46,7 @@ fun CommentCard(
     body: String,
     permalink: String,
     scoreHidden: Boolean,
-    onChangeVisibility: () -> Unit,
+    onChangeVisibility: (Boolean) -> Unit,
     openProfile: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
@@ -60,7 +60,7 @@ fun CommentCard(
                 enabled = true,
                 onLongClick = {
                     showReplies = !showReplies
-                    onChangeVisibility()
+                    onChangeVisibility(showReplies)
                 },
                 onClick = { expanded = !expanded }
             )

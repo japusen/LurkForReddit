@@ -124,7 +124,7 @@ class CommentsViewModel(
      * @param start the index of the parent
      * @param depth the depth of the parent
      */
-    fun changeCommentVisibility(start: Int, depth: Int) {
+    fun changeCommentVisibility(show: Boolean, start: Int, depth: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -133,6 +133,7 @@ class CommentsViewModel(
                         if (networkResponse is CommentsNetworkResponse.Success) {
 
                             val updatedThread = commentThreadRepository.changeCommentVisibility(
+                                show,
                                 start,
                                 depth
                             )

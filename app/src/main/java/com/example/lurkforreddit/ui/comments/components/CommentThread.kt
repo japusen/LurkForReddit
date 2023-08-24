@@ -31,7 +31,7 @@ fun CommentThread(
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
-    onChangeVisibility: (Int, Int) -> Unit,
+    onChangeVisibility: (Boolean, Int, Int) -> Unit,
     onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -77,8 +77,8 @@ fun CommentThread(
                             permalink = item.permalink,
                             scoreHidden = item.isScoreHidden,
                             depth = item.depth,
-                            onChangeVisibility = {
-                                onChangeVisibility(index, item.depth)
+                            onChangeVisibility = { show ->
+                                onChangeVisibility(show, index, item.depth)
                             },
                             openProfile = openProfile,
                             onBrowserClicked = onBrowserClicked,

@@ -90,6 +90,7 @@ class CommentThreadRepositoryImpl(
     }
 
     override suspend fun changeCommentVisibility(
+        show: Boolean,
         index: Int,
         depth: Int
     ): List<CommentThreadItem> {
@@ -99,8 +100,8 @@ class CommentThreadRepositoryImpl(
             val item = thread.elementAt(start)
             if (item.depth > depth) {
                 when (item) {
-                    is Comment -> thread[start] = item.copy(visible = !item.visible)
-                    is More -> thread[start] = item.copy(visible = !item.visible)
+                    is Comment -> thread[start] = item.copy(visible = show)
+                    is More -> thread[start] = item.copy(visible = show)
                 }
                 start += 1
             }
@@ -110,6 +111,4 @@ class CommentThreadRepositoryImpl(
 
         return thread.toList()
     }
-
-
 }

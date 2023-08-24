@@ -49,7 +49,6 @@ fun LurkApp() {
 
         composable(
             route = "home",
-            enterTransition = { enterTransition }
         ) {
             val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
             val homeUiState = homeViewModel.uiState.collectAsStateWithLifecycle()
@@ -92,7 +91,6 @@ fun LurkApp() {
             arguments = listOf(
                 navArgument("subreddit") { type = NavType.StringType },
             ),
-            enterTransition = { enterTransition }
         ) {
             val subredditViewModel: SubredditViewModel = viewModel(factory = SubredditViewModel.Factory)
             val subredditUiState = subredditViewModel.uiState.collectAsStateWithLifecycle()
@@ -130,7 +128,6 @@ fun LurkApp() {
             arguments = listOf(
                 navArgument("username") { type = NavType.StringType },
             ),
-            enterTransition = { enterTransition }
         ) {
             val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
             val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
@@ -173,7 +170,6 @@ fun LurkApp() {
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }
             ),
-            enterTransition = { enterTransition }
         ) {
 
             val duplicatePostsViewModel: DuplicatePostsViewModel =
@@ -214,7 +210,6 @@ fun LurkApp() {
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }
             ),
-            enterTransition = { enterTransition }
         ) {
 
             val commentsViewModel: CommentsViewModel =
@@ -243,8 +238,8 @@ fun LurkApp() {
                 onBrowserClicked = { url, domain ->
                     openLinkInBrowser(context, url, domain)
                 },
-                onChangeVisibility = { start, depth ->
-                    commentsViewModel.changeCommentVisibility(start, depth)
+                onChangeVisibility = { show, start, depth ->
+                    commentsViewModel.changeCommentVisibility(show, start, depth)
                 },
                 onMoreClicked = { index ->
                     commentsViewModel.getMoreComments(index)
@@ -256,7 +251,6 @@ fun LurkApp() {
             arguments = listOf(
                 navArgument("url") { type = NavType.StringType },
             ),
-            enterTransition = { enterTransition }
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
             ImageLink(url)
@@ -266,7 +260,6 @@ fun LurkApp() {
             arguments = listOf(
                 navArgument("url") { type = NavType.StringType },
             ),
-            enterTransition = { enterTransition }
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
             VideoPlayer(url.toUri())
