@@ -78,6 +78,7 @@ fun LurkApp() {
                 }
             )
         }
+
         composable(
             route = "subreddit/{subreddit}",
             arguments = listOf(
@@ -115,6 +116,7 @@ fun LurkApp() {
                 )
             }
         }
+
         composable(
             route = "user/{username}",
             arguments = listOf(
@@ -156,6 +158,7 @@ fun LurkApp() {
                 )
             }
         }
+
         composable(
             route = "duplicates/{subreddit}/{article}",
             arguments = listOf(
@@ -196,6 +199,7 @@ fun LurkApp() {
                 )
             }
         }
+
         composable(
             route = "comments/{subreddit}/{article}",
             arguments = listOf(
@@ -238,6 +242,7 @@ fun LurkApp() {
                 }
             )
         }
+
         composable(
             route = "image/{url}",
             arguments = listOf(
@@ -245,8 +250,12 @@ fun LurkApp() {
             ),
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
-            ImageLink(url)
+            ImageLink(
+                url = url,
+                onBackClicked = { navController.popBackStack() },
+            )
         }
+
         composable(
             route = "video/{url}",
             arguments = listOf(
@@ -254,7 +263,10 @@ fun LurkApp() {
             ),
         ) { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
-            VideoPlayer(url.toUri())
+            VideoPlayer(
+                uri = url.toUri(),
+                onBackClicked = { navController.popBackStack() },
+            )
         }
     }
 }

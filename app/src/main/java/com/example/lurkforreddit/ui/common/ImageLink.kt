@@ -1,5 +1,7 @@
 package com.example.lurkforreddit.ui.common
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
@@ -26,6 +28,7 @@ import coil.request.ImageRequest
 @Composable
 fun ImageLink(
     url: String,
+    onBackClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val minScale = 1.0F
@@ -35,12 +38,18 @@ fun ImageLink(
     var offsetY by remember { mutableFloatStateOf(0f) }
     var size by remember { mutableStateOf(IntSize.Zero) }
     val context = LocalContext.current
+
+    BackHandler {
+        onBackClicked()
+    }
+
     Scaffold(
         containerColor = Color.Black
     ) { paddingValues ->
         Box(
             modifier = modifier
                 .fillMaxSize()
+                .background(Color.Black)
                 .padding(paddingValues)
         ) {
             AsyncImage(
