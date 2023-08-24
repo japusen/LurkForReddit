@@ -46,20 +46,21 @@ fun CommentCard(
     body: String,
     permalink: String,
     scoreHidden: Boolean,
-    onChangeVisibility: (Boolean) -> Unit,
+    onChangeVisibility: () -> Unit,
     openProfile: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showReplies by remember { mutableStateOf(true) }
+
     Column(
         modifier = modifier
             .combinedClickable(
                 enabled = true,
                 onLongClick = {
                     showReplies = !showReplies
-                    onChangeVisibility(showReplies)
+                    onChangeVisibility()
                 },
                 onClick = { expanded = !expanded }
             )

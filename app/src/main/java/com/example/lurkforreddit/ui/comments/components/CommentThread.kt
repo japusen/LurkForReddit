@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +31,7 @@ fun CommentThread(
     openLink: (String) -> Unit,
     openProfile: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
-    onChangeVisibility: (Boolean, Int, Int) -> Unit,
+    onChangeVisibility: (Int, Int) -> Unit,
     onMoreClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -48,48 +49,46 @@ fun CommentThread(
             )
         }
 
-        items(thread.size) { index ->
-            thread[index].let { item ->
-                AnimatedVisibility(
-                    visible = item.visible,
-                    enter = slideInVertically(
-                        // Start the slide from 40 (pixels) above where the content is supposed to go, to
-                        // produce a parallax effect
-                        initialOffsetY = { -40 }
-                    ) + expandVertically(
-                        expandFrom = Alignment.Top
-                    ) + scaleIn(
-                        initialScale = 0.5f,
-                        // Animate scale from 0.5f to 1f using the top center as the pivot point.
-                        transformOrigin = TransformOrigin(0.5f, 0f)
-                    ) + fadeIn(initialAlpha = 0.3f),
-                    exit = slideOutVertically() + shrinkVertically() + fadeOut() + scaleOut(targetScale = 1.2f)
-                ) {
-                    when(item) {
-                        is Comment ->
-                            CommentCard(
-                                postAuthor = post.author,
-                                commentAuthor = item.author,
-                                score = item.score,
-                                time = item.time,
-                                body = item.text,
-                                permalink = item.permalink,
-                                scoreHidden = item.isScoreHidden,
-                                depth = item.depth,
-                                onChangeVisibility = { visible ->
-                                    onChangeVisibility(visible, index, item.depth)
-                                },
-                                openProfile = openProfile,
-                                onBrowserClicked = onBrowserClicked,
-                            )
-                        is More ->
-                            if (item.children.isNotEmpty())
-                                MoreCommentsIndicator(
-                                    depth = item.depth,
-                                    numberOfComments = item.children.size,
-                                    onMoreClicked = { onMoreClicked(index) }
-                                )
-                    }
+        itemsIndexed(thread, key = { index, _ -> index }) { index, item ->
+
+            AnimatedVisibility(
+                visible = item.visible,
+                enter = slideInVertically(
+                    // Start the slide from 40 (pixels) above where the content is supposed to go, to
+                    // produce a parallax effect
+                    initialOffsetY = { -40 }
+                ) + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + scaleIn(
+                    initialScale = 0.5f,
+                    // Animate scale from 0.5f to 1f using the top center as the pivot point.
+                    transformOrigin = TransformOrigin(0.5f, 0f)
+                ) + fadeIn(initialAlpha = 0.3f),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut() + scaleOut(targetScale = 1.2f)
+            ) {
+                when(item) {
+                    is Comment ->
+                        CommentCard(
+                            postAuthor = post.author,
+                            commentAuthor = item.author,
+                            score = item.score,
+                            time = item.time,
+                            body = item.text,
+                            permalink = item.permalink,
+                            scoreHidden = item.isScoreHidden,
+                            depth = item.depth,
+                            onChangeVisibility = {
+                                onChangeVisibility(index, item.depth)
+                            },
+                            openProfile = openProfile,
+                            onBrowserClicked = onBrowserClicked,
+                        )
+                    is More ->
+                        MoreCommentsIndicator(
+                            depth = item.depth,
+                            numberOfComments = item.children.size,
+                            onMoreClicked = { onMoreClicked(index) },
+                        )
                 }
             }
         }

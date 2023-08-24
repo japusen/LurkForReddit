@@ -9,12 +9,16 @@ interface CommentThreadRepository {
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<Post, MutableList<CommentThreadItem>>
+    ): Pair<Post, List<CommentThreadItem>>
 
     suspend fun addComments(
         index: Int,
         linkID: String,
-        ids: String,
         sort: CommentSort,
-    ): MutableList<CommentThreadItem>
+    ): List<CommentThreadItem>
+
+    suspend fun changeCommentVisibility(
+        index: Int,
+        depth: Int
+    ): List<CommentThreadItem>
 }

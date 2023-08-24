@@ -4,8 +4,10 @@ import com.example.lurkforreddit.data.json.parseMoreComments
 import com.example.lurkforreddit.data.json.parsePostComments
 import com.example.lurkforreddit.data.json.parsePostListing
 import com.example.lurkforreddit.data.remote.RedditApiService
+import com.example.lurkforreddit.domain.model.Comment
 import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
+import com.example.lurkforreddit.domain.model.More
 import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
@@ -15,6 +17,9 @@ class CommentThreadRepositoryImpl(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ): CommentThreadRepository {
+
+    private val thread: MutableList<CommentThreadItem> = mutableListOf()
+    private val maxNumOfComments = 50
 
     /**
      * Network call to fetch comments of a specific post
@@ -27,7 +32,7 @@ class CommentThreadRepositoryImpl(
         subreddit: String,
         article: String,
         sort: CommentSort
-    ): Pair<Post, MutableList<CommentThreadItem>> {
+    ): Pair<Post, List<CommentThreadItem>> {
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
@@ -44,10 +49,9 @@ class CommentThreadRepositoryImpl(
         val post = postListing.children[0]
 
         val commentThreadJson = response.jsonArray[1]
-        val commentThread: MutableList<CommentThreadItem> = mutableListOf()
-        parsePostComments(commentThreadJson, commentThread)
+        parsePostComments(commentThreadJson, thread)
 
-        return Pair(post, commentThread)
+        return Pair(post, thread.toList())
     }
 
     /**
@@ -59,11 +63,13 @@ class CommentThreadRepositoryImpl(
     override suspend fun addComments(
         index: Int,
         linkID: String,
-        ids: String,
         sort: CommentSort
-    ): MutableList<CommentThreadItem> {
+    ): List<CommentThreadItem> {
 
         val tokenHeader = accessTokenRepository.getAccessToken()
+
+        val more = thread[index] as More
+        val ids = more.getIDs(maxNumOfComments)
 
         val response = redditApiService.fetchMoreComments(
             tokenHeader,
@@ -75,6 +81,35 @@ class CommentThreadRepositoryImpl(
         val newComments = mutableListOf<CommentThreadItem>()
         parseMoreComments(response, newComments)
 
-        return newComments
+        if (more.children.isEmpty())
+            thread.removeAt(index)
+
+        thread.addAll(index, newComments)
+
+        return thread.toList()
     }
+
+    override suspend fun changeCommentVisibility(
+        index: Int,
+        depth: Int
+    ): List<CommentThreadItem> {
+
+        var start = index + 1
+        while (start < thread.size) {
+            val item = thread.elementAt(start)
+            if (item.depth > depth) {
+                when (item) {
+                    is Comment -> thread[start] = item.copy(visible = !item.visible)
+                    is More -> thread[start] = item.copy(visible = !item.visible)
+                }
+                start += 1
+            }
+            else
+                break
+        }
+
+        return thread.toList()
+    }
+
+
 }

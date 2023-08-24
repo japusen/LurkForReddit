@@ -8,10 +8,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lurkforreddit.LurkApplication
-import com.example.lurkforreddit.domain.model.Comment
 import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
-import com.example.lurkforreddit.domain.model.More
 import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,8 +45,6 @@ class CommentsViewModel(
 
     val subreddit: String = savedStateHandle["subreddit"] ?: ""
     val article: String = savedStateHandle["article"] ?: ""
-
-    private val maxNumOfComments = 50
 
     init {
         loadPostComments()
@@ -101,21 +97,14 @@ class CommentsViewModel(
                     networkResponse = try {
                         val networkResponse = currentState.networkResponse
                         if (networkResponse is CommentsNetworkResponse.Success) {
-                            val more = networkResponse.commentThread[index] as More
-                            val ids = more.getIDs(maxNumOfComments)
 
-                            val newReplies = commentThreadRepository.addComments(
+                            val updatedThread = commentThreadRepository.addComments(
                                 index = index,
                                 linkID = article,
-                                ids = ids,
                                 sort = currentState.commentSort
                             )
                             networkResponse.copy(
-                                commentThread = networkResponse.commentThread.toMutableList().apply {
-                                    if (more.children.isEmpty())
-                                        removeAt(index)
-                                    addAll(index, newReplies)
-                                }
+                                commentThread = updatedThread
                             )
                         } else {
                             CommentsNetworkResponse.Error
@@ -135,33 +124,31 @@ class CommentsViewModel(
      * @param start the index of the parent
      * @param depth the depth of the parent
      */
-    fun changeCommentVisibility(visible: Boolean, start: Int, depth: Int) {
-        _uiState.update { currentState ->
-            val networkResponse = currentState.networkResponse
-            if (networkResponse is CommentsNetworkResponse.Success) {
-                val commentThread = networkResponse.commentThread
+    fun changeCommentVisibility(start: Int, depth: Int) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
                 currentState.copy(
-                    networkResponse = networkResponse.copy(
-                        commentThread = commentThread.toMutableList().apply {
-                            var index = start + 1
-                            while (index < size) {
-                                val item = elementAt(index)
-                                if (item.depth > depth) {
-                                    when (item) {
-                                        is Comment -> set(index, item.copy(visible = visible))
-                                        is More -> set(index, item.copy(visible = visible))
-                                    }
-                                    index += 1
-                                }
-                                else
-                                    break
-                            }
+                    networkResponse = try {
+                        val networkResponse = currentState.networkResponse
+                        if (networkResponse is CommentsNetworkResponse.Success) {
+
+                            val updatedThread = commentThreadRepository.changeCommentVisibility(
+                                start,
+                                depth
+                            )
+                            networkResponse.copy(
+                                commentThread = updatedThread
+                            )
+                        } else {
+                            CommentsNetworkResponse.Error
                         }
-                    )
+                    } catch (e: IOException) {
+                        CommentsNetworkResponse.Error
+                    } catch (e: HttpException) {
+                        CommentsNetworkResponse.Error
+                    }
                 )
             }
-            else
-                currentState
         }
     }
 
