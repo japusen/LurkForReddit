@@ -99,6 +99,7 @@ class CommentsViewModel(
                         if (networkResponse is CommentsNetworkResponse.Success) {
 
                             val updatedThread = commentThreadRepository.addComments(
+                                commentThread = networkResponse.commentThread.toMutableList(),
                                 index = index,
                                 linkID = article,
                                 sort = currentState.commentSort
@@ -121,10 +122,10 @@ class CommentsViewModel(
 
     /**
      * Hides / Reveals child comments in the comment thread
-     * @param start the index of the parent
+     * @param index the index of the parent
      * @param depth the depth of the parent
      */
-    fun changeCommentVisibility(show: Boolean, start: Int, depth: Int) {
+    fun changeCommentVisibility(show: Boolean, index: Int, depth: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -133,9 +134,10 @@ class CommentsViewModel(
                         if (networkResponse is CommentsNetworkResponse.Success) {
 
                             val updatedThread = commentThreadRepository.changeCommentVisibility(
-                                show,
-                                start,
-                                depth
+                                commentThread = networkResponse.commentThread.toMutableList(),
+                                show = show,
+                                index = index,
+                                depth = depth
                             )
                             networkResponse.copy(
                                 commentThread = updatedThread

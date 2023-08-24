@@ -1,8 +1,6 @@
 package com.example.lurkforreddit.ui
 
 import android.widget.Toast
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -36,12 +34,6 @@ fun LurkApp() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    val enterTransition = fadeIn(
-            // Overwrites the default animation with tween
-            animationSpec = tween(durationMillis = 200)
-        )
-
-
     NavHost(
         navController = navController,
         startDestination = "home",
@@ -70,7 +62,7 @@ fun LurkApp() {
                     homeViewModel.setListingSort(listing, top)
                 },
                 onPostClicked = { subreddit, article ->
-                    navController.navigate("details/$subreddit/$article")
+                    navController.navigate("comments/$subreddit/$article")
                 },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
@@ -102,7 +94,7 @@ fun LurkApp() {
                 onBackClicked = { navController.popBackStack() },
                 networkResponse = subredditUiState.value.networkResponse,
                 onPostClicked = { subreddit, article ->
-                    navController.navigate("details/$subreddit/$article")
+                    navController.navigate("comments/$subreddit/$article")
                 },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
@@ -139,7 +131,7 @@ fun LurkApp() {
                 networkResponse = profileUiState.value.networkResponse,
                 onBackClicked = { navController.popBackStack() },
                 onPostClicked = { subreddit, article ->
-                    navController.navigate("details/$subreddit/$article")
+                    navController.navigate("comments/$subreddit/$article")
                 },
                 onProfileClicked = { toast.show()}, /* Already on userpage, no need to open again */
                 onSubredditClicked = { subreddit ->
@@ -181,7 +173,7 @@ fun LurkApp() {
                 networkResponse = duplicatesUiState.value.networkResponse,
                 onBackClicked = { navController.popBackStack() },
                 onPostClicked = { subreddit, article ->
-                    navController.navigate("details/$subreddit/$article")
+                    navController.navigate("comments/$subreddit/$article")
                 },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
@@ -205,7 +197,7 @@ fun LurkApp() {
             }
         }
         composable(
-            route = "details/{subreddit}/{article}",
+            route = "comments/{subreddit}/{article}",
             arguments = listOf(
                 navArgument("subreddit") { type = NavType.StringType },
                 navArgument("article") { type = NavType.StringType }

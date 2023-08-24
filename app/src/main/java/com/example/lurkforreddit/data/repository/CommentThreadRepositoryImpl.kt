@@ -18,7 +18,6 @@ class CommentThreadRepositoryImpl(
     private val redditApiService: RedditApiService
 ): CommentThreadRepository {
 
-    private val thread: MutableList<CommentThreadItem> = mutableListOf()
     private val maxNumOfComments = 50
 
     /**
@@ -49,9 +48,10 @@ class CommentThreadRepositoryImpl(
         val post = postListing.children[0]
 
         val commentThreadJson = response.jsonArray[1]
-        parsePostComments(commentThreadJson, thread)
+        val commentThread = mutableListOf<CommentThreadItem>()
+        parsePostComments(commentThreadJson, commentThread)
 
-        return Pair(post, thread.toList())
+        return Pair(post, commentThread.toList())
     }
 
     /**
@@ -61,6 +61,7 @@ class CommentThreadRepositoryImpl(
      * @return a list of comments requested
      */
     override suspend fun addComments(
+        commentThread: MutableList<CommentThreadItem>,
         index: Int,
         linkID: String,
         sort: CommentSort
@@ -68,7 +69,7 @@ class CommentThreadRepositoryImpl(
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 
-        val more = thread[index] as More
+        val more = commentThread[index] as More
         val ids = more.getIDs(maxNumOfComments)
 
         val response = redditApiService.fetchMoreComments(
@@ -82,26 +83,27 @@ class CommentThreadRepositoryImpl(
         parseMoreComments(response, newComments)
 
         if (more.children.isEmpty())
-            thread.removeAt(index)
+            commentThread.removeAt(index)
 
-        thread.addAll(index, newComments)
+        commentThread.addAll(index, newComments)
 
-        return thread.toList()
+        return commentThread.toList()
     }
 
     override suspend fun changeCommentVisibility(
+        commentThread: MutableList<CommentThreadItem>,
         show: Boolean,
         index: Int,
         depth: Int
     ): List<CommentThreadItem> {
 
         var start = index + 1
-        while (start < thread.size) {
-            val item = thread.elementAt(start)
+        while (start < commentThread.size) {
+            val item = commentThread.elementAt(start)
             if (item.depth > depth) {
                 when (item) {
-                    is Comment -> thread[start] = item.copy(visible = show)
-                    is More -> thread[start] = item.copy(visible = show)
+                    is Comment -> commentThread[start] = item.copy(visible = show)
+                    is More -> commentThread[start] = item.copy(visible = show)
                 }
                 start += 1
             }
@@ -109,6 +111,6 @@ class CommentThreadRepositoryImpl(
                 break
         }
 
-        return thread.toList()
+        return commentThread.toList()
     }
 }

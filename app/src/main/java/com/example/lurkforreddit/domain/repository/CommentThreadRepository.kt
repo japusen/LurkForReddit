@@ -12,12 +12,14 @@ interface CommentThreadRepository {
     ): Pair<Post, List<CommentThreadItem>>
 
     suspend fun addComments(
+        commentThread: MutableList<CommentThreadItem>,
         index: Int,
         linkID: String,
         sort: CommentSort,
     ): List<CommentThreadItem>
 
     suspend fun changeCommentVisibility(
+        commentThread: MutableList<CommentThreadItem>,
         show: Boolean,
         index: Int,
         depth: Int
