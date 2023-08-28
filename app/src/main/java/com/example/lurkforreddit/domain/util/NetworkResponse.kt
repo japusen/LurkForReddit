@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.domain.model
+package com.example.lurkforreddit.domain.util
 
 sealed interface NetworkResponse<out T> {
     data class Success<T>(val data: T) : NetworkResponse<T>

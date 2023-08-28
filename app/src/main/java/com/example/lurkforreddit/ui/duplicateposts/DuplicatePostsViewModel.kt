@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.DuplicatesSort
-import com.example.lurkforreddit.domain.model.NetworkResponse
+import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

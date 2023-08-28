@@ -3,7 +3,7 @@ package com.example.lurkforreddit.ui.subreddit
 import androidx.paging.PagingData
 import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
-import com.example.lurkforreddit.domain.model.NetworkResponse
+import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import kotlinx.coroutines.flow.Flow
 

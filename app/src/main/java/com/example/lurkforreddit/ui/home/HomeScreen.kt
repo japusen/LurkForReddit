@@ -24,7 +24,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
-import com.example.lurkforreddit.domain.model.NetworkResponse
+import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.ui.common.ListingFeed

@@ -17,7 +17,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.domain.model.Content
-import com.example.lurkforreddit.domain.model.NetworkResponse
+import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.ui.common.ListingFeed
 import kotlinx.coroutines.flow.Flow
 

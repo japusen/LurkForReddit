@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import com.example.lurkforreddit.domain.model.NetworkResponse
+import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.model.UserContentType
 import com.example.lurkforreddit.domain.model.UserListingSort
