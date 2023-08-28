@@ -11,8 +11,9 @@ import com.example.lurkforreddit.domain.model.DuplicatesSort
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class DuplicatePostsRepositoryImpl(
+class DuplicatePostsRepositoryImpl @Inject constructor(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ): DuplicatePostsRepository {

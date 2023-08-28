@@ -5,8 +5,9 @@ import com.example.lurkforreddit.data.remote.RedditApiService
 import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
+import javax.inject.Inject
 
-class SearchResultsRepositoryImpl(
+class SearchResultsRepositoryImpl @Inject constructor(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ): SearchResultsRepository {

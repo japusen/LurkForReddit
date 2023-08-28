@@ -6,8 +6,9 @@ import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class AccessTokenRepositoryImpl(
+class AccessTokenRepositoryImpl @Inject constructor(
     private val accessTokenService: AccessTokenService
 ): AccessTokenRepository {
 

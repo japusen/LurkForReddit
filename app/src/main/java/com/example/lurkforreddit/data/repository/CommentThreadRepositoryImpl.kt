@@ -12,8 +12,9 @@ import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
 import kotlinx.serialization.json.jsonArray
+import javax.inject.Inject
 
-class CommentThreadRepositoryImpl(
+class CommentThreadRepositoryImpl @Inject constructor(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ): CommentThreadRepository {

@@ -2,16 +2,12 @@ package com.example.lurkforreddit.ui.comments
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.domain.model.CommentSort
 import com.example.lurkforreddit.domain.model.CommentThreadItem
 import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.CommentThreadRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
 sealed interface CommentsNetworkResponse {
     data class Success(
@@ -35,9 +32,10 @@ data class CommentsUiState(
     val commentSort: CommentSort = CommentSort.BEST
 )
 
-class CommentsViewModel(
+@HiltViewModel
+class CommentsViewModel @Inject constructor(
     private val commentThreadRepository: CommentThreadRepository,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
@@ -155,18 +153,18 @@ class CommentsViewModel(
         }
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LurkApplication)
-                val commentThreadRepository = application.container.commentThreadRepository
-                val savedStateHandle = createSavedStateHandle()
-                CommentsViewModel(
-                    commentThreadRepository = commentThreadRepository,
-                    savedStateHandle = savedStateHandle
-                )
-            }
-        }
-    }
+//    companion object {
+//        val Factory: ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val application =
+//                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LurkApplication)
+//                val commentThreadRepository = application.container.commentThreadRepository
+//                val savedStateHandle = createSavedStateHandle()
+//                CommentsViewModel(
+//                    commentThreadRepository = commentThreadRepository,
+//                    savedStateHandle = savedStateHandle
+//                )
+//            }
+//        }
+//    }
 }

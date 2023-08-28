@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,7 +42,7 @@ fun LurkApp() {
         composable(
             route = "home",
         ) {
-            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
+            val homeViewModel: HomeViewModel = hiltViewModel() //= viewModel(factory = HomeViewModel.Factory)
             val homeUiState = homeViewModel.uiState.collectAsStateWithLifecycle()
 
             HomeScreen(
@@ -85,7 +85,7 @@ fun LurkApp() {
                 navArgument("subreddit") { type = NavType.StringType },
             ),
         ) {
-            val subredditViewModel: SubredditViewModel = viewModel(factory = SubredditViewModel.Factory)
+            val subredditViewModel: SubredditViewModel = hiltViewModel() // = viewModel(factory = SubredditViewModel.Factory)
             val subredditUiState = subredditViewModel.uiState.collectAsStateWithLifecycle()
 
             val toast = Toast.makeText(context, "Already viewing ${subredditViewModel.subreddit}", Toast.LENGTH_SHORT)
@@ -123,7 +123,7 @@ fun LurkApp() {
                 navArgument("username") { type = NavType.StringType },
             ),
         ) {
-            val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.Factory)
+            val profileViewModel: ProfileViewModel = hiltViewModel() // = viewModel(factory = ProfileViewModel.Factory)
             val profileUiState = profileViewModel.uiState.collectAsStateWithLifecycle()
 
             val toast = Toast.makeText(context, "Already viewing ${profileViewModel.username}'s profile", Toast.LENGTH_SHORT)
@@ -167,8 +167,7 @@ fun LurkApp() {
             ),
         ) {
 
-            val duplicatePostsViewModel: DuplicatePostsViewModel =
-                viewModel(factory = DuplicatePostsViewModel.Factory)
+            val duplicatePostsViewModel: DuplicatePostsViewModel = hiltViewModel() // = viewModel(factory = DuplicatePostsViewModel.Factory)
             val duplicatesUiState = duplicatePostsViewModel.uiState.collectAsStateWithLifecycle()
 
             ListingScreen(
@@ -208,8 +207,7 @@ fun LurkApp() {
             ),
         ) {
 
-            val commentsViewModel: CommentsViewModel =
-                viewModel(factory = CommentsViewModel.Factory)
+            val commentsViewModel: CommentsViewModel = hiltViewModel() // = viewModel(factory = CommentsViewModel.Factory)
             val commentsUiState = commentsViewModel.uiState.collectAsStateWithLifecycle()
 
             CommentsScreen(

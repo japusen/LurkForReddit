@@ -12,8 +12,9 @@ import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class PostRepositoryImpl(
+class PostRepositoryImpl @Inject constructor(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ): PostRepository {

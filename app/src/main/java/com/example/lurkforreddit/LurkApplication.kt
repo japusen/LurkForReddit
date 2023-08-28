@@ -5,15 +5,10 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-import com.example.lurkforreddit.di.AppContainer
-import com.example.lurkforreddit.di.DefaultAppContainer
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class LurkApplication: Application(), ImageLoaderFactory {
-    lateinit var container: AppContainer
-    override fun onCreate() {
-        super.onCreate()
-        container = DefaultAppContainer()
-    }
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)

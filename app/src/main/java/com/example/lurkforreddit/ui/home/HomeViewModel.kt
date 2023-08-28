@@ -1,19 +1,15 @@
 package com.example.lurkforreddit.ui.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.cachedIn
-import com.example.lurkforreddit.LurkApplication
 import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
 import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
 
 data class HomeUiState(
@@ -32,7 +29,8 @@ data class HomeUiState(
     val searchResult: List<SearchResult> = listOf()
 )
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val postRepository: PostRepository,
     private val searchResultsRepository: SearchResultsRepository
 ) : ViewModel() {
@@ -132,18 +130,18 @@ class HomeViewModel(
         }
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as LurkApplication)
-                val postRepository = application.container.postRepository
-                val searchResultRepository = application.container.searchResultsRepository
-
-                HomeViewModel(
-                    postRepository = postRepository,
-                    searchResultsRepository = searchResultRepository
-                )
-            }
-        }
-    }
+//    companion object {
+//        val Factory: ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val application = (this[APPLICATION_KEY] as LurkApplication)
+//                val postRepository = application.container.postRepository
+//                val searchResultRepository = application.container.searchResultsRepository
+//
+//                HomeViewModel(
+//                    postRepository = postRepository,
+//                    searchResultsRepository = searchResultRepository
+//                )
+//            }
+//        }
+//    }
 }

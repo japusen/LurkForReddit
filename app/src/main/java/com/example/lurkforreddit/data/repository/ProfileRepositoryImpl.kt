@@ -13,8 +13,9 @@ import com.example.lurkforreddit.domain.model.UserListingSort
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class ProfileRepositoryImpl(
+class ProfileRepositoryImpl @Inject constructor(
     private val accessTokenRepository: AccessTokenRepository,
     private val redditApiService: RedditApiService
 ): ProfileRepository {
