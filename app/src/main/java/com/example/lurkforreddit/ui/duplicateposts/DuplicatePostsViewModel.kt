@@ -18,11 +18,6 @@ import java.io.IOException
 import javax.inject.Inject
 
 
-data class DuplicatesUiState(
-    val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val sort: DuplicatesSort = DuplicatesSort.NUMCOMMENTS,
-)
-
 @HiltViewModel
 class DuplicatePostsViewModel @Inject constructor(
     private val duplicatePostsRepository: DuplicatePostsRepository,

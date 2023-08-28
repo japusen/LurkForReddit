@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.ListingSort
-import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
@@ -19,15 +18,6 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-
-data class HomeUiState(
-    val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val subreddit: String = "All",
-    val listingSort: ListingSort = ListingSort.HOT,
-    val topSort: TopSort? = null,
-    val query: String = "",
-    val searchResult: List<SearchResult> = listOf()
-)
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(

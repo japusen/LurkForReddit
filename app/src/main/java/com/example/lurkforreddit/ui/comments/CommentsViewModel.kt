@@ -27,11 +27,6 @@ sealed interface CommentsNetworkResponse {
     object Loading : CommentsNetworkResponse
 }
 
-data class CommentsUiState(
-    val networkResponse: CommentsNetworkResponse = CommentsNetworkResponse.Loading,
-    val commentSort: CommentSort = CommentSort.BEST
-)
-
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
     private val commentThreadRepository: CommentThreadRepository,

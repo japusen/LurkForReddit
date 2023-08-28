@@ -30,12 +30,6 @@ sealed interface ListingNetworkResponse {
     object Loading : ListingNetworkResponse
 }
 
-data class ListingUiState(
-    val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val listingSort: ListingSort = ListingSort.HOT,
-    val topSort: TopSort? = null,
-)
-
 
 @HiltViewModel
 class SubredditViewModel @Inject constructor(
@@ -43,8 +37,8 @@ class SubredditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ListingUiState())
-    val uiState: StateFlow<ListingUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SubredditUiState())
+    val uiState: StateFlow<SubredditUiState> = _uiState.asStateFlow()
 
     val subreddit: String = savedStateHandle["subreddit"] ?: "All"
 

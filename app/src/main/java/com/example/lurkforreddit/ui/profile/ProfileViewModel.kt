@@ -20,14 +20,6 @@ import java.io.IOException
 import javax.inject.Inject
 
 
-data class ProfileUiState(
-    val networkResponse: ListingNetworkResponse = ListingNetworkResponse.Loading,
-    val contentType: UserContentType = UserContentType.SUBMITTED,
-    val userListingSort: UserListingSort = UserListingSort.HOT,
-    val topSort: TopSort? = null,
-)
-
-
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
