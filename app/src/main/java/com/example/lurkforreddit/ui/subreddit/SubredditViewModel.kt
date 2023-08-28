@@ -3,14 +3,12 @@ package com.example.lurkforreddit.ui.subreddit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,16 +17,6 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
-
-
-sealed interface ListingNetworkResponse {
-    data class Success(
-        val listingContent: Flow<PagingData<Content>>,
-    ) : ListingNetworkResponse
-
-    object Error : ListingNetworkResponse
-    object Loading : ListingNetworkResponse
-}
 
 
 @HiltViewModel
@@ -51,7 +39,7 @@ class SubredditViewModel @Inject constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        ListingNetworkResponse.Success(
+                        NetworkResponse.Success(
                             postRepository.getPosts(
                                 subreddit = subreddit,
                                 sort = currentState.listingSort,
@@ -59,9 +47,9 @@ class SubredditViewModel @Inject constructor(
                             ).cachedIn(viewModelScope)
                         )
                     } catch (e: IOException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Could not make network request")
                     } catch (e: HttpException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Request Failed")
                     }
                 )
             }

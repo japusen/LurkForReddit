@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
-import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        ListingNetworkResponse.Success(
+                        NetworkResponse.Success(
                             postRepository.getPosts(
                                 subreddit = currentState.subreddit,
                                 sort = currentState.listingSort,
@@ -45,9 +45,9 @@ class HomeViewModel @Inject constructor(
                             ).cachedIn(viewModelScope)
                         )
                     } catch (e: IOException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Could not make network request")
                     } catch (e: HttpException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Request Failed")
                     }
                 )
             }

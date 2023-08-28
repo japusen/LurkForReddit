@@ -19,16 +19,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
+import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.NetworkResponse
 import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.ui.common.ListingFeed
 import com.example.lurkforreddit.ui.common.ListingSortMenu
 import com.example.lurkforreddit.ui.common.screens.ErrorScreen
 import com.example.lurkforreddit.ui.common.screens.LoadingScreen
-import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +40,7 @@ fun HomeScreen(
     query: String,
     subreddit: String,
     selectedSort: ListingSort,
-    networkResponse: ListingNetworkResponse,
+    networkResponse: NetworkResponse<Flow<PagingData<Content>>>,
     searchResult: List<SearchResult>,
     updateSearchResults: () -> Unit,
     setQuery: (String) -> Unit,
@@ -108,10 +111,10 @@ fun HomeScreen(
         ) { paddingValues ->
 
             when (networkResponse) {
-                is ListingNetworkResponse.Loading -> LoadingScreen(modifier)
-                is ListingNetworkResponse.Success ->
+                is NetworkResponse.Loading -> LoadingScreen(modifier)
+                is NetworkResponse.Success ->
                     ListingFeed(
-                        submissions = networkResponse.listingContent.collectAsLazyPagingItems(),
+                        submissions = networkResponse.data.collectAsLazyPagingItems(),
                         onPostClicked = onPostClicked,
                         onProfileClicked = onProfileClicked,
                         onSubredditClicked = onSubredditClicked,
@@ -119,7 +122,7 @@ fun HomeScreen(
                         openLink = onLinkClicked,
                         modifier = modifier.padding(paddingValues)
                     )
-                is ListingNetworkResponse.Error -> ErrorScreen(modifier)
+                is NetworkResponse.Error -> ErrorScreen(modifier)
             }
         }
     }

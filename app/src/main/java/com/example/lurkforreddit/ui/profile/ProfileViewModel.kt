@@ -4,11 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import com.example.lurkforreddit.domain.model.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.model.UserContentType
 import com.example.lurkforreddit.domain.model.UserListingSort
 import com.example.lurkforreddit.domain.repository.ProfileRepository
-import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,8 +40,7 @@ class ProfileViewModel @Inject constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        ListingNetworkResponse.Success(
-                            listingContent =
+                        NetworkResponse.Success(
                             if (currentState.contentType == UserContentType.SUBMITTED) {
                                 profileRepository.getUserSubmissions(
                                     username = username,
@@ -57,9 +56,9 @@ class ProfileViewModel @Inject constructor(
                             }
                         )
                     } catch (e: IOException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Could not make network request")
                     } catch (e: HttpException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Request Failed")
                     }
                 )
             }

@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.DuplicatesSort
+import com.example.lurkforreddit.domain.model.NetworkResponse
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
-import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +38,7 @@ class DuplicatePostsViewModel @Inject constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     networkResponse = try {
-                        ListingNetworkResponse.Success(
+                        NetworkResponse.Success(
                             duplicatePostsRepository.getDuplicatePosts(
                                 subreddit = subreddit,
                                 article = article,
@@ -46,9 +46,9 @@ class DuplicatePostsViewModel @Inject constructor(
                             ).cachedIn(viewModelScope)
                         )
                     } catch (e: IOException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Could not make network request")
                     } catch (e: HttpException) {
-                        ListingNetworkResponse.Error
+                        NetworkResponse.Error("Request Failed")
                     }
                 )
             }

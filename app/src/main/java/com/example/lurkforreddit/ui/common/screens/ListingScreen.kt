@@ -14,23 +14,26 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.lurkforreddit.domain.model.Content
+import com.example.lurkforreddit.domain.model.NetworkResponse
 import com.example.lurkforreddit.ui.common.ListingFeed
-import com.example.lurkforreddit.ui.subreddit.ListingNetworkResponse
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListingScreen(
     title: String,
     onBackClicked: () -> Unit,
-    networkResponse: ListingNetworkResponse,
+    networkResponse: NetworkResponse<Flow<PagingData<Content>>>,
     onPostClicked: (String, String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
     onLinkClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
-    menu: @Composable() () -> Unit
+    menu: @Composable () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
@@ -63,10 +66,10 @@ fun ListingScreen(
     ) { paddingValues ->
 
         when (networkResponse) {
-            is ListingNetworkResponse.Loading -> LoadingScreen(modifier)
-            is ListingNetworkResponse.Success ->
+            is NetworkResponse.Loading -> LoadingScreen(modifier)
+            is NetworkResponse.Success ->
                 ListingFeed(
-                    submissions = networkResponse.listingContent.collectAsLazyPagingItems(),
+                    submissions = networkResponse.data.collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
                     onProfileClicked = onProfileClicked,
                     onSubredditClicked = onSubredditClicked,
@@ -74,7 +77,7 @@ fun ListingScreen(
                     openLink = onLinkClicked,
                     modifier = modifier.padding(paddingValues)
                 )
-            is ListingNetworkResponse.Error -> ErrorScreen(modifier)
+            is NetworkResponse.Error -> ErrorScreen(modifier)
         }
     }
 }
