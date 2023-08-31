@@ -53,6 +53,8 @@ object AppModule {
             app,
             PostHistoryDatabase::class.java,
             "post_history_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }
