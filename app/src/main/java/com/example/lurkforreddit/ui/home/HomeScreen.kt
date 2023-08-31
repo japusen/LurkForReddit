@@ -9,6 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
 import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
@@ -46,7 +48,8 @@ fun HomeScreen(
     setQuery: (String) -> Unit,
     clearQuery: () -> Unit,
     onListingSortChanged: (ListingSort, TopSort?) -> Unit,
-    onPostClicked: (String, String) -> Unit,
+    onPostClicked: (Post) -> Unit,
+    onCommentClicked: (String, String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
@@ -116,6 +119,7 @@ fun HomeScreen(
                     ListingFeed(
                         submissions = networkResponse.data.collectAsLazyPagingItems(),
                         onPostClicked = onPostClicked,
+                        onCommentClicked = onCommentClicked,
                         onProfileClicked = onProfileClicked,
                         onSubredditClicked = onSubredditClicked,
                         onBrowserClicked = onBrowserClicked,
@@ -124,6 +128,10 @@ fun HomeScreen(
                     )
                 is NetworkResponse.Error -> ErrorScreen(modifier)
             }
+
+//            ModalBottomSheet(onDismissRequest = { /*TODO*/ }) {
+//
+//            }
         }
     }
 }

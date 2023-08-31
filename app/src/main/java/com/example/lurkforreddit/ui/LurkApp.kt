@@ -16,15 +16,14 @@ import com.example.lurkforreddit.R
 import com.example.lurkforreddit.ui.comments.CommentsScreen
 import com.example.lurkforreddit.ui.comments.CommentsViewModel
 import com.example.lurkforreddit.ui.common.ImageLink
-import com.example.lurkforreddit.ui.common.ListingSortMenu
 import com.example.lurkforreddit.ui.common.VideoPlayer
-import com.example.lurkforreddit.ui.common.screens.ListingScreen
+import com.example.lurkforreddit.ui.duplicateposts.DuplicatePostsScreen
 import com.example.lurkforreddit.ui.duplicateposts.DuplicatePostsViewModel
-import com.example.lurkforreddit.ui.duplicateposts.DuplicatesSortMenu
 import com.example.lurkforreddit.ui.home.HomeScreen
 import com.example.lurkforreddit.ui.home.HomeViewModel
-import com.example.lurkforreddit.ui.profile.ProfileSortMenu
+import com.example.lurkforreddit.ui.profile.ProfileScreen
 import com.example.lurkforreddit.ui.profile.ProfileViewModel
+import com.example.lurkforreddit.ui.subreddit.SubredditScreen
 import com.example.lurkforreddit.ui.subreddit.SubredditViewModel
 import com.example.lurkforreddit.util.openLinkInBrowser
 import com.example.lurkforreddit.util.openPostLink
@@ -61,9 +60,11 @@ fun LurkApp() {
                 onListingSortChanged = { listing, top ->
                     homeViewModel.setListingSort(listing, top)
                 },
-                onPostClicked = { subreddit, article ->
-                    navController.navigate("comments/$subreddit/$article")
+                onPostClicked = { post ->
+                    navController.navigate("comments/${post.subreddit}/${post.id}")
+                    homeViewModel.savePostToHistory(post)
                 },
+                onCommentClicked = { subreddit, article -> },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
@@ -90,13 +91,16 @@ fun LurkApp() {
 
             val toast = Toast.makeText(context, "Already viewing ${subredditViewModel.subreddit}", Toast.LENGTH_SHORT)
 
-            ListingScreen(
+            SubredditScreen(
                 title = subredditViewModel.subreddit,
-                onBackClicked = { navController.popBackStack() },
                 networkResponse = subredditUiState.value.networkResponse,
-                onPostClicked = { subreddit, article ->
-                    navController.navigate("comments/$subreddit/$article")
+                selectedSort = subredditUiState.value.listingSort,
+                onBackClicked = { navController.popBackStack() },
+                onPostClicked = { post ->
+                    navController.navigate("comments/${post.subreddit}/${post.id}")
+                    subredditViewModel.savePostToHistory(post)
                 },
+                onCommentClicked = { subreddit, article -> },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
@@ -106,15 +110,11 @@ fun LurkApp() {
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
+                },
+                onListingSortChanged = { listing, top ->
+                    subredditViewModel.setListingSort(listing, top)
                 }
-            ) {
-                ListingSortMenu(
-                    selectedSort = subredditUiState.value.listingSort,
-                    onListingSortChanged = { listing, top ->
-                        subredditViewModel.setListingSort(listing, top)
-                    }
-                )
-            }
+            )
         }
 
         composable(
@@ -128,11 +128,16 @@ fun LurkApp() {
 
             val toast = Toast.makeText(context, "Already viewing ${profileViewModel.username}'s profile", Toast.LENGTH_SHORT)
 
-            ListingScreen(
+            ProfileScreen(
                 title = profileViewModel.username,
                 networkResponse = profileUiState.value.networkResponse,
+                selectedSort = profileUiState.value.userListingSort,
+                contentType = profileUiState.value.contentType,
                 onBackClicked = { navController.popBackStack() },
-                onPostClicked = { subreddit, article ->
+                onPostClicked = { post ->
+                    navController.navigate("comments/${post.subreddit}/${post.id}")
+                },
+                onCommentClicked = { subreddit, article ->
                     navController.navigate("comments/$subreddit/$article")
                 },
                 onProfileClicked = { toast.show()}, /* Already on userpage, no need to open again */
@@ -144,19 +149,14 @@ fun LurkApp() {
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
+                },
+                onContentTypeChanged = { contentType ->
+                    profileViewModel.setContentType(contentType)
+                },
+                onSortChanged = { sort, topSort ->
+                    profileViewModel.setListingSort(sort, topSort)
                 }
-            ) {
-                ProfileSortMenu(
-                    selectedSort = profileUiState.value.userListingSort,
-                    contentType = profileUiState.value.contentType,
-                    onContentTypeChanged = { contentType ->
-                        profileViewModel.setContentType(contentType)
-                    },
-                    onSortChanged = { sort, top ->
-                        profileViewModel.setListingSort(sort, top)
-                    }
-                )
-            }
+            )
         }
 
         composable(
@@ -170,13 +170,15 @@ fun LurkApp() {
             val duplicatePostsViewModel: DuplicatePostsViewModel = hiltViewModel() // = viewModel(factory = DuplicatePostsViewModel.Factory)
             val duplicatesUiState = duplicatePostsViewModel.uiState.collectAsStateWithLifecycle()
 
-            ListingScreen(
+            DuplicatePostsScreen(
                 title = stringResource(R.string.other_discussions),
                 networkResponse = duplicatesUiState.value.networkResponse,
+                selectedSort = duplicatesUiState.value.sort,
                 onBackClicked = { navController.popBackStack() },
-                onPostClicked = { subreddit, article ->
-                    navController.navigate("comments/$subreddit/$article")
+                onPostClicked = { post ->
+                    navController.navigate("comments/${post.subreddit}/${post.id}")
                 },
+                onCommentClicked = { subreddit, article -> },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
@@ -188,15 +190,11 @@ fun LurkApp() {
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
+                },
+                onSortChanged = { sort ->
+                    duplicatePostsViewModel.setSort(sort)
                 }
-            ) {
-                DuplicatesSortMenu(
-                    selectedSort = duplicatesUiState.value.sort,
-                    onSortChanged = { sort ->
-                        duplicatePostsViewModel.setSort(sort)
-                    }
-                )
-            }
+            )
         }
 
         composable(

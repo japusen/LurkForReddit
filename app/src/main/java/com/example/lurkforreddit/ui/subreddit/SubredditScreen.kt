@@ -1,4 +1,4 @@
-package com.example.lurkforreddit.ui.common.screens
+package com.example.lurkforreddit.ui.subreddit
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,23 +17,31 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.domain.model.Content
+import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.Post
+import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.ui.common.ListingFeed
+import com.example.lurkforreddit.ui.common.ListingSortMenu
+import com.example.lurkforreddit.ui.common.screens.ErrorScreen
+import com.example.lurkforreddit.ui.common.screens.LoadingScreen
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListingScreen(
+fun SubredditScreen(
     title: String,
-    onBackClicked: () -> Unit,
     networkResponse: NetworkResponse<Flow<PagingData<Content>>>,
-    onPostClicked: (String, String) -> Unit,
+    selectedSort: ListingSort,
+    onBackClicked: () -> Unit,
+    onPostClicked: (Post) -> Unit,
+    onCommentClicked: (String, String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
     onLinkClicked: (String) -> Unit,
+    onListingSortChanged: (ListingSort, TopSort?) -> Unit,
     modifier: Modifier = Modifier,
-    menu: @Composable () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
@@ -58,7 +66,12 @@ fun ListingScreen(
                         )
                     }
                 },
-                actions = { menu() },
+                actions = {
+                    ListingSortMenu(
+                        selectedSort = selectedSort,
+                        onListingSortChanged = onListingSortChanged
+                    )
+                },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -71,6 +84,7 @@ fun ListingScreen(
                 ListingFeed(
                     submissions = networkResponse.data.collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
+                    onCommentClicked = onCommentClicked,
                     onProfileClicked = onProfileClicked,
                     onSubredditClicked = onSubredditClicked,
                     onBrowserClicked = onBrowserClicked,
