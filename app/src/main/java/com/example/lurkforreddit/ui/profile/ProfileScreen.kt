@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -22,7 +23,6 @@ import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.model.UserContentType
 import com.example.lurkforreddit.domain.model.UserListingSort
 import com.example.lurkforreddit.domain.util.NetworkResponse
-import com.example.lurkforreddit.ui.common.ListingFeed
 import com.example.lurkforreddit.ui.common.screens.ErrorScreen
 import com.example.lurkforreddit.ui.common.screens.LoadingScreen
 import kotlinx.coroutines.flow.Flow
@@ -49,35 +49,14 @@ fun ProfileScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                ),
-                title = {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onBackClicked() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    ProfileSortMenu(
-                        selectedSort = selectedSort,
-                        contentType = contentType,
-                        onContentTypeChanged = onContentTypeChanged,
-                        onSortChanged = onSortChanged
-                    )
-                },
-                scrollBehavior = scrollBehavior
+            ProfileTopBar(
+                title = title,
+                contentType = contentType,
+                selectedSort = selectedSort,
+                scrollBehavior = scrollBehavior,
+                onBackClicked = { onBackClicked() },
+                onContentTypeChanged = onContentTypeChanged,
+                onSortChanged = onSortChanged
             )
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -86,8 +65,8 @@ fun ProfileScreen(
         when (networkResponse) {
             is NetworkResponse.Loading -> LoadingScreen(modifier)
             is NetworkResponse.Success ->
-                ListingFeed(
-                    submissions = networkResponse.data.collectAsLazyPagingItems(),
+                ProfileContentList(
+                    contentList = networkResponse.data.collectAsLazyPagingItems(),
                     onPostClicked = onPostClicked,
                     onCommentClicked = onCommentClicked,
                     onProfileClicked = onProfileClicked,
@@ -99,4 +78,47 @@ fun ProfileScreen(
             is NetworkResponse.Error -> ErrorScreen(modifier)
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTopBar(
+    title: String,
+    contentType: UserContentType,
+    selectedSort: UserListingSort,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onBackClicked: () -> Unit,
+    onContentTypeChanged: (UserContentType) -> Unit,
+    onSortChanged: (UserListingSort, TopSort?) -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { onBackClicked() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            ProfileSortMenu(
+                selectedSort = selectedSort,
+                contentType = contentType,
+                onContentTypeChanged = onContentTypeChanged,
+                onSortChanged = onSortChanged
+            )
+        },
+        scrollBehavior = scrollBehavior
+    )
 }

@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -117,6 +119,32 @@ class HomeViewModel @Inject constructor(
                     searchResult = searchResultsRepository.getSearchResults(currentState.query)
                 )
             }
+        }
+    }
+
+    /**
+     * Get post history
+     */
+    fun getPostHistory(): Flow<List<Post>> {
+        return postRepository.getPostHistory()
+    }
+
+    /**
+     * Save viewed post to history
+     * @param post the post to save
+     */
+    fun savePostToHistory(post: Post) {
+        viewModelScope.launch {
+            postRepository.savePostToHistory(post)
+        }
+    }
+
+    /**
+     * Clear the viewed history
+     */
+    fun clearPostHistory() {
+        viewModelScope.launch {
+            postRepository.clearPostHistory()
         }
     }
 

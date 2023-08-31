@@ -4,8 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.lurkforreddit.data.json.parsePostListing
 import com.example.lurkforreddit.data.remote.RedditApiService
-import com.example.lurkforreddit.domain.model.Content
-import com.example.lurkforreddit.domain.model.Listing
+import com.example.lurkforreddit.domain.model.Post
+import com.example.lurkforreddit.domain.model.PostListing
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -16,8 +16,8 @@ class PostPagingSource(
     private val subreddit: String,
     private val sort: String,
     private val topSort: String?
-) : PagingSource<String, Content>() {
-    override suspend fun load(params: LoadParams<String>): LoadResult<String, Content> {
+) : PagingSource<String, Post>() {
+    override suspend fun load(params: LoadParams<String>): LoadResult<String, Post> {
         val after = params.key
         return try {
 
@@ -35,14 +35,14 @@ class PostPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<String, Content>): String? {
+    override fun getRefreshKey(state: PagingState<String, Post>): String? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey
         }
     }
 
-    private suspend fun getPosts(after: String?): Listing {
+    private suspend fun getPosts(after: String?): PostListing {
         return parsePostListing(
             service.fetchSubredditPosts(
                 tokenHeader = tokenHeader,

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
@@ -70,6 +71,16 @@ class SubredditViewModel @Inject constructor(
             )
         }
         loadPosts()
+    }
+
+    /**
+     * Save viewed post to history
+     * @param post the post to save
+     */
+    fun savePostToHistory(post: Post) {
+        viewModelScope.launch {
+            postRepository.savePostToHistory(post)
+        }
     }
 
 //    companion object {

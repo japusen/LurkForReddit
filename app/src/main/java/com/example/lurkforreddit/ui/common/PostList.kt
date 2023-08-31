@@ -14,9 +14,9 @@ import com.example.lurkforreddit.domain.model.ProfileComment
 import com.example.lurkforreddit.ui.profile.ProfileCommentCard
 
 @Composable
-fun ListingFeed(
-    submissions: LazyPagingItems<Content>,
-    onPostClicked: (String, String) -> Unit,
+fun PostList(
+    posts: LazyPagingItems<Post>,
+    onPostClicked: (Post) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
@@ -29,26 +29,16 @@ fun ListingFeed(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        items(submissions.itemCount) { index ->
-            submissions[index]?.let { content ->
-                when (content) {
-                    is Post -> {
-                        PostCard(
-                            post = content,
-                            onPostClicked = { onPostClicked(content.subreddit, content.id) },
-                            onProfileClicked = onProfileClicked,
-                            onSubredditClicked = onSubredditClicked,
-                            onBrowserClicked = onBrowserClicked,
-                            openLink = openLink
-                        )
-                    }
-                    is ProfileComment -> {
-                        ProfileCommentCard(
-                            comment = content,
-                            onCommentClicked = { onPostClicked(content.subreddit, content.linkID.substring(3)) },
-                        )
-                    }
-                }
+        items(posts.itemCount) { index ->
+            posts[index]?.let { post ->
+                PostCard(
+                    post = post,
+                    onPostClicked = { onPostClicked(post) },
+                    onProfileClicked = onProfileClicked,
+                    onSubredditClicked = onSubredditClicked,
+                    onBrowserClicked = onBrowserClicked,
+                    openLink = openLink
+                )
             }
         }
     }

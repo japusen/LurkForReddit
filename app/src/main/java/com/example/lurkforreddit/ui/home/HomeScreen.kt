@@ -9,11 +9,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,14 +23,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lurkforreddit.R
-import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.Post
-import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.SearchResult
 import com.example.lurkforreddit.domain.model.TopSort
-import com.example.lurkforreddit.ui.common.ListingFeed
-import com.example.lurkforreddit.ui.common.ListingSortMenu
+import com.example.lurkforreddit.domain.util.NetworkResponse
+import com.example.lurkforreddit.ui.common.PostList
+import com.example.lurkforreddit.ui.common.PostListSortMenu
 import com.example.lurkforreddit.ui.common.screens.ErrorScreen
 import com.example.lurkforreddit.ui.common.screens.LoadingScreen
 import kotlinx.coroutines.flow.Flow
@@ -42,14 +41,13 @@ fun HomeScreen(
     query: String,
     subreddit: String,
     selectedSort: ListingSort,
-    networkResponse: NetworkResponse<Flow<PagingData<Content>>>,
+    networkResponse: NetworkResponse<Flow<PagingData<Post>>>,
     searchResult: List<SearchResult>,
     updateSearchResults: () -> Unit,
     setQuery: (String) -> Unit,
     clearQuery: () -> Unit,
     onListingSortChanged: (ListingSort, TopSort?) -> Unit,
     onPostClicked: (Post) -> Unit,
-    onCommentClicked: (String, String) -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
     onBrowserClicked: (String, String) -> Unit,
@@ -81,33 +79,12 @@ fun HomeScreen(
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         Scaffold(
             topBar = {
-                CenterAlignedTopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    title = {
-                        Text(
-                            text = subreddit,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { coroutineScope.launch { drawerState.open() } }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Menu,
-                                contentDescription = stringResource(R.string.back)
-                            )
-                        }
-                    },
-                    actions = {
-                        ListingSortMenu(
-                            selectedSort = selectedSort,
-                            onListingSortChanged = onListingSortChanged
-                        )
-                    },
-                    scrollBehavior = scrollBehavior
+                HomeTopBar(
+                    subreddit = subreddit,
+                    selectedSort = selectedSort,
+                    scrollBehavior = scrollBehavior,
+                    onDrawerOpen = { coroutineScope.launch { drawerState.open() } },
+                    onListingSortChanged = onListingSortChanged
                 )
             },
             modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -116,10 +93,9 @@ fun HomeScreen(
             when (networkResponse) {
                 is NetworkResponse.Loading -> LoadingScreen(modifier)
                 is NetworkResponse.Success ->
-                    ListingFeed(
-                        submissions = networkResponse.data.collectAsLazyPagingItems(),
+                    PostList(
+                        posts = networkResponse.data.collectAsLazyPagingItems(),
                         onPostClicked = onPostClicked,
-                        onCommentClicked = onCommentClicked,
                         onProfileClicked = onProfileClicked,
                         onSubredditClicked = onSubredditClicked,
                         onBrowserClicked = onBrowserClicked,
@@ -134,4 +110,44 @@ fun HomeScreen(
 //            }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeTopBar(
+    subreddit: String,
+    selectedSort: ListingSort,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onDrawerOpen: () -> Unit,
+    onListingSortChanged: (ListingSort, TopSort?) -> Unit,
+) {
+
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        title = {
+            Text(
+                text = subreddit,
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { onDrawerOpen() }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = stringResource(R.string.back)
+                )
+            }
+        },
+        actions = {
+            PostListSortMenu(
+                selectedSort = selectedSort,
+                onListingSortChanged = onListingSortChanged
+            )
+        },
+        scrollBehavior = scrollBehavior
+    )
 }

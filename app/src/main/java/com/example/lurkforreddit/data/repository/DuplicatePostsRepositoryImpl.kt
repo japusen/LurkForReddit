@@ -8,6 +8,7 @@ import com.example.lurkforreddit.data.remote.RedditApiService
 import com.example.lurkforreddit.data.repository.NetworkPageSize.NETWORK_PAGE_SIZE
 import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.DuplicatesSort
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.repository.AccessTokenRepository
 import com.example.lurkforreddit.domain.repository.DuplicatePostsRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class DuplicatePostsRepositoryImpl @Inject constructor(
         subreddit: String,
         article: String,
         sort: DuplicatesSort
-    ): Flow<PagingData<Content>> {
+    ): Flow<PagingData<Post>> {
 
         val tokenHeader = accessTokenRepository.getAccessToken()
 

@@ -26,7 +26,7 @@ import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.TopSort
 
 @Composable
-fun ListingSortMenu(
+fun PostListSortMenu(
     selectedSort: ListingSort,
     onListingSortChanged: (ListingSort, TopSort?) -> Unit,
     modifier: Modifier = Modifier

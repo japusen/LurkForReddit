@@ -1,8 +1,8 @@
 package com.example.lurkforreddit.domain.repository
 
 import androidx.paging.PagingData
-import com.example.lurkforreddit.domain.model.Content
 import com.example.lurkforreddit.domain.model.ListingSort
+import com.example.lurkforreddit.domain.model.Post
 import com.example.lurkforreddit.domain.model.TopSort
 import kotlinx.coroutines.flow.Flow
 
@@ -11,5 +11,11 @@ interface PostRepository {
         subreddit: String,
         sort: ListingSort,
         topSort: TopSort? = null
-    ): Flow<PagingData<Content>>
+    ): Flow<PagingData<Post>>
+
+    fun getPostHistory(): Flow<List<Post>>
+
+    suspend fun savePostToHistory(post: Post)
+
+    suspend fun clearPostHistory()
 }

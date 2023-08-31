@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -41,41 +42,13 @@ fun CommentsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                ),
-                title = {
-                    Text(
-                        text = subreddit,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onBackClicked() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    CommentSortMenu(
-                        selectedSort = selectedSort,
-                        onSortChanged = onSortChanged
-                    )
-                    IconButton(
-                        onClick = { onDuplicatesClicked() }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_other_discussions),
-                            contentDescription = "Other Discussions"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
+            CommentsTopBar(
+                subreddit = subreddit,
+                selectedSort = selectedSort,
+                scrollBehavior = scrollBehavior,
+                onBackClicked = { onBackClicked() },
+                onSortChanged = onSortChanged,
+                onDuplicatesClicked = { onDuplicatesClicked() }
             )
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -98,4 +71,52 @@ fun CommentsScreen(
             is CommentsNetworkResponse.Error -> ErrorScreen(modifier)
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CommentsTopBar(
+    subreddit: String,
+    selectedSort: CommentSort,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onBackClicked: () -> Unit,
+    onSortChanged: (CommentSort) -> Unit,
+    onDuplicatesClicked: () -> Unit
+) {
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        title = {
+            Text(
+                text = subreddit,
+                style = MaterialTheme.typography.titleMedium
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { onBackClicked() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            CommentSortMenu(
+                selectedSort = selectedSort,
+                onSortChanged = onSortChanged
+            )
+            IconButton(
+                onClick = { onDuplicatesClicked() }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_other_discussions),
+                    contentDescription = "Other Discussions"
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior
+    )
 }

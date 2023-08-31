@@ -64,7 +64,6 @@ fun LurkApp() {
                     navController.navigate("comments/${post.subreddit}/${post.id}")
                     homeViewModel.savePostToHistory(post)
                 },
-                onCommentClicked = { subreddit, article -> },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
@@ -100,7 +99,6 @@ fun LurkApp() {
                     navController.navigate("comments/${post.subreddit}/${post.id}")
                     subredditViewModel.savePostToHistory(post)
                 },
-                onCommentClicked = { subreddit, article -> },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
@@ -178,7 +176,6 @@ fun LurkApp() {
                 onPostClicked = { post ->
                     navController.navigate("comments/${post.subreddit}/${post.id}")
                 },
-                onCommentClicked = { subreddit, article -> },
                 onProfileClicked = { username ->
                     navController.navigate("user/$username")
                 },
