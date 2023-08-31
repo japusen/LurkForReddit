@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
@@ -28,10 +29,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.lurkforreddit.R
 import com.example.lurkforreddit.domain.model.SearchResult
 import kotlinx.coroutines.launch
 
@@ -44,6 +47,8 @@ fun SearchMenu(
     clearQuery: () -> Unit,
     onProfileClicked: (String) -> Unit,
     onSubredditClicked: (String) -> Unit,
+    onShowPostHistory: (Boolean) -> Unit,
+    onGetPostHistory: () -> Unit,
     closeDrawer: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -141,6 +146,22 @@ fun SearchMenu(
                     Text(result.name)
                 }
             }
+
+            Divider(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.recently_viewed_posts),
+                modifier = Modifier
+                    .clickable {
+                        onShowPostHistory(true)
+                        onGetPostHistory()
+                        closeDrawer()
+                    }
+                    .padding(start = 4.dp)
+            )
         }
     }
 }

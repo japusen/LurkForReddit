@@ -5,15 +5,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.lurkforreddit.domain.model.ListingSort
 import com.example.lurkforreddit.domain.model.Post
-import com.example.lurkforreddit.domain.util.NetworkResponse
 import com.example.lurkforreddit.domain.model.TopSort
 import com.example.lurkforreddit.domain.repository.PostRepository
 import com.example.lurkforreddit.domain.repository.SearchResultsRepository
+import com.example.lurkforreddit.domain.util.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -32,6 +32,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadPosts()
+        getPostHistory()
     }
 
     private fun loadPosts() {
@@ -125,8 +126,25 @@ class HomeViewModel @Inject constructor(
     /**
      * Get post history
      */
-    fun getPostHistory(): Flow<List<Post>> {
-        return postRepository.getPostHistory()
+    fun getPostHistory() {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    postHistory = postRepository.getPostHistory().stateIn(viewModelScope).value
+                )
+            }
+        }
+    }
+
+    /**
+     * Set visibility of post history
+     */
+    fun showPostHistory(show: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isShowingPostHistory = show
+            )
+        }
     }
 
     /**

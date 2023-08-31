@@ -50,6 +50,8 @@ fun LurkApp() {
                 selectedSort = homeUiState.value.listingSort,
                 networkResponse = homeUiState.value.networkResponse,
                 searchResult = homeUiState.value.searchResult,
+                postHistory = homeUiState.value.postHistory,
+                isShowingPostHistory = homeUiState.value.isShowingPostHistory,
                 setQuery = { query ->
                     homeViewModel.setQuery(query)
                 },
@@ -75,6 +77,15 @@ fun LurkApp() {
                 },
                 onLinkClicked = { url ->
                     openPostLink(context, navController, url)
+                },
+                onShowPostHistory = { show ->
+                    homeViewModel.showPostHistory(show)
+                },
+                onClearPostHistory = {
+                    homeViewModel.clearPostHistory()
+                },
+                onGetPostHistory = {
+                    homeViewModel.getPostHistory()
                 }
             )
         }

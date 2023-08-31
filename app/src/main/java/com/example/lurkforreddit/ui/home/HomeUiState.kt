@@ -14,5 +14,7 @@ data class HomeUiState(
     val listingSort: ListingSort = ListingSort.HOT,
     val topSort: TopSort? = null,
     val query: String = "",
-    val searchResult: List<SearchResult> = listOf()
+    val searchResult: List<SearchResult> = listOf(),
+    val postHistory: List<Post> = listOf(),
+    val isShowingPostHistory: Boolean = false
 )
