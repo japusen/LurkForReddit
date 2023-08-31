@@ -1,5 +1,8 @@
 package com.example.lurkforreddit.di
 
+import android.app.Application
+import androidx.room.Room
+import com.example.lurkforreddit.data.local.PostHistoryDatabase
 import com.example.lurkforreddit.data.remote.AccessTokenService
 import com.example.lurkforreddit.data.remote.RedditApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -41,5 +44,15 @@ object AppModule {
             .baseUrl(apiURL)
             .build()
             .create()
+    }
+
+    @Provides
+    @Singleton
+    fun providePostHistoryDatabase(app: Application): PostHistoryDatabase {
+        return Room.databaseBuilder(
+            app,
+            PostHistoryDatabase::class.java,
+            "post_history_database"
+        ).build()
     }
 }
