@@ -1,9 +1,10 @@
 package com.example.lurkforreddit.data.local
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(indices = [Index(value = ["postId"], unique = true)])
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
